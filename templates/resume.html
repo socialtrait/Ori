@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="generator" content="Ori">
+<title><!-- SLOT: Name — Role -->Resume</title>
+<style>
+/* ══ ORI TOKENS (print, dense) — do not edit; sync from tokens/ori.css ══ */
+:root{
+  --frost:#FAFBFE; --paper:#FFFFFF; --wash:#EFF5FD; --tint:#E3EEFC;
+  --ink:#000416; --slate:#4A4D5A; --mist:#8A94AB;
+  --blue:#2F80ED; --blue-deep:#1160C6;
+  --line:#E3E8F4; --line-strong:#C9D2E8;
+  --display:"Inter Display","Inter",-apple-system,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --sans:"Inter",-apple-system,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono","SF Mono","JetBrains Mono",Consolas,monospace;
+  --node:4.5pt;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+@page{size:A4;margin:0}
+body{background:var(--frost);color:var(--ink);font-family:var(--sans);font-size:9.5pt;
+  line-height:1.5;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page{width:210mm;min-height:297mm;padding:12mm 14mm;display:flex;flex-direction:column}
+
+/* ── Header: name + contact rail. The only display type on the page. ── */
+header{display:flex;align-items:baseline;gap:12pt;margin-bottom:4pt}
+.name{font-family:var(--display);font-size:24pt;font-weight:650;letter-spacing:-.012em;line-height:1.1}
+.role{font-family:var(--mono);font-size:9pt;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--blue);margin-left:auto;text-align:right}
+.contact{font-family:var(--mono);font-size:8pt;letter-spacing:.03em;color:var(--slate);
+  display:flex;gap:7pt;flex-wrap:wrap;padding:6pt 0 8pt;border-bottom:1px solid var(--line);
+  margin-bottom:12pt}
+.contact .sep::before{content:"·";color:var(--line-strong)}
+.contact a{color:var(--slate);text-decoration:none}
+
+.summary{font-size:10pt;line-height:1.5;color:var(--slate);max-width:72ch;margin-bottom:14pt}
+strong{font-weight:600} em{font-style:normal;font-weight:600;color:var(--blue-deep)}
+
+/* ── Section head — resume uses the thread rule compact ── */
+.eyebrow{font-family:var(--mono);font-size:8pt;font-weight:500;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--blue)}
+.thread{position:relative;height:2px;background:var(--line);margin:5pt 0 10pt}
+.thread::before{content:"";position:absolute;left:0;top:-1.5pt;width:var(--node);
+  height:var(--node);background:var(--blue)}
+.thread::after{content:"";position:absolute;left:0;top:0;width:30pt;height:2px;background:var(--blue)}
+section{margin-bottom:13pt}
+
+/* ── Role entry: title row with mono right-aligned dates; no borders between
+     entries — padding separates. ── */
+.entry{margin-bottom:11pt}
+.entry-head{display:flex;align-items:baseline;gap:8pt}
+.entry-head .title{font-weight:600;font-size:10.5pt}
+.entry-head .org{color:var(--slate)}
+.entry-head .when{margin-left:auto;font-family:var(--mono);font-size:8pt;
+  letter-spacing:.04em;color:var(--mist);font-variant-numeric:tabular-nums}
+.entry-sub{font-size:8.5pt;color:var(--mist);margin:1pt 0 4pt}
+.entry ul{list-style:none;margin-top:3pt}
+.entry li{position:relative;padding-left:12pt;margin-bottom:2.5pt}
+.entry li::before{content:"";position:absolute;left:0;top:5.5pt;width:4pt;height:4pt;background:var(--blue)}
+.entry li .num{font-family:var(--mono);font-size:8.5pt;font-variant-numeric:tabular-nums}
+
+/* ── Skills: grouped nouns, kv grid. No proficiency bars, ever. ── */
+.kv{display:grid;grid-template-columns:max-content 1fr;gap:4pt 16pt;font-size:9.5pt}
+.kv dt{font-family:var(--mono);font-size:8pt;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--mist);padding-top:1pt}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:0 20pt}
+
+.page-footer{display:flex;align-items:center;gap:8pt;font-family:var(--mono);font-size:7.5pt;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--mist);
+  border-top:1px solid var(--line);padding-top:7pt;margin-top:auto}
+.page-footer::before{content:"";width:var(--node);height:var(--node);background:var(--blue);flex:none}
+.page-footer .pageno{margin-left:auto}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div class="name"><!-- SLOT: name -->Asha Venkatesan</div>
+    <div class="role"><!-- SLOT: target role -->Growth engineer</div>
+  </header>
+  <div class="contact">
+    <!-- SLOT: contact — mono rail, links plain -->
+    <span>asha@example.com</span><span class="sep"></span>
+    <span>+1 415 555 0139</span><span class="sep"></span>
+    <span>github.com/ashav</span><span class="sep"></span>
+    <span>San Francisco, CA</span>
+  </div>
+
+  <!-- SLOT: summary — ≤3 lines, evidence not adjectives -->
+  <p class="summary">Engineer across growth and data for 8 years; shipped experiment
+  platforms used by 40+ teams and revenue systems processing $120M/yr. Looking to own
+  growth engineering end-to-end at an early-stage B2B company.</p>
+
+  <section>
+    <p class="eyebrow">Experience</p>
+    <div class="thread"></div>
+
+    <!-- SLOT: entry — repeat. Bullets: Action + Scope + Result + Outcome, ONE line -->
+    <div class="entry">
+      <div class="entry-head">
+        <span class="title">Staff Engineer, Growth</span>
+        <span class="org">— Northbeam</span>
+        <span class="when">2023-02 → present</span>
+      </div>
+      <div class="entry-sub">Growth platform team of 6; owned experimentation and activation surface</div>
+      <ul>
+        <li>Rebuilt experiment assignment across <span class="num">40</span> teams, cutting setup from days to <span class="num">15 min</span> and doubling test volume</li>
+        <li>Shipped onboarding rework across 3 product lines, lifting week-1 activation <span class="num">+18%</span> and unlocking PLG motion</li>
+        <li>Led 4-engineer squad through pricing-page relaunch; conversion <span class="num">+9%</span>, adding <span class="num">$2.1M</span> ARR run-rate</li>
+      </ul>
+    </div>
+
+    <div class="entry">
+      <div class="entry-head">
+        <span class="title">Senior Engineer</span>
+        <span class="org">— Reva Commerce</span>
+        <span class="when">2019-06 → 2023-01</span>
+      </div>
+      <ul>
+        <li>Built checkout event pipeline over <span class="num">6</span> sources at <span class="num">30k</span> events/s, enabling same-day merchandising decisions</li>
+        <li>Cut p95 storefront latency <span class="num">70%</span> by moving personalization to the edge, worth <span class="num">+4%</span> conversion in holdout</li>
+        <li>Mentored 5 engineers; 3 promoted to senior within two cycles</li>
+      </ul>
+    </div>
+
+    <div class="entry">
+      <div class="entry-head">
+        <span class="title">Engineer</span>
+        <span class="org">— Arlo Labs</span>
+        <span class="when">2017-08 → 2019-05</span>
+      </div>
+      <ul>
+        <li>Shipped referral system to <span class="num">1.2M</span> users; drove <span class="num">22%</span> of new signups by year two</li>
+      </ul>
+    </div>
+  </section>
+
+  <div class="two-col">
+    <section>
+      <p class="eyebrow">Skills</p>
+      <div class="thread"></div>
+      <!-- SLOT: grouped nouns only -->
+      <dl class="kv">
+        <dt>Languages</dt><dd>TypeScript, Python, SQL, Go</dd>
+        <dt>Systems</dt><dd>Postgres, Kafka, dbt, Redis, Temporal</dd>
+        <dt>Growth</dt><dd>Experimentation, attribution, activation funnels</dd>
+      </dl>
+    </section>
+    <section>
+      <p class="eyebrow">Education</p>
+      <div class="thread"></div>
+      <div class="entry">
+        <div class="entry-head">
+          <span class="title">B.E. Computer Science</span>
+          <span class="when">2013 → 2017</span>
+        </div>
+        <div class="entry-sub">Anna University · first class with distinction</div>
+      </div>
+    </section>
+  </div>
+
+  <div class="page-footer">
+    <span><!-- SLOT: name slug -->asha-venkatesan · resume</span>
+    <span class="pageno">01 / 01</span>
+  </div>
+
+</div>
+</body>
+</html>

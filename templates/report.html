@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="generator" content="Ori">
+<title><!-- SLOT: doc title -->Socialtrait insight report</title>
+<style>
+/* ══ ORI TOKENS (print) — do not edit; sync from tokens/ori.css ══ */
+:root{
+  --frost:#FAFBFE; --paper:#FFFFFF; --wash:#EFF5FD; --tint:#E3EEFC;
+  --night:#02122A; --navy:#213C60;
+  --ink:#000416; --slate:#4A4D5A; --mist:#8A94AB;
+  --blue:#2F80ED; --blue-deep:#1160C6; --blue-soft:#7EAFF1; --blue-faint:#B6D1F7;
+  --pos:#0E8A5C; --neg:#D64545; --warn:#B7791F;
+  --line:#E3E8F4; --line-strong:#C9D2E8;
+  --display:"Inter Display","Inter",-apple-system,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --sans:"Inter",-apple-system,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono","SF Mono","JetBrains Mono",Consolas,monospace;
+  --node:5pt;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+@page{size:A4;margin:0}
+body{background:var(--frost);color:var(--ink);font-family:var(--sans);font-size:10pt;
+  line-height:1.6;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page{width:210mm;min-height:297mm;padding:16mm 18mm 18mm;display:flex;
+  flex-direction:column;page-break-after:always}
+.page:last-child{page-break-after:auto}
+
+.meta-rail{font-family:var(--mono);font-size:8pt;font-weight:500;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--mist);display:flex;align-items:center;gap:8pt;
+  padding-bottom:9pt;border-bottom:1px solid var(--line);margin-bottom:16pt}
+.meta-rail .brand{color:var(--ink)}
+.meta-rail .sep::before{content:"·";color:var(--line-strong)}
+.meta-rail .right{margin-left:auto}
+
+h1{font-family:var(--display);font-size:22pt;font-weight:650;line-height:1.15;
+  letter-spacing:-.01em;margin-bottom:6pt}
+h2{font-family:var(--display);font-size:15pt;font-weight:600;line-height:1.25;letter-spacing:-.008em}
+p{margin:0 0 8pt;max-width:70ch}
+.lede{font-size:11pt;line-height:1.55;color:var(--slate);max-width:62ch;margin-bottom:14pt}
+strong{font-weight:600} em{font-style:normal;font-weight:600;color:var(--blue-deep)}
+
+.eyebrow{font-family:var(--mono);font-size:8pt;font-weight:500;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--blue);margin-bottom:4pt}
+.eyebrow .idx{color:var(--mist);margin-right:6pt}
+.thread{position:relative;height:2px;background:var(--line);margin:8pt 0 12pt}
+.thread::before{content:"";position:absolute;left:0;top:-1.5pt;width:var(--node);
+  height:var(--node);background:var(--blue)}
+.thread::after{content:"";position:absolute;left:0;top:0;width:36pt;height:2px;background:var(--blue)}
+
+section{margin-bottom:18pt}
+
+.metric-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--line);border:1px solid var(--line);margin-bottom:16pt}
+.metric{background:var(--paper);padding:11pt 12pt}
+.metric-label{font-family:var(--mono);font-size:8pt;font-weight:500;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--mist);margin-bottom:5pt}
+.metric-value{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:22pt;
+  font-weight:600;line-height:1;letter-spacing:-.01em}
+.metric-value .unit{font-size:11pt;font-weight:500;color:var(--mist)}
+.metric-note{font-size:8.5pt;color:var(--slate);margin-top:5pt}
+.metric.hero .metric-value{color:var(--blue)}
+.delta{font-family:var(--mono);font-size:8.5pt;font-weight:500}
+.delta.up{color:var(--pos)} .delta.up::before{content:"▲ ";font-size:6pt}
+.delta.down{color:var(--neg)} .delta.down::before{content:"▼ ";font-size:6pt}
+
+.figure{margin:10pt 0}
+.figure svg{width:100%;height:auto;display:block}
+.figcap{font-family:var(--mono);font-size:8pt;color:var(--mist);margin-top:5pt;display:flex;gap:6pt}
+.figcap .fig-idx{color:var(--blue);white-space:nowrap}
+
+table.ori{width:100%;border-collapse:collapse;font-size:9.5pt;margin:8pt 0}
+table.ori th{font-family:var(--mono);font-size:8pt;font-weight:500;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--mist);text-align:left;padding:5pt 8pt 5pt 0;
+  border-bottom:1px solid var(--line-strong)}
+table.ori td{padding:6pt 8pt 6pt 0;border-bottom:1px solid var(--line)}
+table.ori td.data,table.ori th.data{text-align:right}
+table.ori td.data{font-family:var(--mono);font-size:9pt;font-variant-numeric:tabular-nums}
+
+.callout{background:var(--wash);border-left:2pt solid var(--blue);padding:8pt 12pt;font-size:9.5pt}
+.callout .callout-label{font-family:var(--mono);font-size:7.5pt;font-weight:500;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--blue);display:block;margin-bottom:2pt}
+.callout.warn{border-left-color:var(--warn)} .callout.warn .callout-label{color:var(--warn)}
+
+.persona-grid{display:grid;grid-template-columns:1fr 1fr;gap:10pt;margin:10pt 0}
+.persona{display:grid;grid-template-columns:32pt 1fr;gap:10pt;background:var(--paper);
+  border:1px solid var(--line);padding:11pt 12pt}
+.persona .avatar{width:32pt;height:32pt;border-radius:50%;background:var(--tint);
+  color:var(--blue-deep);font-family:var(--mono);font-size:10pt;font-weight:600;
+  display:flex;align-items:center;justify-content:center}
+.persona .name{font-weight:600;font-size:10pt}
+.persona .role{font-size:8.5pt;color:var(--mist);margin-bottom:5pt}
+.persona .traits{display:flex;flex-wrap:wrap;gap:4pt;margin-bottom:5pt}
+.persona q{font-size:9pt;color:var(--slate)}
+.tag{display:inline-block;font-family:var(--mono);font-size:7pt;font-weight:500;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--blue-deep);
+  background:var(--tint);padding:1.5pt 6pt;border-radius:2px}
+
+.page-footer{display:flex;align-items:center;gap:8pt;font-family:var(--mono);font-size:7.5pt;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--mist);
+  border-top:1px solid var(--line);padding-top:8pt;margin-top:auto}
+.page-footer::before{content:"";width:var(--node);height:var(--node);background:var(--blue);flex:none}
+.page-footer .pageno{margin-left:auto}
+</style>
+</head>
+<body>
+
+<!-- ══ PAGE 1 — header, lede, headline metrics, first finding ══ -->
+<div class="page">
+  <div class="meta-rail">
+    <span class="brand">Socialtrait</span><span class="sep"></span>
+    <span><!-- SLOT -->Insight report</span><span class="sep"></span>
+    <span><!-- SLOT -->2026-07-07</span>
+    <span class="right"><!-- SLOT -->Client confidential</span>
+  </div>
+
+  <!-- SLOT: report title = the variant finding, not the topic -->
+  <h1>Creators beat brand voice with every segment except loyalists</h1>
+  <p class="lede"><!-- SLOT: lede — study scope + the one-line result -->Simulated
+  audience study of 6 creative variants across 4 segments for the Q3 launch.
+  Creator-led variants win 3 of 4 segments; brand-voice wins only existing customers.</p>
+
+  <div class="metric-row">
+    <!-- SLOT: 3 headline metrics; exactly one .hero -->
+    <div class="metric hero">
+      <div class="metric-label">Creator-led lift</div>
+      <div class="metric-value">+31<span class="unit">%</span></div>
+      <div class="metric-note">predicted CTR vs. brand voice</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Segments won</div>
+      <div class="metric-value">3<span class="unit">/4</span></div>
+      <div class="metric-note">all except loyalists</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label">Panel size</div>
+      <div class="metric-value">2,400</div>
+      <div class="metric-note">simulated respondents / variant</div>
+    </div>
+  </div>
+
+  <!-- ══ SECTION PATTERN: claim H2 → evidence shape → insight strip ══ -->
+  <section>
+    <p class="eyebrow"><span class="idx">01</span>Segment preference</p>
+    <h2>Gen-Z and millennial cells prefer creator variants 3:1</h2>
+    <div class="thread"></div>
+    <div class="figure">
+      <!-- SLOT: chart — series ramp #2F80ED → #213C60 → #7EAFF1; square bars -->
+      <svg viewBox="0 0 640 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Preference share by segment">
+        <g stroke="#E9EDF6" stroke-width="1">
+          <line x1="110" y1="30" x2="620" y2="30"/><line x1="110" y1="75" x2="620" y2="75"/>
+          <line x1="110" y1="120" x2="620" y2="120"/>
+        </g>
+        <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#8A94AB">
+          <text x="0" y="49">Gen-Z</text><text x="0" y="94">Millennial</text>
+          <text x="0" y="139">Gen-X</text><text x="0" y="184">Loyalists</text>
+        </g>
+        <line x1="110" y1="20" x2="110" y2="195" stroke="#C9D2E8" stroke-width="1"/>
+        <!-- creator (blue) vs brand (navy) pairs -->
+        <rect x="110" y="36" width="390" height="12" fill="#2F80ED"/>
+        <rect x="110" y="50" width="130" height="12" fill="#213C60"/>
+        <rect x="110" y="81" width="350" height="12" fill="#2F80ED"/>
+        <rect x="110" y="95" width="170" height="12" fill="#213C60"/>
+        <rect x="110" y="126" width="300" height="12" fill="#2F80ED"/>
+        <rect x="110" y="140" width="220" height="12" fill="#213C60"/>
+        <rect x="110" y="171" width="180" height="12" fill="#2F80ED"/>
+        <rect x="110" y="185" width="330" height="12" fill="#213C60"/>
+        <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#000416">
+          <text x="506" y="46">74%</text><text x="466" y="91">68%</text>
+          <text x="416" y="136">58%</text><text x="446" y="195">63%</text>
+        </g>
+        <g font-family="IBM Plex Mono, monospace" font-size="9" fill="#8A94AB">
+          <text x="520" y="14">■ creator</text><text x="580" y="14" fill="#213C60">■ brand</text>
+        </g>
+      </svg>
+      <div class="figcap"><span class="fig-idx">FIG 01</span>
+        <span>Preference share, creator-led vs. brand-voice variants. SOURCE: Socialtrait simulation 2026-07-02.</span>
+      </div>
+    </div>
+    <div class="callout">
+      <span class="callout-label">So what</span>
+      Lead acquisition media with creator variants; reserve brand voice for
+      <strong>retention channels only</strong> — email, app push, loyalty.
+    </div>
+  </section>
+
+  <div class="page-footer">
+    <span>Socialtrait / Ori · <!-- SLOT -->ST-IR-021</span><span class="pageno">01 / 02</span>
+  </div>
+</div>
+
+<!-- ══ PAGE 2 — persona evidence + method ══ -->
+<div class="page">
+  <div class="meta-rail">
+    <span class="brand">Socialtrait</span><span class="sep"></span><span>Insight report</span>
+    <span class="right">ST-IR-021</span>
+  </div>
+
+  <section>
+    <p class="eyebrow"><span class="idx">02</span>Voice of the segments</p>
+    <h2>Loyalists read creator content as a trust downgrade</h2>
+    <div class="thread"></div>
+    <p>Verbatim-style reactions explain the loyalist reversal: existing customers
+    associate the brand's own voice with reliability, and read creator hand-offs
+    as distancing. <em>Quotes below are simulated persona responses,</em> cited to
+    their persona models.</p>
+    <div class="persona-grid">
+      <!-- SLOT: persona cards, 2–4. Initials avatar, ≤3 trait tags, one quote ≤25 words -->
+      <div class="persona">
+        <div class="avatar">MA</div>
+        <div>
+          <div class="name">Maya</div>
+          <div class="role">Simulated Gen-Z shopper · cell A1</div>
+          <div class="traits"><span class="tag">Creator-native</span><span class="tag">Deal-driven</span></div>
+          <q>If the brand says it, it's an ad. If a creator I follow says it, I'll actually look.</q>
+        </div>
+      </div>
+      <div class="persona">
+        <div class="avatar">RD</div>
+        <div>
+          <div class="name">Raj</div>
+          <div class="role">Simulated loyalist · cell D2</div>
+          <div class="traits"><span class="tag">8× repeat buyer</span><span class="tag">Email-first</span></div>
+          <q>Why is some influencer telling me about a brand I already use? Just tell me what's new.</q>
+        </div>
+      </div>
+    </div>
+    <div class="callout">
+      <span class="callout-label">So what</span>
+      Don't ship one campaign to everyone: split creative by lifecycle stage,
+      not just demographics.
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow"><span class="idx">03</span>Method</p>
+    <h2>How this study was run</h2>
+    <div class="thread"></div>
+    <table class="ori">
+      <thead><tr><th>Parameter</th><th>Value</th><th class="data">N</th></tr></thead>
+      <tbody>
+        <tr><td>Panel</td><td>Calibrated persona models, 4 segments</td><td class="data">2,400</td></tr>
+        <tr><td>Variants</td><td>3 creator-led · 3 brand-voice</td><td class="data">6</td></tr>
+        <tr><td>Exposure</td><td>Randomized, in-feed context</td><td class="data">14,400</td></tr>
+      </tbody>
+    </table>
+    <div class="callout warn">
+      <span class="callout-label">Caveats</span>
+      Findings are simulation-derived predictions, calibrated on client first-party
+      data through 2026-06. Validate top variant in a 5% media holdout before full rollout.
+    </div>
+  </section>
+
+  <div class="page-footer">
+    <span>Socialtrait / Ori · ST-IR-021</span><span class="pageno">02 / 02</span>
+  </div>
+</div>
+
+</body>
+</html>

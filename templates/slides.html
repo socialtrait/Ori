@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="generator" content="Ori">
+<title><!-- SLOT: deck title -->Socialtrait deck</title>
+<style>
+/* ══ ORI TOKENS (slides, 1280×720) — do not edit; sync from tokens/ori.css ══ */
+:root{
+  --frost:#FAFBFE; --paper:#FFFFFF; --wash:#EFF5FD; --tint:#E3EEFC;
+  --night:#02122A; --navy:#213C60;
+  --ink:#000416; --slate:#4A4D5A; --mist:#8A94AB;
+  --ink-n:#F4F7FF; --mist-n:#8FA0C2; --line-n:#14294D;
+  --blue:#2F80ED; --blue-deep:#1160C6; --blue-soft:#7EAFF1; --blue-faint:#B6D1F7;
+  --pos:#0E8A5C; --neg:#D64545; --warn:#B7791F;
+  --line:#E3E8F4; --line-strong:#C9D2E8;
+  --display:"Inter Display","Inter",-apple-system,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --sans:"Inter",-apple-system,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono","SF Mono","JetBrains Mono",Consolas,monospace;
+  --node:7px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+@page{size:1280px 720px;margin:0}
+body{background:#0B1526;font-family:var(--sans);color:var(--ink);
+  -webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+.slide{width:1280px;height:720px;background:var(--frost);padding:64px 72px 56px;
+  position:relative;display:flex;flex-direction:column;overflow:hidden;
+  page-break-after:always;margin:0 auto}
+@media screen{.slide{margin:24px auto;box-shadow:0 1px 2px rgba(1,23,66,.2)}}
+
+.meta-rail{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--mist);display:flex;align-items:center;gap:12px;
+  padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:28px}
+.meta-rail .brand{color:var(--ink)}
+.meta-rail .sep::before{content:"·";color:var(--line-strong)}
+.meta-rail .right{margin-left:auto}
+
+.eyebrow{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--blue);margin-bottom:10px}
+.eyebrow .idx{color:var(--mist);margin-right:10px}
+/* SLIDE TITLE = full-sentence assertion, ≤2 lines */
+.slide h2{font-family:var(--display);font-size:40px;font-weight:650;line-height:1.12;
+  letter-spacing:-.012em;max-width:20ch;margin-bottom:14px}
+.thread{position:relative;height:2px;background:var(--line);margin:14px 0 32px}
+.thread::before{content:"";position:absolute;left:0;top:-2.5px;width:var(--node);
+  height:var(--node);background:var(--blue)}
+.thread::after{content:"";position:absolute;left:0;top:0;width:64px;height:2px;background:var(--blue)}
+
+.body{flex:1;display:flex;flex-direction:column;font-size:19px;line-height:1.55;color:var(--slate)}
+.cols{display:grid;grid-template-columns:7fr 5fr;gap:48px;flex:1}
+strong{font-weight:600;color:var(--ink)}
+em{font-style:normal;font-weight:600;color:var(--blue-deep)}
+ul{list-style:none}
+ul li{position:relative;padding-left:24px;margin-bottom:14px}
+ul li::before{content:"";position:absolute;left:0;top:11px;width:7px;height:7px;background:var(--blue)}
+
+.metric-row{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--line);border:1px solid var(--line)}
+.metric{background:var(--paper);padding:24px 26px}
+.metric-label{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--mist);margin-bottom:12px}
+.metric-value{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:52px;
+  font-weight:600;line-height:1;color:var(--ink);letter-spacing:-.01em}
+.metric-value .unit{font-size:24px;font-weight:500;color:var(--mist)}
+.metric-note{font-size:15px;color:var(--slate);margin-top:12px}
+.metric.hero .metric-value{color:var(--blue)}
+
+.figure svg{width:100%;height:auto;display:block}
+.figcap{font-family:var(--mono);font-size:13px;color:var(--mist);margin-top:10px;display:flex;gap:8px}
+.figcap .fig-idx{color:var(--blue);white-space:nowrap}
+
+/* Pinned takeaway — every content slide ends with one, ≤14 words */
+.takeaway{position:absolute;left:72px;right:72px;bottom:56px;background:var(--wash);
+  border-left:3px solid var(--blue);padding:14px 20px;font-size:18px;color:var(--ink)}
+.takeaway .label{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--blue);display:block;margin-bottom:2px}
+.slide.has-takeaway{padding-bottom:150px}
+
+.slideno{position:absolute;right:72px;top:70px;font-family:var(--mono);font-size:12px;
+  color:var(--mist);letter-spacing:.08em}
+
+/* ── Night slides (cover + close) ── */
+.slide.night{background:radial-gradient(ellipse 90% 70% at 50% -10%,#0A2458 0%,var(--night) 60%);
+  color:var(--ink-n)}
+.slide.night .display{font-family:var(--display);font-size:64px;font-weight:650;line-height:1.05;
+  letter-spacing:-.015em;max-width:18ch;color:var(--ink-n)}
+.slide.night .eyebrow{color:var(--blue-soft)}
+.slide.night .lede{font-size:22px;color:var(--mist-n);max-width:48ch;margin-top:18px}
+.slide.night .meta-rail{color:var(--mist-n);border-bottom-color:var(--line-n)}
+.slide.night .meta-rail .brand{color:var(--ink-n)}
+.cover-foot{margin-top:auto;display:flex;gap:14px;font-family:var(--mono);font-size:13px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--mist-n);align-items:center}
+.cover-foot::before{content:"";width:var(--node);height:var(--node);background:var(--blue);flex:none}
+.weave{position:absolute;right:-180px;bottom:-180px;width:560px;height:560px;opacity:.5}
+</style>
+</head>
+<body>
+
+<!-- ══ COVER (night). Title = the pitch in one line ══ -->
+<section class="slide night">
+  <svg class="weave" viewBox="0 0 400 400" aria-hidden="true">
+    <g fill="none" stroke="#14294D" stroke-width="30">
+      <path d="M40 360 C 40 180, 180 40, 360 40"/>
+      <path d="M40 40 C 40 220, 180 360, 360 360"/>
+    </g>
+  </svg>
+  <div class="meta-rail">
+    <span class="brand">Socialtrait</span><span class="sep"></span>
+    <span><!-- SLOT: occasion -->Q3 review</span><span class="sep"></span>
+    <span><!-- SLOT: date -->2026-07-07</span>
+    <span class="right"><!-- SLOT -->Confidential</span>
+  </div>
+  <p class="eyebrow" style="margin-top:96px"><!-- SLOT: deck eyebrow -->Pilot results</p>
+  <!-- SLOT: cover assertion -->
+  <div class="display">Simulation predicted the market. Three times out of three.</div>
+  <p class="lede"><!-- SLOT: subtitle -->Q3 audience-simulation pilot results and the
+  case for a ten-account expansion.</p>
+  <div class="cover-foot"><span><!-- SLOT: presenter -->Suraj · Socialtrait</span></div>
+</section>
+
+<!-- ══ CONTENT SLIDE — evidence: metrics. Repeat per slide. ══ -->
+<section class="slide has-takeaway">
+  <div class="meta-rail">
+    <span class="brand">Socialtrait</span><span class="sep"></span><span>Q3 review</span>
+    <span class="right">02 / 05</span>
+  </div>
+  <p class="eyebrow"><span class="idx">01</span>Headline numbers</p>
+  <!-- SLOT: assertion title -->
+  <h2>Three pilots, one pattern: the simulation called every winner</h2>
+  <div class="thread"></div>
+  <div class="body">
+    <div class="metric-row">
+      <div class="metric hero">
+        <div class="metric-label">Prediction accuracy</div>
+        <div class="metric-value">87<span class="unit">%</span></div>
+        <div class="metric-note">interval coverage 11/12 cells</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Time to insight</div>
+        <div class="metric-value">4<span class="unit">hrs</span></div>
+        <div class="metric-note">panels took 19 days median</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Media saved</div>
+        <div class="metric-value">$340<span class="unit">k</span></div>
+        <div class="metric-note">one flagged creative, one pilot</div>
+      </div>
+    </div>
+  </div>
+  <div class="takeaway"><span class="label">Takeaway</span>
+    Simulation is accurate enough to gate media spend today.</div>
+</section>
+
+<!-- ══ CONTENT SLIDE — evidence: chart (one evidence shape per slide) ══ -->
+<section class="slide has-takeaway">
+  <div class="meta-rail">
+    <span class="brand">Socialtrait</span><span class="sep"></span><span>Q3 review</span>
+    <span class="right">03 / 05</span>
+  </div>
+  <p class="eyebrow"><span class="idx">02</span>Speed</p>
+  <h2>Answers land inside the campaign cycle, not after it</h2>
+  <div class="thread"></div>
+  <div class="body">
+    <div class="cols">
+      <div class="figure">
+        <svg viewBox="0 0 620 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Time to insight">
+          <g stroke="#E9EDF6" stroke-width="1">
+            <line x1="150" y1="40" x2="600" y2="40"/><line x1="150" y1="120" x2="600" y2="120"/>
+            <line x1="150" y1="200" x2="600" y2="200"/>
+          </g>
+          <g font-family="IBM Plex Mono, monospace" font-size="14" fill="#8A94AB">
+            <text x="0" y="75">Field study</text><text x="0" y="155">Online panel</text>
+            <text x="0" y="235">Socialtrait</text>
+          </g>
+          <line x1="150" y1="30" x2="150" y2="270" stroke="#C9D2E8" stroke-width="1"/>
+          <rect x="150" y="55" width="430" height="32" fill="#B6D1F7"/>
+          <rect x="150" y="135" width="292" height="32" fill="#7EAFF1"/>
+          <rect x="150" y="215" width="18" height="32" fill="#2F80ED"/>
+          <g font-family="IBM Plex Mono, monospace" font-size="15" fill="#000416">
+            <text x="540" y="76">28 d</text><text x="452" y="156">19 d</text>
+            <text x="178" y="236">4 h</text>
+          </g>
+        </svg>
+        <div class="figcap"><span class="fig-idx">FIG 01</span>
+          <span>Median question → segmented result. SOURCE: pilot instrumentation.</span></div>
+      </div>
+      <div>
+        <ul>
+          <li><strong>9-day</strong> median creative iteration cycle at pilot clients</li>
+          <li>Panels answer after the decision; simulation answers <em>before</em></li>
+          <li>Same-day re-tests after every creative revision</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="takeaway"><span class="label">Takeaway</span>
+    Research finally moves at the speed the campaign already does.</div>
+</section>
+
+<!-- ══ CONTENT SLIDE — evidence: table/list. Duplicate pattern as needed. ══ -->
+<section class="slide has-takeaway">
+  <div class="meta-rail">
+    <span class="brand">Socialtrait</span><span class="sep"></span><span>Q3 review</span>
+    <span class="right">04 / 05</span>
+  </div>
+  <p class="eyebrow"><span class="idx">03</span>Expansion</p>
+  <h2>$53k and one engineer buys a ten-account proof by October</h2>
+  <div class="thread"></div>
+  <div class="body">
+    <ul style="font-size:21px;max-width:52ch">
+      <li><strong>Jul</strong> — onboard 4 pipeline accounts, 8 studies</li>
+      <li><strong>Aug</strong> — 4 new logos, 12 studies, pricing test</li>
+      <li><strong>Sep</strong> — 2 enterprise validations against media holdouts</li>
+      <li>Instrumentation unchanged — same accuracy dashboard reviewed monthly</li>
+    </ul>
+  </div>
+  <div class="takeaway"><span class="label">The ask</span>
+    Approve budget and headcount by July 18 to finish before Q4 planning.</div>
+</section>
+
+<!-- ══ CLOSE (night) — one ask, one contact. Never an empty thank-you. ══ -->
+<section class="slide night">
+  <div class="meta-rail">
+    <span class="brand">Socialtrait</span><span class="sep"></span><span>Q3 review</span>
+    <span class="right">05 / 05</span>
+  </div>
+  <p class="eyebrow" style="margin-top:120px">Decision requested</p>
+  <div class="display" style="font-size:52px">Expand the pilot. Ten accounts, this quarter.</div>
+  <p class="lede">Approval needed by <strong style="color:#F4F7FF">July 18</strong> ·
+  detail in ST-OP-014</p>
+  <div class="cover-foot"><span>suraj@socialtrait.ai</span></div>
+</section>
+
+</body>
+</html>

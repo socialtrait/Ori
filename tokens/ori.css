@@ -1,0 +1,324 @@
+/* ═══════════════════════════════════════════════════════════════════
+   ORI — the Socialtrait document design system            v1.0
+   Canonical tokens + core components.
+   Templates embed a copy of this block. Change values HERE first;
+   templates inherit on next sync. Never fork values inside a document.
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── Surfaces ─────────────────────────────────────────────── */
+  --frost:  #FAFBFE;   /* page canvas — cool, never warm            */
+  --paper:  #FFFFFF;   /* cards, lifted containers                  */
+  --wash:   #EFF5FD;   /* callout / insight-strip background        */
+  --tint:   #E3EEFC;   /* tag background, chart last-series fill    */
+  --night:  #02122A;   /* dark section surface (screen only)        */
+  --navy:   #213C60;   /* deep structural navy, chart series 2      */
+
+  /* ── Ink ──────────────────────────────────────────────────── */
+  --ink:    #000416;   /* primary text                              */
+  --slate:  #4A4D5A;   /* secondary text, ledes                     */
+  --mist:   #8A94AB;   /* tertiary text, captions, metadata         */
+  --ink-n:  #F4F7FF;   /* primary text on night surfaces            */
+  --mist-n: #8FA0C2;   /* secondary text on night surfaces          */
+
+  /* ── Accent (one accent, always this one) ─────────────────── */
+  --blue:       #2F80ED;   /* Signal Blue — emphasis, threads, keys */
+  --blue-deep:  #1160C6;   /* hover/pressed, links on wash          */
+  --blue-soft:  #7EAFF1;   /* chart series 3                        */
+  --blue-faint: #B6D1F7;   /* chart series 4                        */
+
+  /* ── Semantic (data deltas + cautions ONLY, never decoration) */
+  --pos:  #0E8A5C;
+  --neg:  #D64545;
+  --warn: #B7791F;
+
+  /* ── Lines ────────────────────────────────────────────────── */
+  --line:        #E3E8F4;  /* default hairline                      */
+  --line-strong: #C9D2E8;  /* table header rule, chart axis         */
+  --line-n:      #14294D;  /* hairline on night surfaces            */
+
+  /* ── Type ─────────────────────────────────────────────────── */
+  --display: "Inter Display", "Inter", -apple-system, BlinkMacSystemFont,
+             "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --sans:    "Inter", -apple-system, BlinkMacSystemFont,
+             "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  --mono:    "IBM Plex Mono", "SF Mono", "JetBrains Mono", "Roboto Mono",
+             Consolas, monospace;
+
+  /* ── Geometry ─────────────────────────────────────────────── */
+  --r-chip: 2px;       /* tags, code spans — near-square            */
+  --r-card: 6px;       /* cards, code blocks, buttons — max radius  */
+  --node:   6px;       /* the thread-rule node square               */
+
+  /* ── Shadow (screen artifacts only; print gets none) ─────── */
+  --lift:  0 1px 2px rgba(1, 23, 66, .06);
+  --hover: 0 8px 24px rgba(1, 23, 66, .08);
+}
+
+/* ═══ Base ═══════════════════════════════════════════════════ */
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--frost);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px;                 /* print templates: 10pt */
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "cv11";   /* Inter: single-storey a off, keep default; cv11 = open digits opt */
+}
+
+::selection { background: var(--tint); color: var(--ink); }
+
+h1, h2, h3, h4 { font-family: var(--display); color: var(--ink); }
+h1 { font-size: 29px; font-weight: 650; line-height: 1.15; letter-spacing: -0.01em; }
+h2 { font-size: 20px; font-weight: 600; line-height: 1.25; letter-spacing: -0.008em; }
+h3 { font-size: 15px; font-weight: 600; line-height: 1.35; }
+
+.display {
+  font-family: var(--display);
+  font-size: 42px; font-weight: 650;
+  line-height: 1.05; letter-spacing: -0.015em;
+}
+
+p { margin: 0 0 12px; }
+.lede { font-size: 15px; line-height: 1.55; color: var(--slate); max-width: 62ch; }
+.small { font-size: 12.5px; line-height: 1.5; }
+
+strong, b { font-weight: 600; }
+em, i { font-style: normal; font-weight: 600; color: var(--blue-deep); } /* italics banned */
+
+a { color: var(--blue); text-decoration: none; border-bottom: 1px solid var(--blue-faint); }
+a:hover { color: var(--blue-deep); border-bottom-color: var(--blue-deep); }
+
+/* Every number that matters is data */
+.num, .metric-value, td.data, .delta { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+
+/* ═══ Signature: meta rail ═══════════════════════════════════
+   Mono metadata line, first element on every page.
+   Format: SOCIALTRAIT · <ARTIFACT> · <YYYY-MM-DD> · <CLASSIFICATION> */
+.meta-rail {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 500;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--mist);
+  display: flex; align-items: center; gap: 10px;
+  padding-bottom: 12px; border-bottom: 1px solid var(--line);
+}
+.meta-rail .brand { color: var(--ink); }
+.meta-rail .sep::before { content: "·"; color: var(--line-strong); }
+.meta-rail .right { margin-left: auto; }
+
+/* ═══ Signature: eyebrow + thread rule ═══════════════════════
+   Section head = mono index eyebrow, display title,
+   then a 2px blue thread starting with a 6px node square.    */
+.eyebrow {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 500;
+  letter-spacing: .12em; text-transform: uppercase;
+  color: var(--blue); margin-bottom: 6px;
+}
+.eyebrow .idx { color: var(--mist); margin-right: 8px; }
+
+.thread {
+  position: relative; height: 2px; background: var(--line);
+  margin: 10px 0 20px;
+}
+.thread::before {
+  content: ""; position: absolute; left: 0; top: -2px;
+  width: var(--node); height: var(--node); background: var(--blue);
+}
+.thread::after {           /* blue segment of the thread */
+  content: ""; position: absolute; left: 0; top: 0;
+  width: 48px; height: 2px; background: var(--blue);
+}
+
+/* ═══ Metric block ═══════════════════════════════════════════ */
+.metric-row {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+  background: var(--line);                 /* 1px grid seams */
+  border: 1px solid var(--line);
+}
+.metric { background: var(--paper); padding: 16px 18px; }
+.metric-label {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 500;
+  letter-spacing: .08em; text-transform: uppercase;
+  color: var(--mist); margin-bottom: 8px;
+}
+.metric-value {
+  font-size: 32px; font-weight: 600; line-height: 1;
+  color: var(--ink); letter-spacing: -0.01em;
+}
+.metric-value .unit { font-size: 16px; font-weight: 500; color: var(--mist); margin-left: 2px; }
+.metric-note { font-size: 12px; color: var(--slate); margin-top: 8px; }
+
+.delta { font-size: 11.5px; font-weight: 500; }
+.delta.up   { color: var(--pos); }
+.delta.up::before   { content: "▲ "; font-size: 8px; vertical-align: 1px; }
+.delta.down { color: var(--neg); }
+.delta.down::before { content: "▼ "; font-size: 8px; vertical-align: 1px; }
+
+/* ═══ Tag ════════════════════════════════════════════════════ */
+.tag {
+  display: inline-block;
+  font-family: var(--mono); font-size: 10px; font-weight: 500;
+  letter-spacing: .06em; text-transform: uppercase;
+  color: var(--blue-deep); background: var(--tint);
+  padding: 2px 8px; border-radius: var(--r-chip);
+}
+.tag.ghost { background: transparent; border: 1px solid var(--line-strong); color: var(--slate); }
+
+/* ═══ Table ══════════════════════════════════════════════════ */
+table.ori { width: 100%; border-collapse: collapse; font-size: 13px; margin: 16px 0; }
+table.ori th {
+  font-family: var(--mono); font-size: 10.5px; font-weight: 500;
+  letter-spacing: .07em; text-transform: uppercase;
+  color: var(--mist); text-align: left;
+  padding: 8px 12px 8px 0;
+  border-bottom: 1px solid var(--line-strong);
+}
+table.ori td { padding: 9px 12px 9px 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+table.ori td.data, table.ori th.data { text-align: right; font-variant-numeric: tabular-nums; }
+table.ori td.data { font-family: var(--mono); font-size: 12.5px; }
+table.ori tr.total td {
+  border-top: 2px solid var(--ink); border-bottom: none;
+  font-weight: 600; padding-top: 10px;
+}
+table.ori.compact td { padding: 6px 10px 6px 0; font-size: 12px; }
+
+/* ═══ Callout / insight strip ════════════════════════════════ */
+.callout {
+  background: var(--wash);
+  border-left: 2px solid var(--blue);
+  padding: 12px 16px; margin: 16px 0;
+  font-size: 13.5px;
+}
+.callout .callout-label {
+  font-family: var(--mono); font-size: 10px; font-weight: 500;
+  letter-spacing: .1em; text-transform: uppercase;
+  color: var(--blue); display: block; margin-bottom: 4px;
+}
+.callout.warn { border-left-color: var(--warn); }
+.callout.warn .callout-label { color: var(--warn); }
+.callout.risk { border-left-color: var(--neg); }
+.callout.risk .callout-label { color: var(--neg); }
+
+/* ═══ Quote ══════════════════════════════════════════════════ */
+.quote { padding: 4px 0 4px 18px; border-left: 2px solid var(--line-strong); margin: 16px 0; }
+.quote p { font-size: 15px; line-height: 1.5; color: var(--ink); margin-bottom: 6px; }
+.quote cite {
+  font-family: var(--mono); font-style: normal; font-size: 11px;
+  letter-spacing: .05em; text-transform: uppercase; color: var(--mist);
+}
+.quote cite::before { content: "— "; color: var(--blue); }
+
+/* ═══ Persona card (Socialtrait-native) ══════════════════════ */
+.persona {
+  display: grid; grid-template-columns: 44px 1fr; gap: 14px;
+  background: var(--paper); border: 1px solid var(--line);
+  padding: 16px 18px;
+}
+.persona .avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--tint); color: var(--blue-deep);
+  font-family: var(--mono); font-size: 14px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+}
+.persona .name { font-weight: 600; font-size: 14px; }
+.persona .role { font-size: 12px; color: var(--mist); margin-bottom: 8px; }
+.persona .traits { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.persona q { font-size: 13px; color: var(--slate); quotes: "“" "”"; }
+
+/* ═══ Key-value list ═════════════════════════════════════════ */
+.kv { display: grid; grid-template-columns: max-content 1fr; gap: 6px 24px;
+      font-size: 13px; align-content: start; }
+.kv dt {
+  font-family: var(--mono); font-size: 11px; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--mist); padding-top: 2px;
+}
+.kv dd { color: var(--ink); }
+
+/* ═══ Code ═══════════════════════════════════════════════════ */
+code {
+  font-family: var(--mono); font-size: .88em;
+  background: var(--wash); border: 1px solid var(--line);
+  border-radius: var(--r-chip); padding: 1px 5px;
+}
+pre {
+  font-family: var(--mono); font-size: 12px; line-height: 1.55;
+  background: var(--night); color: var(--ink-n);
+  border-radius: var(--r-card); padding: 16px 18px;
+  overflow-x: auto; margin: 16px 0;
+}
+pre code { background: none; border: none; padding: 0; }
+
+/* ═══ Figure / chart frame ═══════════════════════════════════ */
+.figure { margin: 20px 0; }
+.figure svg { width: 100%; height: auto; display: block; }
+.figcap {
+  font-family: var(--mono); font-size: 11px; color: var(--mist);
+  margin-top: 8px; display: flex; gap: 8px;
+}
+.figcap .fig-idx { color: var(--blue); white-space: nowrap; }
+
+/* ═══ Timeline ═══════════════════════════════════════════════ */
+.timeline { list-style: none; border-left: 2px solid var(--line); }
+.timeline li { position: relative; padding: 0 0 20px 22px; }
+.timeline li::before {
+  content: ""; position: absolute; left: -4px; top: 5px;
+  width: var(--node); height: var(--node); background: var(--blue);
+}
+.timeline .when {
+  font-family: var(--mono); font-size: 11px; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--mist); display: block;
+}
+.timeline .what { font-weight: 600; }
+
+/* ═══ Night section (screen artifacts only) ══════════════════ */
+.night { background: var(--night); color: var(--ink-n); }
+.night h1, .night h2, .night h3, .night .display, .night .metric-value { color: var(--ink-n); }
+.night p, .night .lede { color: var(--mist-n); }
+.night .eyebrow { color: var(--blue-soft); }
+.night .thread { background: var(--line-n); }
+.night .meta-rail { color: var(--mist-n); border-bottom-color: var(--line-n); }
+.night .tag { background: rgba(47, 128, 237, .16); color: var(--blue-faint); }
+/* The one gradient Ori permits — night hero glow, screen only: */
+.night.hero { background: radial-gradient(ellipse 90% 70% at 50% -10%, #0A2458 0%, var(--night) 60%); }
+
+/* ═══ Buttons (landing pages only) ═══════════════════════════ */
+.btn {
+  display: inline-block; font-family: var(--sans);
+  font-size: 14px; font-weight: 600; line-height: 1;
+  padding: 13px 22px; border-radius: var(--r-card);
+  border: 1px solid transparent; cursor: pointer;
+}
+.btn.primary { background: var(--blue); color: #fff; }
+.btn.primary:hover { background: var(--blue-deep); }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--line-strong); }
+.btn.ghost:hover { border-color: var(--ink); }
+.night .btn.ghost { color: var(--ink-n); border-color: var(--line-n); }
+
+/* ═══ Footer ═════════════════════════════════════════════════ */
+.page-footer {
+  display: flex; align-items: center; gap: 10px;
+  font-family: var(--mono); font-size: 10px;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--mist);
+  border-top: 1px solid var(--line); padding-top: 10px; margin-top: 32px;
+}
+.page-footer::before {
+  content: ""; width: var(--node); height: var(--node);
+  background: var(--blue); flex: none;
+}
+.page-footer .pageno { margin-left: auto; }
+
+/* ═══ Chart conventions (apply inside inline SVGs) ═══════════
+   Series order:  1 #2F80ED  2 #213C60  3 #7EAFF1  4 #B6D1F7
+                  5 #E3EEFC (with 1px #C9D2E8 stroke)
+   Gridlines:     1px #E9EDF6, horizontal only
+   Axis line:     1px #C9D2E8, bottom only
+   Axis labels:   mono 10px #8A94AB
+   Value labels:  mono 11px #000416, tabular-nums
+   Bars:          radius 0 (sharp), gap ≥ 40% of bar width
+   Lines:         2px stroke, 3.5px dots white-filled + 2px blue stroke
+   Donut:         stroke-based ring, mono metric in center
+   Highlight ONE series in blue; mute the rest.               */

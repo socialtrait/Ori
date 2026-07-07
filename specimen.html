@@ -1,0 +1,435 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="Ori">
+<title>Ori — Socialtrait design system specimen</title>
+<style>
+:root{
+  --frost:#FAFBFE; --paper:#FFFFFF; --wash:#EFF5FD; --tint:#E3EEFC;
+  --night:#02122A; --navy:#213C60;
+  --ink:#000416; --slate:#4A4D5A; --mist:#8A94AB;
+  --ink-n:#F4F7FF; --mist-n:#8FA0C2; --line-n:#14294D;
+  --blue:#2F80ED; --blue-deep:#1160C6; --blue-soft:#7EAFF1; --blue-faint:#B6D1F7;
+  --pos:#0E8A5C; --neg:#D64545; --warn:#B7791F;
+  --line:#E3E8F4; --line-strong:#C9D2E8;
+  --display:"Inter Display","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono","SF Mono","JetBrains Mono","Roboto Mono",Consolas,monospace;
+  --node:6px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--frost);color:var(--ink);font-family:var(--sans);font-size:14.5px;
+  line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:960px;margin:0 auto;padding:48px 40px 64px}
+@media(max-width:640px){.wrap{padding:32px 18px 48px}}
+strong{font-weight:600} em{font-style:normal;font-weight:600;color:var(--blue-deep)}
+p{margin:0 0 12px;max-width:68ch}
+h2{font-family:var(--display);font-size:22px;font-weight:650;line-height:1.2;letter-spacing:-.01em}
+h3{font-family:var(--display);font-size:15.5px;font-weight:600;margin:20px 0 8px}
+section{margin-bottom:56px}
+
+.meta-rail{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--mist);display:flex;align-items:center;gap:10px;
+  padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:40px;flex-wrap:wrap}
+.meta-rail .brand{color:var(--ink)}
+.meta-rail .sep::before{content:"·";color:var(--line-strong)}
+.meta-rail .right{margin-left:auto}
+
+.display{font-family:var(--display);font-size:clamp(34px,6vw,46px);font-weight:650;
+  line-height:1.05;letter-spacing:-.015em;max-width:20ch;text-wrap:balance;margin-bottom:14px}
+.lede{font-size:16px;line-height:1.55;color:var(--slate);max-width:58ch}
+
+.eyebrow{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--blue);margin-bottom:6px}
+.eyebrow .idx{color:var(--mist);margin-right:8px}
+.thread{position:relative;height:2px;background:var(--line);margin:10px 0 24px}
+.thread::before{content:"";position:absolute;left:0;top:-2px;width:var(--node);height:var(--node);background:var(--blue)}
+.thread::after{content:"";position:absolute;left:0;top:0;width:48px;height:2px;background:var(--blue)}
+
+/* palette */
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.swatch{border:1px solid var(--line);background:var(--paper)}
+.swatch .chip{height:56px}
+.swatch .meta{padding:8px 10px}
+.swatch .nm{font-weight:600;font-size:12.5px}
+.swatch .hx,.swatch .use{font-family:var(--mono);font-size:10.5px;color:var(--mist)}
+
+/* type specimen */
+.type-row{display:grid;grid-template-columns:150px 1fr;gap:20px;align-items:baseline;
+  padding:12px 0;border-bottom:1px solid var(--line)}
+.type-row .spec{font-family:var(--mono);font-size:10.5px;color:var(--mist);letter-spacing:.04em}
+@media(max-width:640px){.type-row{grid-template-columns:1fr;gap:4px}}
+
+/* metric */
+.metric-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
+  border:1px solid var(--line);margin:16px 0}
+@media(max-width:640px){.metric-row{grid-template-columns:1fr 1fr}}
+.metric{background:var(--paper);padding:16px 18px}
+.metric-label{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--mist);margin-bottom:8px}
+.metric-value{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:30px;
+  font-weight:600;line-height:1;letter-spacing:-.01em}
+.metric-value .unit{font-size:15px;font-weight:500;color:var(--mist)}
+.metric-note{font-size:12px;color:var(--slate);margin-top:8px}
+.metric.hero .metric-value{color:var(--blue)}
+.delta{font-family:var(--mono);font-size:11px;font-weight:500}
+.delta.up{color:var(--pos)} .delta.up::before{content:"▲ ";font-size:8px}
+.delta.down{color:var(--neg)} .delta.down::before{content:"▼ ";font-size:8px}
+
+.tag{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:500;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--blue-deep);background:var(--tint);
+  padding:2px 8px;border-radius:2px}
+.tag.ghost{background:transparent;border:1px solid var(--line-strong);color:var(--slate)}
+
+table.ori{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0}
+table.ori th{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--mist);text-align:left;padding:8px 12px 8px 0;
+  border-bottom:1px solid var(--line-strong)}
+table.ori td{padding:9px 12px 9px 0;border-bottom:1px solid var(--line);vertical-align:top}
+table.ori td.data,table.ori th.data{text-align:right}
+table.ori td.data{font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums}
+table.ori tr.total td{border-top:2px solid var(--ink);border-bottom:none;font-weight:600}
+.scroll{overflow-x:auto}
+
+.callout{background:var(--wash);border-left:2px solid var(--blue);padding:12px 16px;
+  margin:16px 0;font-size:13.5px;max-width:none}
+.callout .callout-label{font-family:var(--mono);font-size:10px;font-weight:500;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--blue);display:block;margin-bottom:4px}
+.callout.warn{border-left-color:var(--warn)} .callout.warn .callout-label{color:var(--warn)}
+
+.quote{padding:4px 0 4px 18px;border-left:2px solid var(--line-strong);margin:16px 0}
+.quote p{font-size:15px;line-height:1.5;margin-bottom:6px}
+.quote cite{font-family:var(--mono);font-style:normal;font-size:11px;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--mist)}
+.quote cite::before{content:"— ";color:var(--blue)}
+
+.persona-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+@media(max-width:640px){.persona-grid{grid-template-columns:1fr}}
+.persona{display:grid;grid-template-columns:44px 1fr;gap:14px;background:var(--paper);
+  border:1px solid var(--line);padding:16px 18px}
+.persona .avatar{width:44px;height:44px;border-radius:50%;background:var(--tint);
+  color:var(--blue-deep);font-family:var(--mono);font-size:14px;font-weight:600;
+  display:flex;align-items:center;justify-content:center}
+.persona .name{font-weight:600;font-size:14px}
+.persona .role{font-size:12px;color:var(--mist);margin-bottom:8px}
+.persona .traits{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+.persona q{font-size:13px;color:var(--slate)}
+
+.timeline{list-style:none;border-left:2px solid var(--line);margin:16px 0}
+.timeline li{position:relative;padding:0 0 18px 22px}
+.timeline li:last-child{padding-bottom:0}
+.timeline li::before{content:"";position:absolute;left:-4px;top:5px;width:var(--node);height:var(--node);background:var(--blue)}
+.timeline .when{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mist);display:block}
+.timeline .what{font-weight:600}
+
+.figure{margin:16px 0}
+.figure svg{width:100%;height:auto;display:block;max-width:640px}
+.figcap{font-family:var(--mono);font-size:11px;color:var(--mist);margin-top:8px;display:flex;gap:8px}
+.figcap .fig-idx{color:var(--blue);white-space:nowrap}
+
+.night-demo{background:radial-gradient(ellipse 90% 80% at 50% -20%,#0A2458 0%,var(--night) 60%);
+  color:var(--ink-n);padding:36px 32px;margin:16px 0;position:relative;overflow:hidden}
+.night-demo .eyebrow{color:var(--blue-soft)}
+.night-demo h2{color:var(--ink-n)}
+.night-demo p{color:var(--mist-n)}
+.night-demo .weave{position:absolute;right:-120px;bottom:-140px;width:340px;height:340px}
+
+.artifact-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:640px){.artifact-grid{grid-template-columns:1fr}}
+.artifact{background:var(--paper);border:1px solid var(--line);padding:16px 18px}
+.artifact .file{font-family:var(--mono);font-size:10.5px;color:var(--blue);letter-spacing:.04em}
+.artifact h3{margin:6px 0 4px}
+.artifact p{font-size:13px;color:var(--slate);margin:0}
+.artifact .contract{font-family:var(--mono);font-size:10.5px;color:var(--mist);
+  border-top:1px solid var(--line);margin-top:10px;padding-top:8px}
+
+.rules{list-style:none;counter-reset:inv}
+.rules li{counter-increment:inv;position:relative;padding:10px 0 10px 44px;border-bottom:1px solid var(--line);max-width:none}
+.rules li::before{content:counter(inv,decimal-leading-zero);position:absolute;left:0;top:11px;
+  font-family:var(--mono);font-size:11px;color:var(--blue)}
+
+.page-footer{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:10px;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--mist);
+  border-top:1px solid var(--line);padding-top:12px;margin-top:8px}
+.page-footer::before{content:"";width:var(--node);height:var(--node);background:var(--blue);flex:none}
+.page-footer .right{margin-left:auto}
+code{font-family:var(--mono);font-size:.88em;background:var(--wash);
+  border:1px solid var(--line);border-radius:2px;padding:1px 5px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <div class="meta-rail">
+    <span class="brand">Socialtrait</span><span class="sep"></span>
+    <span>Design system</span><span class="sep"></span>
+    <span>2026-07-07</span>
+    <span class="right">Ori v1.0 · specimen</span>
+  </div>
+
+  <header style="margin-bottom:56px">
+    <p class="eyebrow">織 · The weave</p>
+    <div class="display">Ori is how Socialtrait documents look</div>
+    <p class="lede">A constraint system for agents: cool graph-paper surfaces, mono-set
+    data, hairline structure, one Signal Blue accent. Every rule on this page is also
+    obeyed by this page.</p>
+  </header>
+
+  <section>
+    <p class="eyebrow"><span class="idx">01</span>Invariants</p>
+    <h2>Ten rules that make a page Ori</h2>
+    <div class="thread"></div>
+    <ol class="rules">
+      <li>Cool canvas — Frost <code>#FAFBFE</code>; white only on cards; warm tones never.</li>
+      <li>One accent — Signal Blue <code>#2F80ED</code>. Navy is structure, not accent.</li>
+      <li>Sans + mono only. Serif banned; italics banned — emphasis is <strong>weight</strong> or <em>blue</em>.</li>
+      <li>Every meaningful number is mono with tabular figures.</li>
+      <li>Hairlines are 1px; the only thick line is the 2px blue thread.</li>
+      <li>The 6px node square appears at least once per page, at most once per component.</li>
+      <li>Flush-left axis, ragged right. Centering only on slide covers and heros.</li>
+      <li>Sharp geometry: radius 0 by default, 2px chips, 6px cards. No pills.</li>
+      <li>Flat: no print shadows; screen gets lift and hover only; one sanctioned gradient (night hero).</li>
+      <li>Color means data — green/red for deltas only; nothing decorated with color.</li>
+    </ol>
+  </section>
+
+  <section>
+    <p class="eyebrow"><span class="idx">02</span>Color</p>
+    <h2>Brand-true palette, keyed to the mark</h2>
+    <div class="thread"></div>
+    <div class="swatches">
+      <div class="swatch"><div class="chip" style="background:#2F80ED"></div>
+        <div class="meta"><div class="nm">Signal Blue</div><div class="hx">#2F80ED</div><div class="use">the accent</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#000416"></div>
+        <div class="meta"><div class="nm">Ink</div><div class="hx">#000416</div><div class="use">primary text</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#213C60"></div>
+        <div class="meta"><div class="nm">Navy</div><div class="hx">#213C60</div><div class="use">structure, chart 2</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#02122A"></div>
+        <div class="meta"><div class="nm">Night</div><div class="hx">#02122A</div><div class="use">dark sections</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#4A4D5A"></div>
+        <div class="meta"><div class="nm">Slate</div><div class="hx">#4A4D5A</div><div class="use">secondary text</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#8A94AB"></div>
+        <div class="meta"><div class="nm">Mist</div><div class="hx">#8A94AB</div><div class="use">captions, labels</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#7EAFF1"></div>
+        <div class="meta"><div class="nm">Blue soft</div><div class="hx">#7EAFF1</div><div class="use">chart 3</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#B6D1F7"></div>
+        <div class="meta"><div class="nm">Blue faint</div><div class="hx">#B6D1F7</div><div class="use">chart 4</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#E3EEFC"></div>
+        <div class="meta"><div class="nm">Tint</div><div class="hx">#E3EEFC</div><div class="use">tags, chart 5</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#EFF5FD"></div>
+        <div class="meta"><div class="nm">Wash</div><div class="hx">#EFF5FD</div><div class="use">callouts</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#FAFBFE;border-bottom:1px solid #E3E8F4"></div>
+        <div class="meta"><div class="nm">Frost</div><div class="hx">#FAFBFE</div><div class="use">page canvas</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#E3E8F4"></div>
+        <div class="meta"><div class="nm">Line</div><div class="hx">#E3E8F4</div><div class="use">hairlines</div></div></div>
+    </div>
+    <p style="margin-top:16px">A finished page is roughly <strong>90% neutral, 8% line, 2% blue</strong>.
+    When two things compete for blue, one loses it.</p>
+  </section>
+
+  <section>
+    <p class="eyebrow"><span class="idx">03</span>Typography</p>
+    <h2>Inter Display argues, Plex Mono measures</h2>
+    <div class="thread"></div>
+    <div class="type-row"><div class="spec">display · 42px · 650</div>
+      <div style="font-family:var(--display);font-size:42px;font-weight:650;line-height:1.05;letter-spacing:-.015em">Know before you ship</div></div>
+    <div class="type-row"><div class="spec">h1 · 29px · 650</div>
+      <div style="font-family:var(--display);font-size:29px;font-weight:650;line-height:1.15;letter-spacing:-.01em">Headings are sentence-case assertions</div></div>
+    <div class="type-row"><div class="spec">h2 · 20px · 600</div>
+      <div style="font-family:var(--display);font-size:20px;font-weight:600;line-height:1.25">Creators beat brand voice 3:1 with Gen-Z</div></div>
+    <div class="type-row"><div class="spec">body · 14px · 400</div>
+      <div style="max-width:60ch">Body text is Inter at a 1.6 line height, sixty to seventy characters wide, flush left. Emphasis is <strong>weight</strong> or <em>Signal Blue</em> — never italics.</div></div>
+    <div class="type-row"><div class="spec">label · 10.5px · mono</div>
+      <div style="font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--mist)">Prediction accuracy · panel size · 2026-07-07</div></div>
+    <div class="type-row"><div class="spec">metric · 32px · mono</div>
+      <div style="font-family:var(--mono);font-size:32px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.01em">87% · $1.2k · 2,400</div></div>
+  </section>
+
+  <section>
+    <p class="eyebrow"><span class="idx">04</span>Signature elements</p>
+    <h2>Meta rail, thread rule, node square</h2>
+    <div class="thread"></div>
+    <p>Three moves make a page recognizably Ori, and all three come from the brand mark's
+    interlaced geometry: the <strong>meta rail</strong> you saw at the top of this page, the
+    <strong>eyebrow + thread rule</strong> opening this section (a 2px thread anchored by the
+    6px node square), and the <strong>node footer</strong> that closes every printed page.
+    Section indexes are two-digit mono because Ori documents argue in sequence.</p>
+    <div class="callout">
+      <span class="callout-label">Insight</span>
+      This callout is the fourth signature: a wash strip with a 2px blue thread, used once
+      per section to carry the conclusion — <strong>the “so what”, never decoration</strong>.
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow"><span class="idx">05</span>Components</p>
+    <h2>The working set</h2>
+    <div class="thread"></div>
+
+    <h3>Metric row — the one-pager's argument</h3>
+    <div class="metric-row">
+      <div class="metric hero">
+        <div class="metric-label">Prediction accuracy</div>
+        <div class="metric-value">87<span class="unit">%</span></div>
+        <div class="metric-note"><span class="delta up">12pt</span> vs. panel baseline</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Time to insight</div>
+        <div class="metric-value">4<span class="unit">hrs</span></div>
+        <div class="metric-note">was 3 weeks with panels</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Cost per study</div>
+        <div class="metric-value">$1.2<span class="unit">k</span></div>
+        <div class="metric-note"><span class="delta down">−94%</span> vs. field research</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Pilot campaigns</div>
+        <div class="metric-value">3</div>
+        <div class="metric-note">CPG · fintech · retail</div>
+      </div>
+    </div>
+    <p>One cell — and only one — colors its value blue: the number the page argues for.</p>
+
+    <h3>Tags</h3>
+    <p><span class="tag">Creator-native</span> <span class="tag">Deal-driven</span>
+    <span class="tag ghost">Control cell</span></p>
+
+    <h3>Table</h3>
+    <div class="scroll">
+    <table class="ori">
+      <thead><tr><th>Phase</th><th>Accounts</th><th class="data">Studies</th><th class="data">Budget</th></tr></thead>
+      <tbody>
+        <tr><td>Jul — onboard</td><td>4 existing pipeline</td><td class="data">8</td><td class="data">$14k</td></tr>
+        <tr><td>Aug — scale</td><td>4 new logos</td><td class="data">12</td><td class="data">$21k</td></tr>
+        <tr><td>Sep — validate</td><td>2 enterprise</td><td class="data">6</td><td class="data">$18k</td></tr>
+        <tr class="total"><td>Total</td><td></td><td class="data">26</td><td class="data">$53k</td></tr>
+      </tbody>
+    </table>
+    </div>
+
+    <h3>Persona cards — Socialtrait-native evidence</h3>
+    <div class="persona-grid">
+      <div class="persona">
+        <div class="avatar">MA</div>
+        <div>
+          <div class="name">Maya</div>
+          <div class="role">Simulated Gen-Z shopper · cell A1</div>
+          <div class="traits"><span class="tag">Creator-native</span><span class="tag">Deal-driven</span></div>
+          <q>If the brand says it, it's an ad. If a creator I follow says it, I'll actually look.</q>
+        </div>
+      </div>
+      <div class="persona">
+        <div class="avatar">RD</div>
+        <div>
+          <div class="name">Raj</div>
+          <div class="role">Simulated loyalist · cell D2</div>
+          <div class="traits"><span class="tag">8× repeat buyer</span><span class="tag">Email-first</span></div>
+          <q>Why is some influencer telling me about a brand I already use?</q>
+        </div>
+      </div>
+    </div>
+    <p>Simulated quotes are always cited to their persona — honest provenance is a content
+    invariant, not a style choice.</p>
+
+    <h3>Quote &amp; timeline</h3>
+    <div class="quote">
+      <p>"The simulation caught in four hours what our panel would have told us three weeks
+      after launch."</p>
+      <cite>VP Growth · pilot client</cite>
+    </div>
+    <ul class="timeline">
+      <li><span class="when">2026-04</span><span class="what">Pilot kickoff</span> — three enterprise accounts instrumented</li>
+      <li><span class="when">2026-06</span><span class="what">Validation</span> — 12 of 12 campaign rankings matched in-market</li>
+      <li><span class="when">2026-07</span><span class="what">Expansion ask</span> — ten accounts, one quarter</li>
+    </ul>
+  </section>
+
+  <section>
+    <p class="eyebrow"><span class="idx">06</span>Charts</p>
+    <h2>One blue series; everything else stands back</h2>
+    <div class="thread"></div>
+    <div class="figure">
+      <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Time to insight comparison">
+        <g font-family="IBM Plex Mono, SF Mono, monospace" font-size="10" fill="#8A94AB">
+          <text x="0" y="52">Field study</text>
+          <text x="0" y="102">Online panel</text>
+          <text x="0" y="152">Socialtrait</text>
+        </g>
+        <line x1="120" y1="20" x2="120" y2="170" stroke="#C9D2E8" stroke-width="1"/>
+        <rect x="120" y="38" width="460" height="20" fill="#B6D1F7"/>
+        <rect x="120" y="88" width="300" height="20" fill="#7EAFF1"/>
+        <rect x="120" y="138" width="18" height="20" fill="#2F80ED"/>
+        <g font-family="IBM Plex Mono, SF Mono, monospace" font-size="11" fill="#000416">
+          <text x="588" y="52">28 d</text>
+          <text x="428" y="102">19 d</text>
+          <text x="146" y="152">4 h</text>
+        </g>
+      </svg>
+      <div class="figcap"><span class="fig-idx">FIG 01</span>
+        <span>Median time from question to segmented result. SOURCE: pilot instrumentation.</span></div>
+    </div>
+    <p>Square bars, horizontal gridlines only, mono axis labels, values labeled directly —
+    no legends below three series. Series ramp: <code>#2F80ED</code> →
+    <code>#213C60</code> → <code>#7EAFF1</code> → <code>#B6D1F7</code> → <code>#E3EEFC</code>.</p>
+  </section>
+
+  <section>
+    <p class="eyebrow"><span class="idx">07</span>Night</p>
+    <h2>Dark sections exist only on screens</h2>
+    <div class="thread"></div>
+    <div class="night-demo">
+      <svg class="weave" viewBox="0 0 400 400" aria-hidden="true">
+        <g fill="none" stroke="#14294D" stroke-width="30">
+          <path d="M40 360 C 40 180, 180 40, 360 40"/>
+          <path d="M40 40 C 40 220, 180 360, 360 360"/>
+        </g>
+      </svg>
+      <p class="eyebrow">Audience simulation</p>
+      <h2 style="font-family:var(--display);font-weight:650;letter-spacing:-.012em;max-width:20ch;text-wrap:balance">Know how your audience reacts before you ship</h2>
+      <p style="max-width:48ch;margin-top:10px">Landing heros, slide covers, and closing slides go Night
+      <code style="background:rgba(47,128,237,.14);border-color:#14294D;color:#B6D1F7">#02122A</code> —
+      with the system's one sanctioned gradient and the weave watermark. Print body pages never go dark.</p>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow"><span class="idx">08</span>Artifacts</p>
+    <h2>Six templates, each with a density contract</h2>
+    <div class="thread"></div>
+    <div class="artifact-grid">
+      <div class="artifact"><span class="file">templates/one-pager.html</span>
+        <h3>One-pager</h3><p>Exec brief where the metric row is the argument.</p>
+        <div class="contract">1 page exactly · metrics 3–4 · ends with THE ASK</div></div>
+      <div class="artifact"><span class="file">templates/report.html</span>
+        <h3>Insight report</h3><p>Claim → evidence → "so what" strip, per section.</p>
+        <div class="contract">3–6 sections · 1 evidence shape each · METHOD callout</div></div>
+      <div class="artifact"><span class="file">templates/long-doc.html</span>
+        <h3>Long doc</h3><p>White papers and specs, with cover recipe and TOC.</p>
+        <div class="contract">pages 60–85% full · ≤1 figure/page · exec summary ≤1p</div></div>
+      <div class="artifact"><span class="file">templates/slides.html</span>
+        <h3>Slides</h3><p>1280×720; night cover, assertion titles, pinned takeaways.</p>
+        <div class="contract">ghost test · 1 evidence/slide · takeaway ≤14 words</div></div>
+      <div class="artifact"><span class="file">templates/resume.html</span>
+        <h3>Resume</h3><p>Dense single page; every bullet ends in an outcome.</p>
+        <div class="contract">action+scope+result+outcome · 1-line bullets</div></div>
+      <div class="artifact"><span class="file">templates/landing-page.html</span>
+        <h3>Landing page</h3><p>Night hero, proof strip, one primary CTA per viewport.</p>
+        <div class="contract">hero ≤9 words · real proof only · breakpoint 900px</div></div>
+    </div>
+    <p style="margin-top:16px">Agents copy the template and edit body content only —
+    the CSS is law, the tokens change in one place (<code>tokens/ori.css</code>), and the
+    pre-ship checklist in <code>references/anti-patterns.md</code> gates delivery.</p>
+  </section>
+
+  <div class="page-footer">
+    <span>Socialtrait / Ori v1.0</span>
+    <span class="right">socialtrait/Ori · specimen</span>
+  </div>
+
+</div>
+</body>
+</html>

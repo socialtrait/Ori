@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="generator" content="Ori">
+<title><!-- SLOT: doc title -->Socialtrait long document</title>
+<style>
+/* ══ ORI TOKENS (print) — do not edit; sync from tokens/ori.css ══ */
+:root{
+  --frost:#FAFBFE; --paper:#FFFFFF; --wash:#EFF5FD; --tint:#E3EEFC;
+  --night:#02122A; --navy:#213C60;
+  --ink:#000416; --slate:#4A4D5A; --mist:#8A94AB;
+  --blue:#2F80ED; --blue-deep:#1160C6; --blue-soft:#7EAFF1; --blue-faint:#B6D1F7;
+  --pos:#0E8A5C; --neg:#D64545; --warn:#B7791F;
+  --line:#E3E8F4; --line-strong:#C9D2E8;
+  --display:"Inter Display","Inter",-apple-system,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --sans:"Inter",-apple-system,"Segoe UI","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono","SF Mono","JetBrains Mono",Consolas,monospace;
+  --node:5pt;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+@page{size:A4;margin:0}
+body{background:var(--frost);color:var(--ink);font-family:var(--sans);font-size:10pt;
+  line-height:1.6;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.page{width:210mm;min-height:297mm;padding:18mm 20mm 20mm;display:flex;
+  flex-direction:column;page-break-after:always}
+.page:last-child{page-break-after:auto}
+
+.meta-rail{font-family:var(--mono);font-size:8pt;font-weight:500;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--mist);display:flex;align-items:center;gap:8pt;
+  padding-bottom:9pt;border-bottom:1px solid var(--line);margin-bottom:22pt}
+.meta-rail .brand{color:var(--ink)}
+.meta-rail .sep::before{content:"·";color:var(--line-strong)}
+.meta-rail .right{margin-left:auto}
+
+/* ── Cover ── */
+.cover{justify-content:flex-start;position:relative;overflow:hidden}
+.weave{position:absolute;right:-70mm;bottom:-70mm;width:180mm;height:180mm;z-index:0}
+.cover-body{position:relative;z-index:1;display:flex;flex-direction:column;flex:1}
+.display{font-family:var(--display);font-size:32pt;font-weight:650;line-height:1.08;
+  letter-spacing:-.015em;max-width:150mm;margin:42mm 0 10pt}
+.cover .lede{margin-bottom:0}
+.cover-meta{margin-top:auto;display:grid;grid-template-columns:max-content 1fr;gap:5pt 18pt}
+.cover-meta dt{font-family:var(--mono);font-size:8pt;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--mist);padding-top:1.5pt}
+.cover-meta dd{font-size:10pt}
+
+h1{font-family:var(--display);font-size:22pt;font-weight:650;line-height:1.15;letter-spacing:-.01em}
+h2{font-family:var(--display);font-size:15pt;font-weight:600;line-height:1.25;
+  letter-spacing:-.008em;margin:14pt 0 6pt}
+h3{font-family:var(--display);font-size:11.5pt;font-weight:600;line-height:1.35;margin:10pt 0 4pt}
+p{margin:0 0 9pt;max-width:70ch}
+.lede{font-size:11pt;line-height:1.55;color:var(--slate);max-width:62ch}
+strong{font-weight:600} em{font-style:normal;font-weight:600;color:var(--blue-deep)}
+ul,ol{margin:0 0 9pt 14pt} li{margin-bottom:3pt}
+
+.eyebrow{font-family:var(--mono);font-size:8pt;font-weight:500;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--blue);margin-bottom:4pt}
+.eyebrow .idx{color:var(--mist);margin-right:6pt}
+.thread{position:relative;height:2px;background:var(--line);margin:8pt 0 16pt}
+.thread::before{content:"";position:absolute;left:0;top:-1.5pt;width:var(--node);
+  height:var(--node);background:var(--blue)}
+.thread::after{content:"";position:absolute;left:0;top:0;width:36pt;height:2px;background:var(--blue)}
+
+.callout{background:var(--wash);border-left:2pt solid var(--blue);padding:9pt 12pt;
+  font-size:10pt;margin:12pt 0}
+.callout .callout-label{font-family:var(--mono);font-size:7.5pt;font-weight:500;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--blue);display:block;margin-bottom:3pt}
+.callout.warn{border-left-color:var(--warn)} .callout.warn .callout-label{color:var(--warn)}
+
+.quote{padding:3pt 0 3pt 14pt;border-left:2pt solid var(--line-strong);margin:12pt 0}
+.quote p{font-size:11pt;line-height:1.5;margin-bottom:4pt}
+.quote cite{font-family:var(--mono);font-style:normal;font-size:8pt;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--mist)}
+.quote cite::before{content:"— ";color:var(--blue)}
+
+table.ori{width:100%;border-collapse:collapse;font-size:9.5pt;margin:10pt 0}
+table.ori th{font-family:var(--mono);font-size:8pt;font-weight:500;letter-spacing:.07em;
+  text-transform:uppercase;color:var(--mist);text-align:left;padding:5pt 8pt 5pt 0;
+  border-bottom:1px solid var(--line-strong)}
+table.ori td{padding:6pt 8pt 6pt 0;border-bottom:1px solid var(--line);vertical-align:top}
+table.ori td.data,table.ori th.data{text-align:right}
+table.ori td.data{font-family:var(--mono);font-size:9pt;font-variant-numeric:tabular-nums}
+
+.figure{margin:14pt 0}
+.figure svg{width:100%;height:auto;display:block}
+.figcap{font-family:var(--mono);font-size:8pt;color:var(--mist);margin-top:6pt;display:flex;gap:6pt}
+.figcap .fig-idx{color:var(--blue);white-space:nowrap}
+
+code{font-family:var(--mono);font-size:.88em;background:var(--wash);
+  border:1px solid var(--line);border-radius:2px;padding:0 4pt}
+pre{font-family:var(--mono);font-size:8.5pt;line-height:1.55;background:var(--night);
+  color:#F4F7FF;border-radius:5pt;padding:12pt 14pt;overflow:hidden;margin:12pt 0}
+pre code{background:none;border:none;padding:0}
+
+.toc{list-style:none;margin:0}
+.toc li{display:flex;align-items:baseline;gap:8pt;padding:7pt 0;border-bottom:1px solid var(--line)}
+.toc .idx{font-family:var(--mono);font-size:9pt;color:var(--blue)}
+.toc .t{font-weight:600}
+.toc .pg{margin-left:auto;font-family:var(--mono);font-size:9pt;color:var(--mist)}
+
+.page-footer{display:flex;align-items:center;gap:8pt;font-family:var(--mono);font-size:7.5pt;
+  letter-spacing:.08em;text-transform:uppercase;color:var(--mist);
+  border-top:1px solid var(--line);padding-top:8pt;margin-top:auto}
+.page-footer::before{content:"";width:var(--node);height:var(--node);background:var(--blue);flex:none}
+.page-footer .pageno{margin-left:auto}
+</style>
+</head>
+<body>
+
+<!-- ══ COVER — display claim, no body content, weave watermark ══ -->
+<div class="page cover">
+  <svg class="weave" viewBox="0 0 400 400" aria-hidden="true">
+    <g fill="none" stroke="#E3EEFC" stroke-width="30">
+      <path d="M40 360 C 40 180, 180 40, 360 40"/>
+      <path d="M40 40 C 40 220, 180 360, 360 360"/>
+    </g>
+  </svg>
+  <div class="cover-body">
+    <div class="meta-rail">
+      <span class="brand">Socialtrait</span><span class="sep"></span>
+      <span><!-- SLOT: artifact type -->White paper</span><span class="sep"></span>
+      <span><!-- SLOT: date -->2026-07-07</span>
+      <span class="right"><!-- SLOT: classification -->Public</span>
+    </div>
+    <!-- SLOT: cover claim — the document's argument in one display line -->
+    <div class="display">Audience simulation is the pre-flight check marketing never had</div>
+    <p class="lede"><!-- SLOT: cover lede, one sentence -->How simulated panels predict
+    in-market creative performance, and what that changes about campaign planning.</p>
+    <dl class="cover-meta">
+      <dt>Author</dt><dd><!-- SLOT -->Socialtrait Research</dd>
+      <dt>Version</dt><dd><!-- SLOT -->1.0</dd>
+      <dt>Doc ID</dt><dd><!-- SLOT -->ST-WP-003</dd>
+    </dl>
+  </div>
+  <div class="page-footer">
+    <span>Socialtrait / Ori · ST-WP-003</span>
+    <span class="pageno">01 / <!-- SLOT: total -->04</span>
+  </div>
+</div>
+
+<!-- ══ CONTENTS + EXEC SUMMARY (merge onto one page if both are short) ══ -->
+<div class="page">
+  <div class="meta-rail">
+    <span class="brand">Socialtrait</span><span class="sep"></span><span>White paper</span>
+    <span class="right">ST-WP-003</span>
+  </div>
+
+  <p class="eyebrow">Contents</p>
+  <div class="thread"></div>
+  <ol class="toc">
+    <!-- SLOT: TOC entries — assertion titles, mono page refs -->
+    <li><span class="idx">01</span><span class="t">Panels are slow where campaigns are fast</span><span class="pg">03</span></li>
+    <li><span class="idx">02</span><span class="t">Simulation closes the loop in hours</span><span class="pg">03</span></li>
+    <li><span class="idx">03</span><span class="t">What we validated, and what we didn't</span><span class="pg">04</span></li>
+  </ol>
+
+  <h2 style="margin-top:24pt">Executive summary</h2>
+  <div class="thread"></div>
+  <!-- SLOT: exec summary — ≤1 page, standalone, written last -->
+  <p>Creative testing with human panels takes two to four weeks — longer than most
+  campaign iteration cycles. Simulated audiences answer the same questions in hours.
+  Across three enterprise pilots, Socialtrait simulations ranked creative variants in
+  the same order as in-market results, with confidence intervals containing observed
+  lift in 11 of 12 cells.</p>
+  <div class="callout">
+    <span class="callout-label">In one line</span>
+    Test the campaign against a simulated audience before you spend on media —
+    same rigor, <strong>hours instead of weeks</strong>.
+  </div>
+
+  <div class="page-footer">
+    <span>Socialtrait / Ori · ST-WP-003</span><span class="pageno">02 / 04</span>
+  </div>
+</div>
+
+<!-- ══ CHAPTER PAGE — repeat this block per chapter. 60–85% full, ≤1 figure ══ -->
+<div class="page">
+  <div class="meta-rail">
+    <span class="brand">Socialtrait</span><span class="sep"></span><span>White paper</span>
+    <span class="right">ST-WP-003</span>
+  </div>
+
+  <section>
+    <p class="eyebrow"><span class="idx">01</span>The problem</p>
+    <h1>Panels are slow where campaigns are fast</h1>
+    <div class="thread"></div>
+    <!-- SLOT: chapter opens with its conclusion, then supports it -->
+    <p>The median enterprise campaign iterates creative every nine days; the median
+    panel study returns in nineteen. By the time research lands, the decision it was
+    meant to inform has been made. <em>Research that arrives after the decision is
+    reporting, not research.</em></p>
+    <p>Three structural costs follow: teams either skip testing, test only the
+    hero asset, or hold launches for research and pay the opportunity cost.</p>
+
+    <div class="quote">
+      <p>"We stopped pre-testing because the answers came back after launch.
+      We were paying to be told what we already shipped."</p>
+      <cite>VP Growth · pilot client interview, 2026-05</cite>
+    </div>
+  </section>
+
+  <section>
+    <p class="eyebrow"><span class="idx">02</span>The mechanism</p>
+    <h1>Simulation closes the loop in hours</h1>
+    <div class="thread"></div>
+    <p>A Socialtrait simulated panel is built from calibrated persona models per
+    audience cell. Variants are exposed to the panel; responses aggregate into
+    ranked preference, predicted lift, and verbatim-style reactions per segment.</p>
+    <!-- SLOT: figure — inline SVG per design.md §7, one per page max -->
+    <div class="figure">
+      <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Time to insight comparison">
+        <g font-family="IBM Plex Mono, monospace" font-size="10" fill="#8A94AB">
+          <text x="0" y="52">Field study</text>
+          <text x="0" y="102">Online panel</text>
+          <text x="0" y="152">Socialtrait</text>
+        </g>
+        <line x1="120" y1="20" x2="120" y2="170" stroke="#C9D2E8" stroke-width="1"/>
+        <rect x="120" y="38" width="460" height="20" fill="#B6D1F7"/>
+        <rect x="120" y="88" width="300" height="20" fill="#7EAFF1"/>
+        <rect x="120" y="138" width="18" height="20" fill="#2F80ED"/>
+        <g font-family="IBM Plex Mono, monospace" font-size="11" fill="#000416">
+          <text x="588" y="52">28 d</text>
+          <text x="428" y="102">19 d</text>
+          <text x="146" y="152">4 h</text>
+        </g>
+      </svg>
+      <div class="figcap"><span class="fig-idx">FIG 01</span>
+        <span>Median time from question to segmented result. SOURCE: pilot instrumentation, n=26 studies.</span>
+      </div>
+    </div>
+  </section>
+
+  <div class="page-footer">
+    <span>Socialtrait / Ori · ST-WP-003</span><span class="pageno">03 / 04</span>
+  </div>
+</div>
+
+<!-- ══ FINAL PAGE — last chapter + method/caveats callout ══ -->
+<div class="page">
+  <div class="meta-rail">
+    <span class="brand">Socialtrait</span><span class="sep"></span><span>White paper</span>
+    <span class="right">ST-WP-003</span>
+  </div>
+
+  <section>
+    <p class="eyebrow"><span class="idx">03</span>Validation</p>
+    <h1>What we validated, and what we didn't</h1>
+    <div class="thread"></div>
+    <p>Across 12 audience cells in three categories, simulated preference rankings
+    matched in-market outcomes in every pilot; interval coverage was 11 of 12 cells.
+    We have not yet validated long-horizon brand effects or non-English markets.</p>
+    <table class="ori">
+      <thead><tr><th>Pilot</th><th>Category</th><th class="data">Cells</th><th class="data">Rank match</th><th class="data">Coverage</th></tr></thead>
+      <tbody>
+        <tr><td>Arlo Foods</td><td>CPG</td><td class="data">4</td><td class="data">4/4</td><td class="data">4/4</td></tr>
+        <tr><td>Northbeam</td><td>Fintech</td><td class="data">4</td><td class="data">4/4</td><td class="data">3/4</td></tr>
+        <tr><td>Reva</td><td>Retail</td><td class="data">4</td><td class="data">4/4</td><td class="data">4/4</td></tr>
+      </tbody>
+    </table>
+    <div class="callout warn">
+      <span class="callout-label">Method &amp; caveats</span>
+      Simulated panels (n=2,400/study) calibrated on first-party engagement data.
+      Findings are simulation-derived; in-market validation covered US English
+      audiences, 2026-04 to 2026-06.
+    </div>
+  </section>
+
+  <div class="page-footer">
+    <span>Socialtrait / Ori · ST-WP-003</span><span class="pageno">04 / 04</span>
+  </div>
+</div>
+
+</body>
+</html>
