@@ -173,7 +173,7 @@ headings are banned (uppercase belongs to mono labels only).
 | Long doc | A4 portrait | 18·20·20·20 mm |
 | Report | A4 portrait | 16·18·18·18 mm |
 | Resume | A4 portrait | 12·14·12·14 mm |
-| Slides | 1280×720 px fixed | padding 64px 72px |
+| Slides | 1280×720 px fixed | padding 56px 72px 48px |
 | Landing | fluid | content max-width 1120px; sections 96px 64px (mobile 64px 20px) |
 
 ### 4.3 Grid
@@ -254,7 +254,26 @@ inherit it, and dropping it fills them black. Max two logo instances
 visible per page (rail mark + cover imprint); everything else stays
 type and thread.
 
-### 5.5 Night sections (screen artifacts only)
+### 5.5 Slide anatomy (evidence and statement)
+Slides are Ori's workhorse, mostly read as PDFs — so they are calibrated
+as reading decks: compact headers, dominant evidence.
+
+**Evidence slide (default).** Header is a 7/5 grid: eyebrow + 30px
+assertion title (≤2 lines) on the left; an optional **context slot** on
+the right holding either the slide's key stat (mono 40px + label) or a
+one-line scope kicker (15px slate, ≤36ch). Delete the slot if there is
+nothing honest to put in it. Thread rule spans full width below. Budget:
+header ≤150px, body ≥340px, takeaway zone 132px, figures ≤300px tall.
+A single compact evidence shape (one metric row, one small table) is
+vertically centered in the body zone.
+
+**Statement slide (`.slide.statement`).** 44px display title, optional
+20px lede — for the deck's 2–3 argumentative beats: the pivot, the big
+claim, the ask. Still an assertion with support; a statement slide with
+a bare topic label is a section divider, which stays banned. Covers and
+closes are night statements.
+
+### 5.6 Night sections (screen artifacts only)
 `.night` blocks — deep navy `#02122A` surface — for landing heros, slide
 covers, and closing slides. Body pages of print artifacts never go dark.
 Rhythm rule for landing pages: never two night sections adjacent.

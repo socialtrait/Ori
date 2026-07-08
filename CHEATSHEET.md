@@ -86,6 +86,7 @@ Resume 12·14·12·14 · Slides 1280×720px pad 64/72 · Landing max-w 1120px.
 | Quote | 2px gray left rule; mono cite `— NAME`; persona quotes cite persona |
 | Persona | `.persona`: tint avatar w/ mono initials, trait tags, one quote |
 | Steps/history | `.timeline`: hairline spine + node squares + mono when |
+| Slide header | evidence: 30px title + optional context stat/kicker right · statement: 44px display, 2–3/deck |
 | Code | inline: wash chip · block: night bg, 12px mono, 6px radius |
 | Button (landing) | primary blue fill 6px radius; one primary per viewport |
 | Icon | 1.5px line stroke, currentColor; no fills, no emoji |

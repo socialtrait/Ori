@@ -58,6 +58,8 @@ input, delete it first.
 - ≤ 24 words of body text per slide beyond the title. Slides are evidence
   displays, not documents.
 - Takeaway bar text ≤ 14 words, states the "therefore".
+- Context slot holds the one number the title claims, or a scope kicker
+  (who/what/when, ≤ 15 words) — never a second sentence of argument.
 - Numbers on slides get magnitude context ("2.4× baseline", not "2.4×").
 - Closing slide: one ask, one contact line. No "Thank you" slide with
   nothing on it.

@@ -105,7 +105,7 @@ fits one page (it usually should).
 - One evidence shape per slide — split slides that mix chart + table.
 - No section-divider slides; the eyebrow index does that job.
 - Takeaway bar pinned at bottom: wash strip, mono `TAKEAWAY` label.
-- Slide figures fit a fixed budget: charts ≤260px tall (the template caps
+- Slide figures fit a fixed budget: charts ≤300px tall (the template caps
   this). A chart that needs more room gets its own slide, full width.
 - Cover and closing slides are night; body slides are frost.
 

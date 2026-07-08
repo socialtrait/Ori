@@ -24,14 +24,14 @@
 body{background:#0B1526;font-family:var(--sans);color:var(--ink);
   -webkit-print-color-adjust:exact;print-color-adjust:exact}
 
-.slide{width:1280px;height:720px;background:var(--frost);padding:64px 72px 56px;
+.slide{width:1280px;height:720px;background:var(--frost);padding:56px 72px 48px;
   position:relative;display:flex;flex-direction:column;overflow:hidden;
   page-break-after:always;margin:0 auto}
 @media screen{.slide{margin:24px auto;box-shadow:0 1px 2px rgba(1,23,66,.2)}}
 
 .meta-rail{font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.08em;
   text-transform:uppercase;color:var(--mist);display:flex;align-items:center;gap:12px;
-  padding-bottom:14px;border-bottom:1px solid var(--line);margin-bottom:28px}
+  padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:20px}
 .meta-rail .brand{color:var(--ink)}
 .meta-rail .sep::before{content:"·";color:var(--line-strong)}
 .meta-rail .right{margin-left:auto}
@@ -42,9 +42,22 @@ body{background:#0B1526;font-family:var(--sans);color:var(--ink);
   text-transform:uppercase;color:var(--blue);margin-bottom:10px}
 .eyebrow .idx{color:var(--mist);margin-right:10px}
 /* SLIDE TITLE = full-sentence assertion, ≤2 lines */
-.slide h2{font-family:var(--display);font-size:40px;font-weight:650;line-height:1.12;
-  letter-spacing:-.012em;max-width:27ch;margin-bottom:14px}
-.thread{position:relative;height:2px;background:var(--line);margin:14px 0 32px}
+.slide h2{font-family:var(--display);font-size:30px;font-weight:650;line-height:1.2;
+  letter-spacing:-.01em;max-width:34ch;margin-bottom:0}
+/* Header grid: title left, optional context slot right. The context slot
+   carries the slide's key stat or a scope kicker — delete it if unused. */
+.head{display:grid;grid-template-columns:7fr 5fr;gap:48px;align-items:end}
+.context-label{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--mist);margin-bottom:6px}
+.context-value{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:40px;
+  font-weight:600;line-height:1;color:var(--ink);letter-spacing:-.01em}
+.context-value .unit{font-size:20px;font-weight:500;color:var(--mist)}
+.context-kicker{font-size:15px;line-height:1.5;color:var(--slate);max-width:36ch}
+/* Statement slide: the deck's 2–3 argumentative beats (pivot, big claim,
+   the ask). Still an assertion + support — never a bare section divider. */
+.slide.statement h2{font-size:44px;line-height:1.1;letter-spacing:-.014em;max-width:22ch}
+.slide.statement .lede{font-size:20px;line-height:1.5;color:var(--slate);max-width:44ch;margin-top:16px}
+.thread{position:relative;height:2px;background:var(--line);margin:14px 0 26px}
 .thread::before{content:"";position:absolute;left:0;top:-2.5px;width:var(--node);
   height:var(--node);background:var(--blue)}
 .thread::after{content:"";position:absolute;left:0;top:0;width:64px;height:2px;background:var(--blue)}
@@ -68,16 +81,16 @@ ul li::before{content:"";position:absolute;left:0;top:11px;width:7px;height:7px;
 .metric-note{font-size:15px;color:var(--slate);margin-top:12px}
 .metric.hero .metric-value{color:var(--blue)}
 
-.figure svg{width:100%;height:auto;max-height:260px;display:block}
+.figure svg{width:100%;height:auto;max-height:300px;display:block}
 .figcap{font-family:var(--mono);font-size:13px;color:var(--mist);margin-top:10px;display:flex;gap:8px}
 .figcap .fig-idx{color:var(--blue);white-space:nowrap}
 
 /* Pinned takeaway — every content slide ends with one, ≤14 words */
-.takeaway{position:absolute;left:72px;right:72px;bottom:56px;background:var(--wash);
-  border-left:3px solid var(--blue);padding:14px 20px;font-size:18px;color:var(--ink)}
+.takeaway{position:absolute;left:72px;right:72px;bottom:48px;background:var(--wash);
+  border-left:3px solid var(--blue);padding:12px 18px;font-size:17px;color:var(--ink)}
 .takeaway .label{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.1em;
   text-transform:uppercase;color:var(--blue);display:block;margin-bottom:2px}
-.slide.has-takeaway{padding-bottom:150px}
+.slide.has-takeaway{padding-bottom:132px}
 
 .slideno{position:absolute;right:72px;top:70px;font-family:var(--mono);font-size:12px;
   color:var(--mist);letter-spacing:.08em}
@@ -126,11 +139,21 @@ ul li::before{content:"";position:absolute;left:0;top:11px;width:7px;height:7px;
     <span class="brand">Socialtrait</span><span class="sep"></span><span>Q3 review</span>
     <span class="right">02 / 05</span>
   </div>
-  <p class="eyebrow"><span class="idx">01</span>Headline numbers</p>
-  <!-- SLOT: assertion title -->
-  <h2>Three pilots, one pattern: the simulation called every winner</h2>
+  <div class="head">
+    <div>
+      <p class="eyebrow"><span class="idx">01</span>Headline numbers</p>
+      <!-- SLOT: assertion title, ≤2 lines -->
+      <h2>Three pilots, one pattern: the simulation called every winner</h2>
+    </div>
+    <!-- SLOT: context — key stat OR scope kicker; delete div if unused -->
+    <div class="context">
+      <div class="context-kicker">Enterprise pilots across CPG, fintech, and
+      retail — 12 audience cells, Apr–Jun 2026.</div>
+    </div>
+  </div>
   <div class="thread"></div>
-  <div class="body">
+  <!-- Single compact evidence shape → center it in the body zone -->
+  <div class="body" style="justify-content:center">
     <div class="metric-row">
       <div class="metric hero">
         <div class="metric-label">Prediction accuracy</div>
@@ -160,8 +183,16 @@ ul li::before{content:"";position:absolute;left:0;top:11px;width:7px;height:7px;
     <span class="brand">Socialtrait</span><span class="sep"></span><span>Q3 review</span>
     <span class="right">03 / 05</span>
   </div>
-  <p class="eyebrow"><span class="idx">02</span>Speed</p>
-  <h2>Answers land inside the campaign cycle, not after it</h2>
+  <div class="head">
+    <div>
+      <p class="eyebrow"><span class="idx">02</span>Speed</p>
+      <h2>Answers land inside the campaign cycle, not after it</h2>
+    </div>
+    <div class="context">
+      <div class="context-label">Median time to insight</div>
+      <div class="context-value">4<span class="unit">hrs</span></div>
+    </div>
+  </div>
   <div class="thread"></div>
   <div class="body">
     <div class="cols">
@@ -207,8 +238,12 @@ ul li::before{content:"";position:absolute;left:0;top:11px;width:7px;height:7px;
     <span class="brand">Socialtrait</span><span class="sep"></span><span>Q3 review</span>
     <span class="right">04 / 05</span>
   </div>
-  <p class="eyebrow"><span class="idx">03</span>Expansion</p>
-  <h2>$53k and one engineer buys a ten-account proof by October</h2>
+  <div class="head">
+    <div>
+      <p class="eyebrow"><span class="idx">03</span>Expansion</p>
+      <h2>$53k and one engineer buys a ten-account proof by October</h2>
+    </div>
+  </div>
   <div class="thread"></div>
   <div class="body">
     <ul style="font-size:21px;max-width:52ch">
