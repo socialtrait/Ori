@@ -13,6 +13,22 @@ cool graph-paper surfaces, grotesque sans + mono data, hairline structure,
 one Signal Blue accent, and the node-and-thread motif drawn from the
 interlaced Socialtrait mark.
 
+## Browse it live
+
+| Artifact | Live preview | Source |
+|---|---|---|
+| **Specimen — the full style guide** | [specimen.html](https://socialtrait.github.io/Ori/specimen.html) | [view](https://github.com/socialtrait/Ori/blob/main/specimen.html) |
+| One-pager | [templates/one-pager.html](https://socialtrait.github.io/Ori/templates/one-pager.html) | [view](https://github.com/socialtrait/Ori/blob/main/templates/one-pager.html) |
+| Long doc (white paper) | [templates/long-doc.html](https://socialtrait.github.io/Ori/templates/long-doc.html) | [view](https://github.com/socialtrait/Ori/blob/main/templates/long-doc.html) |
+| Insight report | [templates/report.html](https://socialtrait.github.io/Ori/templates/report.html) | [view](https://github.com/socialtrait/Ori/blob/main/templates/report.html) |
+| Slides (1280×720) | [templates/slides.html](https://socialtrait.github.io/Ori/templates/slides.html) | [view](https://github.com/socialtrait/Ori/blob/main/templates/slides.html) |
+| Resume | [templates/resume.html](https://socialtrait.github.io/Ori/templates/resume.html) | [view](https://github.com/socialtrait/Ori/blob/main/templates/resume.html) |
+| Landing page | [templates/landing-page.html](https://socialtrait.github.io/Ori/templates/landing-page.html) | [view](https://github.com/socialtrait/Ori/blob/main/templates/landing-page.html) |
+
+Start with the **specimen** — it demonstrates every rule by obeying it. The
+print artifacts (one-pager, long doc, report, resume) are fixed A4 pages, so
+view them on a desktop; print-to-PDF from the browser to see true pagination.
+
 ## The look, in one paragraph
 
 Frost `#FAFBFE` canvas, never warm. Inter Display headings in sentence case,
