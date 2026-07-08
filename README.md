@@ -55,6 +55,7 @@ Ori/
 ├── references/
 │   ├── design.md               ← full spec: invariants, color, type, layout, components, charts
 │   ├── writing.md              ← content quality bars per artifact
+│   ├── office.md               ← docx/pptx translation spec (Google Docs/Slides workflow)
 │   └── anti-patterns.md        ← banned list + pre-ship checklist
 ├── templates/
 │   ├── one-pager.html          ← exec brief; the metric row is the argument
@@ -63,8 +64,11 @@ Ori/
 │   ├── slides.html             ← 1280×720 deck; night cover, pinned takeaways
 │   ├── resume.html             ← dense single-page CV
 │   └── landing-page.html       ← responsive marketing page; night hero
+├── scripts/
+│   ├── ori_docx.py             ← Ori-native Word generator (docx → Google Docs)
+│   └── ori_pptx.py             ← Ori-native PowerPoint generator (pptx → Google Slides)
 └── assets/
-    └── logo/                   ← official mark + wordmark (blue/white/black)
+    └── logo/                   ← official mark + wordmark (SVG + transparent PNG)
 ```
 
 ## How agents use it
@@ -81,6 +85,10 @@ Ori/
 
 To render PDFs: `chrome --headless --print-to-pdf=out.pdf template.html`
 (or WeasyPrint). Slides print at their native 1280×720 page size.
+For editable internal sharing, `.docx` and `.pptx` are **native outputs**
+generated straight from the tokens (`scripts/ori_docx.py`,
+`scripts/ori_pptx.py`) — upload to Google Docs / Slides; spec in
+`references/office.md`.
 
 ## The ten invariants (summary)
 

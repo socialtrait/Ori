@@ -123,6 +123,7 @@ page · resume bullet = action+scope+result+outcome, one line.
 | Wide table (>6 cols) | split it, or landscape artifact |
 | Empty region | add evidence or merge — never a stock image |
 | Dark mode? | no such thing; night sections are components |
+| Editable / Google Docs · Slides | `scripts/ori_docx.py` / `ori_pptx.py` — docx & pptx ARE Ori-native |
 | Rounded corners? | 0 / 2 / 6px. When in doubt, square |
 | Which font for a date? | metadata → mono; prose sentence → sans |
 

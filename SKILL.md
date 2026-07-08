@@ -62,6 +62,7 @@ fits one page (it usually should).
 | Charts/figures needed | `references/design.md` §7 |
 | Resume content | `references/writing.md` §Resume |
 | Pre-ship review | `references/anti-patterns.md` checklist |
+| Office outputs (docx/pptx) | `references/office.md` + `scripts/ori_docx.py` / `ori_pptx.py` |
 
 ## Step 4 — Materials & sources
 
@@ -117,8 +118,12 @@ fits one page (it usually should).
    page fills 60–85%; footers paginate correctly; exactly one blue hero
    metric per page; node square present; no invariant violations
    (run `references/anti-patterns.md` list).
-3. Deliver: HTML + PDF for print artifacts; HTML for landing; state any
-   missing materials.
+3. Deliver, per artifact: print artifacts → HTML + PDF + **DOCX**
+   (`scripts/ori_docx.py`); slides → HTML + **PPTX** (`scripts/ori_pptx.py`);
+   landing → HTML. Office files are **Ori-native** — never ask whether the
+   user wants "native or editable". The standard internal path is
+   docx → Google Docs, pptx → Google Slides (see `references/office.md`).
+4. State any missing materials.
 
 ## Feedback protocol
 
