@@ -72,6 +72,9 @@ SVGs. Regenerate them if the SVGs ever change.
 
 ## Using the generators
 
+Dependencies: `pip install python-docx python-pptx` (the only Python
+dependencies in the repo).
+
 ```python
 from ori_docx import OriDoc
 doc = OriDoc(doc_type="Statement of work", doc_id="ST-SOW-007",
