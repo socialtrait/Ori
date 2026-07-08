@@ -233,18 +233,25 @@ Every printed page ends with `.page-footer`: node square, mono coordinates
 (`02 / 08`, mono, zero-padded).
 
 ### 5.4 Weave watermark (covers and heros only)
-Two interlaced arcs from the logo geometry, stroked at `--tint`, oversized
-(120–160% of page width), anchored to a corner, behind content. Max one per
-artifact. Never on body pages.
+The **official mark itself**, rendered as a watermark: inline the four
+paths from `assets/logo/mark.svg` and stroke the group in the watermark
+tone — `--tint` on light covers, `--line-n` on night surfaces. Never
+invent arcs or redraw the mark; use the real path data so the knot stays
+recognizable.
 
 ```html
-<svg class="weave" viewBox="0 0 400 400" aria-hidden="true">
-  <g fill="none" stroke="#E3EEFC" stroke-width="30">
-    <path d="M40 360 C 40 180, 180 40, 360 40"/>
-    <path d="M40 40 C 40 220, 180 360, 360 360"/>
+<svg class="weave" viewBox="0 0 287 284" aria-hidden="true">
+  <g fill="none" stroke="#E3EEFC" stroke-miterlimit="10">
+    <!-- the four <path> elements from assets/logo/mark.svg,
+         with their stroke-width attributes kept and stroke color removed -->
   </g>
 </svg>
 ```
+
+Sizing: 40–70% of page width, anchored to a corner behind content, cropped
+by **at most ~30% per axis** — over-cropping reduces the mark to anonymous
+arcs. Max one per artifact. Never on body pages. Copy the working blocks
+from `templates/long-doc.html` (light) or `templates/slides.html` (night).
 
 ### 5.5 Night sections (screen artifacts only)
 `.night` blocks — deep navy `#02122A` surface — for landing heros, slide
