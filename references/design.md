@@ -248,8 +248,11 @@ no tint-recoloring, no oversizing. Small and sharp beats big and faint.
 
 Templates inline the SVG paths directly (self-contained; no asset-path
 dependency), copied verbatim from `assets/logo/mark.svg` /
-`wordmark.svg`. Max two logo instances visible per page (rail mark +
-cover imprint); everything else stays type and thread.
+`wordmark.svg`. When re-wrapping asset paths in a new `<svg>` tag, keep
+`fill="none"` on the root or a wrapping `<g>` — the stroked knot paths
+inherit it, and dropping it fills them black. Max two logo instances
+visible per page (rail mark + cover imprint); everything else stays
+type and thread.
 
 ### 5.5 Night sections (screen artifacts only)
 `.night` blocks — deep navy `#02122A` surface — for landing heros, slide
