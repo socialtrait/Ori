@@ -109,6 +109,8 @@ a:hover { color: var(--blue-deep); border-bottom-color: var(--blue-deep); }
 .meta-rail .brand { color: var(--ink); }
 .meta-rail .sep::before { content: "·"; color: var(--line-strong); }
 .meta-rail .right { margin-left: auto; }
+.meta-rail .mark { height: 16px; width: auto; flex: none; }   /* inline mark.svg paths */
+.night .meta-rail .mark path { stroke: var(--ink-n); }
 
 /* ═══ Signature: eyebrow + thread rule ═══════════════════════
    Section head = mono index eyebrow, display title,

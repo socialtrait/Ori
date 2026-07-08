@@ -232,26 +232,24 @@ Every printed page ends with `.page-footer`: node square, mono coordinates
 (`SOCIALTRAIT / ORI · <doc-id>`), page number right-aligned
 (`02 / 08`, mono, zero-padded).
 
-### 5.4 Weave watermark (covers and heros only)
-The **official mark itself**, rendered as a watermark: inline the four
-paths from `assets/logo/mark.svg` and stroke the group in the watermark
-tone — `--tint` on light covers, `--line-n` on night surfaces. Never
-invent arcs or redraw the mark; use the real path data so the knot stays
-recognizable.
+### 5.4 Logo placement (one rule per surface)
+The logo appears **small, crisp, and complete** — at real emblem sizes,
+in full brand color. It is never decoration: no watermarks, no cropping,
+no tint-recoloring, no oversizing. Small and sharp beats big and faint.
 
-```html
-<svg class="weave" viewBox="0 0 287 284" aria-hidden="true">
-  <g fill="none" stroke="#E3EEFC" stroke-miterlimit="10">
-    <!-- the four <path> elements from assets/logo/mark.svg,
-         with their stroke-width attributes kept and stroke color removed -->
-  </g>
-</svg>
-```
+| Surface | Treatment |
+|---|---|
+| Meta rail (every page/slide) | Inline **mark**, 12pt print / 16px screen, leading the rail before the brand word. White on night (CSS `path{stroke:#F4F7FF}` override). |
+| Covers (long-doc, slides) | **Wordmark imprint**, bottom-left: 42mm above the author/version block (long-doc); 22px white in the cover foot (slides). |
+| Landing nav | Mark 24px + "Socialtrait" in Inter Display 650 — the lockup. |
+| Landing final CTA | White mark 36px, centered above the heading. |
+| Page footers | The node square only — the footer is system signature, not logo territory. |
+| Resume | **No logo.** A resume is the candidate's document, not Socialtrait's. |
 
-Sizing: 40–70% of page width, anchored to a corner behind content, cropped
-by **at most ~30% per axis** — over-cropping reduces the mark to anonymous
-arcs. Max one per artifact. Never on body pages. Copy the working blocks
-from `templates/long-doc.html` (light) or `templates/slides.html` (night).
+Templates inline the SVG paths directly (self-contained; no asset-path
+dependency), copied verbatim from `assets/logo/mark.svg` /
+`wordmark.svg`. Max two logo instances visible per page (rail mark +
+cover imprint); everything else stays type and thread.
 
 ### 5.5 Night sections (screen artifacts only)
 `.night` blocks — deep navy `#02122A` surface — for landing heros, slide
@@ -367,9 +365,14 @@ flowchart of hairline boxes with node-square connectors.
   on night surfaces.
 - Mark renders in Signal Blue on light surfaces, white on night. Never
   recolor, outline, shadow, or rotate.
-- Clear space: one petal-width on all sides. Minimum size 20px/15pt.
-- Documents: mark only (top-left of meta area or footer). Wordmark reserved
-  for covers, slide covers, and landing navs.
+- Clear space: one petal-width on all sides. Size window: **12pt–22pt
+  print / 16px–42px screen**. Below it the knot muddies; above it the
+  logo stops being an emblem and starts being decoration.
+- Placement is fixed per surface — see §5.4. Mark in meta rails, wordmark
+  as cover imprint, nothing else. Max two logo instances per page.
+- **The logo is never a watermark.** No oversized, cropped, faded,
+  tinted, rotated, or partially-bled logo art — if a surface feels empty,
+  fix the content density, not the branding.
 - Never set the company name in the wordmark's style using live text —
   it's an asset, not typography.
 

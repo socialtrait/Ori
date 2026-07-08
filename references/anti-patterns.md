@@ -30,7 +30,8 @@ The banned list, then the pre-ship checklist. If output matches anything in
   as icons or bullets
 - Full-width paragraphs beyond 70ch; three-column body text
 - Section-divider slides; "Thank you" empty closing slides
-- Watermark arcs on body pages (covers/heros only)
+- The logo as watermark — oversized, cropped, faded, tinted, or redrawn
+- More than two logo instances on one page; logos in page footers
 - Two adjacent night sections; night sections in print body
 
 ### Content
@@ -47,6 +48,8 @@ Run top to bottom; every line must pass.
 
 **Identity**
 - [ ] Meta rail present on page 1 (and every slide/section top)
+- [ ] Mark leads every meta rail (white on night); wordmark imprint on covers
+      only; resume unbranded; no logo anywhere else
 - [ ] Eyebrow + thread rule opens each section; indexes sequential from 01
 - [ ] Node square appears ≥1× per page, ≤1× per component
 - [ ] Node footer with doc-id and zero-padded pagination (`03 / 08`)

@@ -67,7 +67,9 @@ Resume 12·14·12·14 · Slides 1280×720px pad 64/72 · Landing max-w 1120px.
 - **Section head**: `.eyebrow` (mono, blue, `01` index in mist) → H2 →
   `.thread` (2px: 48px blue + node square, then gray).
 - **Node footer**: node square + `SOCIALTRAIT / ORI · <doc-id>` + `02 / 08`.
-- **Weave watermark**: tint-stroked interlaced arcs, covers/heros only, max 1.
+- **Logo**: mark leads the meta rail (12pt/16px; white on night); wordmark =
+  cover imprint, bottom-left; resume unbranded. Never a watermark, never
+  cropped, never tinted. Max 2 logo instances per page.
 - **Night sections**: `#02122A`, screen artifacts only, never adjacent pairs,
   never in print body pages.
 

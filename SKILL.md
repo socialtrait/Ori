@@ -68,9 +68,9 @@ fits one page (it usually should).
 - **Facts:** verify names, dates, metrics against provided material. A
   number without a source becomes a magnitude ("~40%") or is cut. Never
   fabricate metrics, quotes, logos, or testimonials.
-- **Logo:** use `assets/logo/mark.svg` / `wordmark.svg` on light surfaces,
-  the `-white` variants on night surfaces. These are official assets —
-  never recolor or redraw them.
+- **Logo:** templates already embed the official mark (meta rails) and
+  wordmark (cover imprints) inline — leave them exactly where they are.
+  Never add more logo instances, and never use the logo as a watermark.
 - **Personas/quotes:** quotes from Socialtrait simulations are cited to the
   persona (`— MAYA · SIMULATED GEN-Z SHOPPER`), never passed off as human
   research.
