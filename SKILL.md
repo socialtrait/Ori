@@ -2,11 +2,11 @@
 name: ori
 description: >
   Typeset Socialtrait documents, one-pagers, reports, slide decks, resumes,
-  and landing pages in Ori — Socialtrait's document design system (cool
+  meeting minutes, and landing pages in Ori — Socialtrait's document design system (cool
   graph-paper surfaces, Inter Display + IBM Plex Mono, Signal Blue #2F80ED,
   node-and-thread structure). Use whenever asked to make a doc, deck,
-  one-pager, insight report, exec summary, PDF, resume/CV, memo, or landing
-  page "in our style" / "for Socialtrait" / "presentable".
+  one-pager, insight report, exec summary, PDF, resume/CV, memo, meeting
+  minutes/MoM, or landing page "in our style" / "for Socialtrait" / "presentable".
 ---
 
 # Ori — Socialtrait document skill
@@ -25,7 +25,7 @@ template marks a `<!-- TUNE -->` block.
 make this presentable · one-pager · exec summary · insight report ·
 audience report · white paper · long doc · deck / slides / PPT · resume /
 CV · landing page / microsite · turn this into a PDF · Socialtrait-brand
-doc · persona report · pitch page
+doc · persona report · pitch page · meeting minutes / MoM / sync recap
 
 ## Step 1 — Intent
 

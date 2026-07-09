@@ -117,7 +117,10 @@ bundled, the stack degrades to system sans gracefully — do not substitute a
 different personality (no geometric rounds, no humanist serifs).
 
 **Banned:** serif faces anywhere; italics anywhere (emphasis = weight 600 or
-Signal Blue); more than these three stacks in one artifact.
+Signal Blue); more than these three stacks in one artifact. Blue emphasis
+is for a few words — a name, a number, a pivot phrase. Clause- or
+sentence-length emphasis uses weight only; long blue spans read as
+hyperlinks, especially in print.
 
 ### 3.2 Scale
 

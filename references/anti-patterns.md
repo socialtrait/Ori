@@ -82,5 +82,7 @@ Run top to bottom; every line must pass.
 
 **Delivery**
 - [ ] Rendered and eyeballed (PDF for print artifacts, browser for landing)
+- [ ] Office outputs generated via `scripts/ori_docx.py` / `ori_pptx.py`
+      (never converted from HTML); fonts named Inter / IBM Plex Mono
 - [ ] PDF metadata set (title/author/keywords/description)
 - [ ] Missing materials reported to the user in one line

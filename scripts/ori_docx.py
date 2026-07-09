@@ -77,14 +77,46 @@ def _cell_borders(cell, edges, size=4, color=LINE):
     tcPr.append(borders)
 
 
-def _no_table_borders(table):
+def _attach_tbl_borders(table, borders):
+    """Insert w:tblBorders at its schema position: before tblLayout /
+    tblCellMar / tblLook if present, else append. Word tolerates disorder;
+    strict OOXML validators don't."""
     tblPr = table._tbl.tblPr
+    for tag in ("w:tblBorders",):          # replace an existing block
+        old = tblPr.find(qn(tag))
+        if old is not None:
+            tblPr.remove(old)
+    for tag in ("w:tblLayout", "w:tblCellMar", "w:tblLook"):
+        ref = tblPr.find(qn(tag))
+        if ref is not None:
+            ref.addprevious(borders)
+            return
+    tblPr.append(borders)
+
+
+def _no_table_borders(table):
     borders = OxmlElement("w:tblBorders")
     for edge in ("top", "left", "bottom", "right", "insideH", "insideV"):
         el = OxmlElement(f"w:{edge}")
         el.set(qn("w:val"), "none")
         borders.append(el)
-    tblPr.append(borders)
+    _attach_tbl_borders(table, borders)
+
+
+def _outer_table_borders(table, size=4, color=LINE):
+    """Hairline box around the table, no inner rules."""
+    borders = OxmlElement("w:tblBorders")
+    for edge in ("top", "left", "bottom", "right"):
+        el = OxmlElement(f"w:{edge}")
+        el.set(qn("w:val"), "single")
+        el.set(qn("w:sz"), str(size))
+        el.set(qn("w:color"), color)
+        borders.append(el)
+    for edge in ("insideH", "insideV"):
+        el = OxmlElement(f"w:{edge}")
+        el.set(qn("w:val"), "none")
+        borders.append(el)
+    _attach_tbl_borders(table, borders)
 
 
 def _tracking(run, twentieths=12):
@@ -176,7 +208,7 @@ class OriDoc:
         _tracking(r, 12)
         return r
 
-    def _rich(self, p, text, size, color):
+    def _rich(self, p, text, size, color, bold_color=INK):
         """Minimal markup: <b>bold</b> renders weight-600 ink."""
         for i, part in enumerate(text.split("<b>")):
             if i == 0:
@@ -184,7 +216,8 @@ class OriDoc:
                     self._style_run(p.add_run(part), SANS, size, color)
                 continue
             bold_txt, _, rest = part.partition("</b>")
-            self._style_run(p.add_run(bold_txt), SANS, size, INK, bold=True)
+            self._style_run(p.add_run(bold_txt), SANS, size, bold_color,
+                            bold=True)
             if rest:
                 self._style_run(p.add_run(rest), SANS, size, color)
 
@@ -330,6 +363,46 @@ class OriDoc:
                             SANS, 9.5, INK)
         self.doc.add_paragraph().paragraph_format.space_after = Pt(2)
 
+    def logistics(self, left, right):
+        """Meeting logistics: two kv columns in a hairline box."""
+        rows = max(len(left), len(right))
+        t = self.doc.add_table(rows=rows, cols=4)
+        t.autofit = False
+        self._fixed_layout(t)
+        _outer_table_borders(t, size=4, color=LINE)
+        widths = [0.13, 0.37, 0.13, 0.37]
+        for r in t.rows:
+            for j, cell in enumerate(r.cells):
+                cell.width = int(self._usable * widths[j])
+        for col, pairs in ((0, left), (2, right)):
+            for i, (k, v) in enumerate(pairs):
+                kp = t.cell(i, col).paragraphs[0]
+                self._mono(kp, k, color=MIST)
+                vp = t.cell(i, col + 1).paragraphs[0]
+                self._style_run(vp.add_run(v), SANS, 9.5, INK)
+                if i == 0:
+                    kp.paragraph_format.space_before = Pt(5)
+                    vp.paragraph_format.space_before = Pt(5)
+                if i == rows - 1:
+                    kp.paragraph_format.space_after = Pt(5)
+                    vp.paragraph_format.space_after = Pt(5)
+        self.doc.add_paragraph().paragraph_format.space_after = Pt(2)
+
+    def agenda(self, items):
+        """Pre-meeting agenda: eyebrow + mono-indexed compact list."""
+        p = self.doc.add_paragraph()
+        p.paragraph_format.space_before = Pt(10)
+        p.paragraph_format.space_after = Pt(4)
+        self._mono(p, "Agenda", color=BLUE)
+        _p_border(p, "bottom", size=8, color=LINE, space=4)
+        for i, item in enumerate(items, 1):
+            ip = self.doc.add_paragraph()
+            self._mono(ip, f"{i:02d}  ", color=BLUE, size=8.5)
+            self._rich(ip, item, 9.5, INK)
+            if i < len(items):    # template suppresses the last hairline
+                _p_border(ip, "bottom", size=4, color=LINE, space=3)
+            ip.paragraph_format.space_after = Pt(4)
+
     def decisions(self, items):
         """Meeting decisions: node glyph + referenceable D-ids."""
         for i, item in enumerate(items, 1):
@@ -370,6 +443,13 @@ class OriDoc:
             self._mono(cells[4].paragraphs[0], st,
                        color=status_color.get(st, BLUE_DEEP), size=8)
         self.doc.add_paragraph().paragraph_format.space_after = Pt(2)
+
+    def smallprint(self, text):
+        """Next meeting / status / distribution / confidentiality."""
+        p = self.doc.add_paragraph()
+        p.paragraph_format.space_before = Pt(10)
+        self._rich(p, text, 8, MIST, bold_color=SLATE)
+        return p
 
     def page_break(self):
         self.doc.add_page_break()

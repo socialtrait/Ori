@@ -48,7 +48,8 @@ thread/eyebrow → hero metric → primary chart series → links/button → ink
 | Metric | 32/24 | 600 | 1.0 | mono tabular |
 
 Emphasis = weight 600 or Signal Blue. Never italics, never underline
-(underline is for links only).
+(underline is for links only). Blue emphasis ≤ a few words; sentence-length
+emphasis is weight-only (long blue spans read as links).
 
 ## Spacing (8px base)
 

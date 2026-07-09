@@ -2,7 +2,7 @@
 
 **Ori** (織, *weave*) is Socialtrait's constraint-based design system for
 documents. It gives AI agents — and humans — a fixed visual language so that
-every one-pager, report, deck, resume, and landing page we produce looks
+every one-pager, report, deck, resume, minutes, and landing page we produce looks
 deliberate, branded, and publishable without a designer in the loop.
 
 The premise (borrowed from systems like [Kami](https://github.com/tw93/Kami)):
@@ -82,8 +82,9 @@ Ori/
    `tokens/ori.css`.
 4. Fill every `<!-- SLOT -->`, delete unused optional blocks, obey the
    density contract.
-5. Run the `references/anti-patterns.md` checklist, render, deliver
-   HTML + PDF.
+5. Run the `references/anti-patterns.md` checklist, render, and deliver
+   per the `references/office.md` contract (HTML + PDF, plus DOCX/PPTX
+   where those are native).
 
 To render PDFs: `chrome --headless --print-to-pdf=out.pdf template.html`
 (or WeasyPrint). Slides print at their native 1280×720 page size.
