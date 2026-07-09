@@ -17,7 +17,8 @@ documents read `references/design.md`; tokens are canonical in
 8. Radius: 0 default, 2px chips, 6px cards max. No pills.
 9. No shadows in print; screen gets `--lift`/`--hover` only. One gradient
    exists: the night-hero radial glow.
-10. Green/red = deltas only. Blue = emphasis. No decorative color.
+10. Green/red = deltas, action statuses, risk only. Blue = emphasis.
+    No decorative color.
 
 ## Colors
 
@@ -58,7 +59,8 @@ Emphasis = weight 600 or Signal Blue. Never italics, never underline
 ## Margins
 
 One-pager 14·16·14·16mm · Long doc 18·20·20·20 · Report 16·18·18·18 ·
-Resume 12·14·12·14 · Slides 1280×720px pad 64/72 · Landing max-w 1120px.
+Resume 12·14·12·14 · Minutes 16·18·18·18 · Slides 1280×720px pad 56/72 ·
+Landing max-w 1120px.
 
 ## Signature moves
 
@@ -87,6 +89,7 @@ Resume 12·14·12·14 · Slides 1280×720px pad 64/72 · Landing max-w 1120px.
 | Persona | `.persona`: tint avatar w/ mono initials, trait tags, one quote |
 | Steps/history | `.timeline`: hairline spine + node squares + mono when |
 | Slide header | evidence: 30px title + optional context stat/kicker right · statement: 44px display, 2–3/deck |
+| Decisions / actions | `.decisions` D-ids + node · actions table A-ids, owner+due always, status chip (open/done/blocked) |
 | Code | inline: wash chip · block: night bg, 12px mono, 6px radius |
 | Button (landing) | primary blue fill 6px radius; one primary per viewport |
 | Icon | 1.5px line stroke, currentColor; no fills, no emoji |

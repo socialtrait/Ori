@@ -15,6 +15,7 @@ HTML.
 | Artifact | Deliver by default |
 |---|---|
 | One-pager, long doc, report | HTML + PDF + **DOCX** |
+| Meeting minutes | **DOCX** (primary — lives in Google Docs) + HTML + PDF |
 | Slides | HTML + **PPTX** |
 | Resume | HTML + PDF (DOCX on request — recruiters edit) |
 | Landing page | HTML only (it's a website) |

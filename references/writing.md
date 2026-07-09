@@ -77,6 +77,24 @@ input, delete it first.
 - Reverse chronology; gaps unexplained are fine; page 2 only if the last 5
   years alone overflow page 1.
 
+## Meeting minutes
+
+- TL;DR ≤ 25 words states the meeting's consequential outcome, not its
+  topic list.
+- Topic headings are outcomes ("The CX simulator sells to a different
+  buyer"), never agenda labels ("Agentic CX discussion").
+- Attribute positions to named people; record disagreement neutrally —
+  minutes have no opinions and no editorializing.
+- Decisions are one-sentence, verb-led commitments with D-ids. If nothing
+  was decided on a contested topic, record that explicitly ("No pricing
+  decision was made").
+- Every action row has an owner and a due date. "Not specified" becomes
+  TBD — visible and chaseable, never silently dropped.
+- Reference decisions and actions by ID in prose ("see A5"), so follow-ups
+  survive copy-paste into chat.
+- Carry unresolved items forward: the next-meeting line names the carry-over
+  actions.
+
 ## Landing page
 
 - Hero H1 ≤ 9 words, states the outcome the visitor buys, not the feature.

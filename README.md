@@ -23,6 +23,7 @@ interlaced Socialtrait mark.
 | Insight report | [templates/report.html](https://socialtrait.github.io/Ori/templates/report.html) | [view](https://github.com/socialtrait/Ori/blob/main/templates/report.html) |
 | Slides (1280×720) | [templates/slides.html](https://socialtrait.github.io/Ori/templates/slides.html) | [view](https://github.com/socialtrait/Ori/blob/main/templates/slides.html) |
 | Resume | [templates/resume.html](https://socialtrait.github.io/Ori/templates/resume.html) | [view](https://github.com/socialtrait/Ori/blob/main/templates/resume.html) |
+| Meeting minutes | [templates/meeting-minutes.html](https://socialtrait.github.io/Ori/templates/meeting-minutes.html) | [view](https://github.com/socialtrait/Ori/blob/main/templates/meeting-minutes.html) |
 | Landing page | [templates/landing-page.html](https://socialtrait.github.io/Ori/templates/landing-page.html) | [view](https://github.com/socialtrait/Ori/blob/main/templates/landing-page.html) |
 
 Start with the **specimen** — it demonstrates every rule by obeying it. The
@@ -63,6 +64,7 @@ Ori/
 │   ├── report.html             ← insight report: claim + evidence + "so what"
 │   ├── slides.html             ← 1280×720 deck; night cover, pinned takeaways
 │   ├── resume.html             ← dense single-page CV
+│   ├── meeting-minutes.html    ← TL;DR, decisions (D-ids), actions (A-ids)
 │   └── landing-page.html       ← responsive marketing page; night hero
 ├── scripts/
 │   ├── ori_docx.py             ← Ori-native Word generator (docx → Google Docs)
@@ -101,7 +103,7 @@ generated straight from the tokens (`scripts/ori_docx.py`,
 7. Flush-left axis; centering only on slide covers and heros
 8. Sharp geometry: radius 0/2/6px, nothing rounder
 9. Flat: no print shadows, one sanctioned gradient (night hero glow)
-10. Color means data: green/red for deltas only
+10. Color means data: green/red for deltas and statuses only
 
 **First principles:** ink argues, mono measures, hairlines structure,
 whitespace paces, and blue points at what matters.

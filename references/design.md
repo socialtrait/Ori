@@ -40,8 +40,9 @@ Non-negotiable. Any output violating one of these is not Ori.
 9. **Flat by default.** Print artifacts have zero shadows. Screen artifacts
    may use exactly two: `--lift` at rest, `--hover` on interaction. No
    gradients, except the single radial night-hero glow (screen only).
-10. **Color means data.** Green/red appear only on deltas and risk callouts.
-    Blue marks emphasis and keys. Nothing is colored for decoration.
+10. **Color means data.** Green/red appear only on deltas, action-item
+    statuses, and risk callouts. Blue marks emphasis and keys. Nothing is
+    colored for decoration.
 
 ---
 
@@ -173,6 +174,7 @@ headings are banned (uppercase belongs to mono labels only).
 | Long doc | A4 portrait | 18·20·20·20 mm |
 | Report | A4 portrait | 16·18·18·18 mm |
 | Resume | A4 portrait | 12·14·12·14 mm |
+| Minutes | A4 portrait | 16·18·18·18 mm |
 | Slides | 1280×720 px fixed | padding 56px 72px 48px |
 | Landing | fluid | content max-width 1120px; sections 96px 64px (mobile 64px 20px) |
 

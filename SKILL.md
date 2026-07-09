@@ -46,6 +46,7 @@ silently and proceed):
 | insight report, audience report, persona findings, chart-heavy analysis | Report | `templates/report.html` |
 | deck, slides, PPT, presentation, pitch | Slides | `templates/slides.html` |
 | resume, CV, candidate profile | Resume | `templates/resume.html` |
+| meeting minutes, meeting notes, MoM, sync recap | Minutes | `templates/meeting-minutes.html` |
 | landing page, microsite, launch page, waitlist page | Landing | `templates/landing-page.html` |
 
 Ambiguous "report" → if the argument is charts/evidence, use Report; if
@@ -98,6 +99,7 @@ fits one page (it usually should).
 | Report | Each section: assertion H2 + one evidence shape (chart/table/persona grid) + one insight strip. 3–6 sections. |
 | Slides | 1 assertion title (≤2 lines) + 1 evidence shape + pinned takeaway bar per slide. 3–5 content items max. 10–16 slides typical. |
 | Resume | 1 page (2 max). Every bullet: Action + Scope + Result + Outcome, one line. 3–5 bullets per role. |
+| Minutes | TL;DR (≤25 words) + logistics grid + agenda + numbered topics with outcome headings + decisions (D-ids) + actions table (A-ids; every row has owner + due) + next meeting. 1–3 pages. |
 | Landing | Hero + 3–6 sections + final CTA. One primary button per viewport. Sections alternate frost/white; night for hero and/or final CTA only. |
 
 ### Slide-specific rules

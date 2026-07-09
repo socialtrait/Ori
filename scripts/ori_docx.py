@@ -38,6 +38,7 @@ MARGINS = {  # T, R, B, L in mm — mirrors design.md §4.2
     "long-doc": (18, 20, 20, 20),
     "report": (16, 18, 18, 18),
     "resume": (12, 14, 12, 14),
+    "minutes": (16, 18, 18, 18),
 }
 
 
@@ -327,6 +328,47 @@ class OriDoc:
             self._mono(t.cell(i, 0).paragraphs[0], k, color=MIST)
             self._style_run(t.cell(i, 1).paragraphs[0].add_run(v),
                             SANS, 9.5, INK)
+        self.doc.add_paragraph().paragraph_format.space_after = Pt(2)
+
+    def decisions(self, items):
+        """Meeting decisions: node glyph + referenceable D-ids."""
+        for i, item in enumerate(items, 1):
+            p = self.doc.add_paragraph()
+            self._mono(p, "\u25aa ", color=BLUE, size=8.5)
+            self._mono(p, f"D{i}  ", color=BLUE, size=8.5)
+            self._rich(p, item, 10, INK)
+            _p_border(p, "bottom", size=4, color=LINE, space=3)
+            p.paragraph_format.space_after = Pt(4)
+
+    def actions(self, rows):
+        """Action items: [{action, owner, due, status}] -> A-id table.
+        status in {open, done, blocked} -> blue / green / red mono."""
+        status_color = {"open": BLUE_DEEP, "done": POS, "blocked": NEG}
+        t = self.doc.add_table(rows=1 + len(rows), cols=5)
+        t.autofit = False
+        self._fixed_layout(t)
+        _no_table_borders(t)
+        widths = [0.07, 0.47, 0.17, 0.12, 0.17]
+        for r in t.rows:
+            for j, cell in enumerate(r.cells):
+                cell.width = int(self._usable * widths[j])
+        for j, htext in enumerate(["#", "Action", "Owner", "Due", "Status"]):
+            cell = t.cell(0, j)
+            _cell_borders(cell, ["bottom"], size=6, color=LINE_STRONG)
+            self._mono(cell.paragraphs[0], htext, color=MIST)
+        for i, row in enumerate(rows, 1):
+            cells = t.rows[i].cells
+            for cell in cells:
+                _cell_borders(cell, ["bottom"], size=4, color=LINE)
+            self._mono(cells[0].paragraphs[0], f"A{i}", color=BLUE, size=8.5)
+            self._rich(cells[1].paragraphs[0], row["action"], 9.5, INK)
+            self._mono(cells[2].paragraphs[0], row["owner"], color=SLATE,
+                       size=8.5)
+            self._mono(cells[3].paragraphs[0], row.get("due", "TBD"),
+                       color=SLATE, size=8.5)
+            st = row.get("status", "open").lower()
+            self._mono(cells[4].paragraphs[0], st,
+                       color=status_color.get(st, BLUE_DEEP), size=8)
         self.doc.add_paragraph().paragraph_format.space_after = Pt(2)
 
     def page_break(self):
