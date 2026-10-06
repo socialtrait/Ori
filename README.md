@@ -1,4 +1,4 @@
-# Ori — the Socialtrait document design system
+# Ori — the Socialtrait document design system · v2
 
 **Ori** (織, *weave*) is Socialtrait's constraint-based design system for
 documents. It gives AI agents — and humans — a fixed visual language so that
@@ -7,11 +7,13 @@ deliberate, branded, and publishable without a designer in the loop.
 
 The premise (borrowed from systems like [Kami](https://github.com/tw93/Kami)):
 agents are already good at content; what they lack is **constraint**. Ori
-supplies the constraints and nothing else. Where Kami reads like warm paper —
-parchment, serif, editorial calm — Ori reads like a precision instrument:
-cool graph-paper surfaces, grotesque sans + mono data, hairline structure,
-one Signal Blue accent, and the node-and-thread motif drawn from the
-interlaced Socialtrait mark.
+supplies the constraints and nothing else.
+
+**v2 is a complete revamp** onto the *Socialtrait Brand Concept Guidelines V2*
+(2026-08-26): the refined logo, SF Pro's wide cuts as the brand voice, light
+Horizon pages for function, Solar Horizon atmospheres for moments, and a
+single Seagrass signal. The v1 look (Frost canvas, Inter + Plex Mono, Signal
+Blue, node-and-thread) is retired.
 
 ## Browse it live
 
@@ -27,21 +29,22 @@ interlaced Socialtrait mark.
 | Landing page | [templates/landing-page.html](https://socialtrait.github.io/Ori/templates/landing-page.html) | [view](https://github.com/socialtrait/Ori/blob/main/templates/landing-page.html) |
 
 Start with the **specimen** — it demonstrates every rule by obeying it. The
-print artifacts (one-pager, long doc, report, resume) are fixed A4 pages, so
-view them on a desktop; print-to-PDF from the browser to see true pagination.
+print artifacts (one-pager, long doc, report, resume, minutes) are fixed A4
+pages; print-to-PDF from the browser to see true pagination.
 
 ## The look, in one paragraph
 
-Frost `#FAFBFE` canvas, never warm. Inter Display headings in sentence case,
-IBM Plex Mono for every label and every number that matters. One accent —
-Signal Blue `#2F80ED` — rationed to about 2% of the page. Structure comes
-from 1px hairlines and the signature **thread rule**: a 2px line that starts
-with a 6px blue node square, opening every section under a mono eyebrow like
-`01 · AUDIENCE SIGNAL`. Sharp corners, flat surfaces, flush-left text,
-metrics set huge in mono. Dark "night" sections (`#02122A`) exist only on
-screens — heros and slide covers. The accent and navy are taken straight
-from the official logo assets, the neutrals from socialtrait.ai's CSS, so
-output matches the brand by construction.
+Horizon `#FAFAFA` pages for anything people read, Real Black `#1F2937` ink,
+Dust and Cloud greys, structure from 1px hairlines and open space. Headlines in
+**SF Pro's wide cuts** (width 118–132; Archivo stands in where SF Pro isn't
+installed), reading text at normal width, everything tabular. Key moments —
+covers, heros, statement and closing slides — move to the **Solar Horizon**:
+Dawn, Day, Dusk, Twilight, soft-focus skies with a glowing horizon line. One
+accent, **Seagrass** `#BAFE81`, marks the single thing each page argues: a
+marker under a number, a glowing chip on a horizon. Corners are slightly
+softened; photos are bright and real, with large radii, a cool shadow, and a
+softly blurred edge. Every page closes with the guideline's folio: hairline,
+lockup, legal line, page number.
 
 ## Repository map
 
@@ -52,25 +55,26 @@ Ori/
 ├── README.md                   ← you are here
 ├── specimen.html               ← living style guide; open in a browser
 ├── tokens/
-│   └── ori.css                 ← canonical tokens + core components
+│   └── ori.css                 ← canonical tokens + core components (v2)
 ├── references/
-│   ├── design.md               ← full spec: invariants, color, type, layout, components, charts
+│   ├── design.md               ← full spec: invariants, color, type, layout, components, charts, photos, logo
 │   ├── writing.md              ← content quality bars per artifact
 │   ├── office.md               ← docx/pptx translation spec (Google Docs/Slides workflow)
 │   └── anti-patterns.md        ← banned list + pre-ship checklist
 ├── templates/
 │   ├── one-pager.html          ← exec brief; the metric row is the argument
-│   ├── long-doc.html           ← white paper / spec, with cover recipe
-│   ├── report.html             ← insight report: claim + evidence + "so what"
-│   ├── slides.html             ← 1280×720 deck; night cover, pinned takeaways
-│   ├── resume.html             ← dense single-page CV
+│   ├── long-doc.html           ← white paper / spec: Dawn cover, chapter openers
+│   ├── report.html             ← insight report: claim + evidence + insight
+│   ├── slides.html             ← 1280×720 deck: light evidence, dark moments
+│   ├── resume.html             ← dense single-page CV (unbranded)
 │   ├── meeting-minutes.html    ← TL;DR, decisions (D-ids), actions (A-ids)
-│   └── landing-page.html       ← responsive marketing page; night hero
+│   └── landing-page.html       ← responsive marketing page; Dawn hero
 ├── scripts/
 │   ├── ori_docx.py             ← Ori-native Word generator (docx → Google Docs)
 │   └── ori_pptx.py             ← Ori-native PowerPoint generator (pptx → Google Slides)
 └── assets/
-    └── logo/                   ← official mark + wordmark (SVG + transparent PNG)
+    ├── logo/                   ← refined 2026 lockup, mark, wordmark (SVG, PNG, inline symbols)
+    └── horizon/                ← Solar Horizon originals (Dawn, Day, Dusk, Twilight)
 ```
 
 ## How agents use it
@@ -81,34 +85,42 @@ Ori/
 3. **Edit body content only.** Template CSS is law; tokens change only in
    `tokens/ori.css`.
 4. Fill every `<!-- SLOT -->`, delete unused optional blocks, obey the
-   density contract.
+   density contract, place the page's one Seagrass signal.
 5. Run the `references/anti-patterns.md` checklist, render, and deliver
    per the `references/office.md` contract (HTML + PDF, plus DOCX/PPTX
    where those are native).
 
-To render PDFs: `chrome --headless --print-to-pdf=out.pdf template.html`
-(or WeasyPrint). Slides print at their native 1280×720 page size.
-For editable internal sharing, `.docx` and `.pptx` are **native outputs**
-generated straight from the tokens (`scripts/ori_docx.py`,
-`scripts/ori_pptx.py`) — upload to Google Docs / Slides; spec in
-`references/office.md`.
+To render PDFs:
+`chrome --headless --no-pdf-header-footer --virtual-time-budget=8000 --print-to-pdf=out.pdf template.html`
+(the time budget lets the Archivo webfont load). Slides print at their native
+1280×720 page size. For editable internal sharing, `.docx` and `.pptx` are
+**native outputs** generated straight from the tokens — upload to Google Docs /
+Slides; spec in `references/office.md`.
+
+## Typeface
+
+The brand typeface is **SF Pro** (installer in the brand Drive folder,
+`_Typeface/SF-Pro.dmg`). SF Pro can't be web-served, so every template also
+loads **Archivo** (open-licensed, Google Fonts) — its 62–125 width axis is the
+closest free match to SF Pro's wide cuts. Install SF Pro locally to see the
+true brand face; everyone else, and every headless PDF build, gets Archivo.
 
 ## The ten invariants (summary)
 
-1. Cool canvas — Frost, never warm
-2. One accent — Signal Blue `#2F80ED`
-3. Sans + mono only; serif and italics banned
-4. Meaningful numbers are mono tabular
-5. 1px hairlines; the only thick line is the 2px thread
-6. The blue node square: ≥1× per page, ≤1× per component
-7. Flush-left axis; centering only on slide covers and heros
-8. Sharp geometry: radius 0/2/6px, nothing rounder
-9. Flat: no print shadows, one sanctioned gradient (night hero glow)
-10. Color means data: green/red for deltas and statuses only
+1. Light for function, dark for moments
+2. One signal — Seagrass `#BAFE81`, once per surface, a fill on light
+3. Atmosphere, not decoration — blues live in the Solar Horizons and data
+4. One family, many widths — SF Pro (Archivo fallback); no serif, no italics
+5. Sentence-case headlines; caps only for kickers, labels, folio
+6. Numbers are tabular figures; key figures in the wide cut
+7. Open layouts — hairlines and whitespace, never boxed sections
+8. Slight radii — 4 · 8 · 12 · 24px
+9. Depth is earned — soft cool shadows on photos and cards; glow is Seagrass-only
+10. The folio closes every page; the logo is black or white
 
-**First principles:** ink argues, mono measures, hairlines structure,
-whitespace paces, and blue points at what matters.
+**First principles:** light does the work, dark makes the moment, width gives
+the voice, hairlines hold the structure, and Seagrass marks what matters.
 
 ---
 
-Ori v1.0 · maintained by Socialtrait · tokens keyed to the official logo assets + socialtrait.ai
+Ori v2.0 · maintained by Socialtrait · built on Brand Concept Guidelines V2 (2026-08-26)

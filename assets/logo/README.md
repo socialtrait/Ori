@@ -1,21 +1,28 @@
-# Logo assets
+# Logo assets · refined 2026
 
-Official Socialtrait assets. Templates resolve these filenames directly —
-do not rename.
+The refined Socialtrait logo from *Brand Concept Guidelines V2* — "the logo to
+use going forward across all applications." The previous blue interlaced logo
+is retired; don't reintroduce it.
 
-| File | Content | Use on |
+| File | Content | Use |
 |---|---|---|
-| `mark.svg` | Interlaced-knot mark, Signal Blue `#2F80ED` | Light surfaces: doc footers/meta areas, landing nav |
-| `mark-white.svg` | Mark in white | Night surfaces |
-| `mark-black.svg` | Mark in black | Grayscale/print-fax contexts only |
-| `wordmark.svg` | Mark + "socialtrait" (`#2F80ED` + navy `#213C60`) | Covers, slide covers, landing navs |
-| `wordmark-white.svg` | Wordmark in white | Night surfaces |
-| `wordmark-black.svg` | Wordmark in black | Grayscale contexts only |
+| `lockup-black.svg` / `lockup-white.svg` | Mark + wordmark — **the primary logo** | Folios, covers, landing nav |
+| `mark-black.svg` / `mark-white.svg` | Mark only | Only where the lockup can't fit (favicons, ≤24px slots) |
+| `wordmark-black.svg` / `wordmark-white.svg` | Wordmark only | Kept for completeness — Ori never uses it alone |
+| `png/*.png` | Transparent PNG, 480px tall | Office generators (`scripts/ori_*.py`) |
+| `symbols.html` | `<symbol id="st-lockup">` / `<symbol id="st-mark">`, `fill="currentColor"` | Paste once into HTML templates; reference with `<use href="#st-lockup"/>` |
 
-These files are the **brand color authority**: Ori's `--blue` (`#2F80ED`)
-and `--navy` (`#213C60`) tokens are keyed to them. If the logo assets ever
-change, update `tokens/ori.css` to match.
+**Color:** black on light surfaces and the Day horizon; white on Real Black and
+the Dawn, Dusk, Twilight horizons. Never colored, never Seagrass, never a
+gradient. In HTML the symbols follow CSS `color`, so set `color: var(--black)`
+or `var(--on-dark)`.
 
-Usage rules (see `references/design.md` §9): never recolor, outline, shadow,
-or rotate; clear space of one petal-width; minimum 20px / 15pt; never
-typeset the company name to imitate the wordmark.
+**Provenance:** the brand team delivered the refined logo as PNG only
+(`Drive › Brand Guidelines › _Logo Refined`). These SVGs are vector traces of
+the logo as rendered in the guideline PDF (page 6), checked by overlay against
+the source. If the brand team publishes master vectors, replace these files
+with them — keep the filenames — and regenerate `png/` and `symbols.html`.
+
+Rules (see `references/design.md` §9): clear space = the mark's inner aperture
+width; minimum lockup height 9pt / 12px; never crop, rotate, outline, shadow,
+watermark, or retype the wordmark.

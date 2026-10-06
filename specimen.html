@@ -3,436 +3,897 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="generator" content="Ori">
-<title>Ori — Socialtrait design system specimen</title>
+<meta name="generator" content="Ori 2">
+<title>Ori 2 specimen</title>
+<meta name="description" content="Ori v2 — the Socialtrait design system, built on Brand Concept Guidelines V2.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet">
 <style>
-:root{
-  --frost:#FAFBFE; --paper:#FFFFFF; --wash:#EFF5FD; --tint:#E3EEFC;
-  --night:#02122A; --navy:#213C60;
-  --ink:#000416; --slate:#4A4D5A; --mist:#8A94AB;
-  --ink-n:#F4F7FF; --mist-n:#8FA0C2; --line-n:#14294D;
-  --blue:#2F80ED; --blue-deep:#1160C6; --blue-soft:#7EAFF1; --blue-faint:#B6D1F7;
-  --pos:#0E8A5C; --neg:#D64545; --warn:#B7791F;
-  --line:#E3E8F4; --line-strong:#C9D2E8;
-  --display:"Inter Display","Inter",-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
-  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI","Helvetica Neue",Arial,sans-serif;
-  --mono:"IBM Plex Mono","SF Mono","JetBrains Mono","Roboto Mono",Consolas,monospace;
-  --node:6px;
+/* ══ ORI 2 TOKENS + COMPONENTS — verbatim copy of tokens/ori.css; edit there, then re-sync ══ */
+/* ═══════════════════════════════════════════════════════════════════
+   ORI — the Socialtrait document design system            v2.0
+   Canonical tokens + core components.
+   Source of truth: Socialtrait Brand Concept Guidelines V2 (2026-08-26)
+   — refined logo, SF Pro type system, Solar Horizon + Seagrass color.
+
+   Templates embed a copy of the blocks they need. Change values HERE
+   first; templates inherit on next sync. Never fork values in a document.
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Fallback face: Archivo (OFL, variable width 62–125) stands in for
+   SF Pro wherever SF Pro isn't installed. Templates load it with:
+   <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap" rel="stylesheet"> */
+
+:root {
+  /* ── Brand neutrals (from the guideline swatches) ─────────── */
+  --black:    #1F2937;   /* Real Black — primary text; dark surface     */
+  --dust:     #535B65;   /* Dust — secondary text; dark panels          */
+  --cloud:    #CCCED1;   /* Cloud — strong rules; light secondary panel */
+  --horizon:  #FAFAFA;   /* Horizon — the light canvas                  */
+
+  /* ── Derived neutrals (fixed steps between the brand swatches) ── */
+  --mist:     #80868F;   /* tertiary text: captions, annotations only   */
+  --rule:     #E3E5E8;   /* default hairline                            */
+  --fog:      #F1F2F4;   /* panel fill, chapter-opener page             */
+  --paper:    #FFFFFF;   /* cards, photos' mat, table surfaces          */
+
+  /* ── Signal (the one accent) ──────────────────────────────── */
+  --seagrass:      #BAFE81;                  /* fills & glows, never text on light */
+  --seagrass-glow: rgba(186, 254, 129, .55);
+
+  /* ── Solar Horizon (atmosphere) ───────────────────────────── */
+  --dawn:     #314188;   /* hero color direction — default atmosphere   */
+  --day:      #3E6FE7;   /* bright; carries Real Black text, not white  */
+  --dusk:     #2A2759;
+  --twilight: #070B2F;   /* from the Twilight asset                     */
+
+  /* ── Functional blue (links, data on light) ───────────────── */
+  --day-deep: #2F5BCC;   /* links & blue text on light (5.8:1)          */
+  --day-soft: #9DB8F5;   /* chart series 3                              */
+  --day-wash: #EAF0FD;   /* chart last series / subtle blue fill        */
+
+  /* ── Semantic (deltas, statuses, risk ONLY) ───────────────── */
+  --pos:  #2F7A12;
+  --neg:  #C23B32;
+  --warn: #9A6206;
+
+  /* ── On-dark text (dark surface + horizons) ───────────────── */
+  --on-dark:       #FAFAFA;
+  --on-dark-2:     #CCCED1;   /* = cloud */
+  --rule-dark:     rgba(250, 250, 250, .18);
+
+  /* ── Type: one family, SF Pro, driven by the width axis ───── */
+  --font: "SF Pro", "SF Pro Display", "SF Pro Text", "Archivo",
+          "Helvetica Neue", Arial, sans-serif;
+  --code: "SF Mono", ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
+
+  /* Width (font-stretch → wdth axis). Brand spec values; Archivo clamps at 125. */
+  --w-display: 132%;   /* H1 / H2                        */
+  --w-wide:    118%;   /* H3 wide, H4 wide               */
+  --w-title:   110%;   /* H3 regular                     */
+  --w-label:   120%;   /* Body 1 — labels, kickers, UI   */
+  --w-text:    100%;   /* Body 2 — reading text          */
+
+  /* ── Geometry: "slight corner radii" on everything ────────── */
+  --r-xs: 4px;     /* highlights, chips, code              */
+  --r-s:  8px;     /* print callouts, inputs, small cards  */
+  --r-m:  12px;    /* buttons, cards                       */
+  --r-l:  24px;    /* photos, hero panels, large cards     */
+
+  /* ── Elevation (photos + screen cards; cool-tinted, soft) ─── */
+  --shadow-card:  0 1px 2px rgba(31, 41, 55, .05), 0 16px 40px -18px rgba(49, 65, 136, .22);
+  --shadow-photo: 0 2px 6px rgba(31, 41, 55, .06), 0 32px 64px -28px rgba(49, 65, 136, .42);
+  --glow:         0 0 18px 2px var(--seagrass-glow);
+
+  /* ── Motion ───────────────────────────────────────────────── */
+  --ease: cubic-bezier(.2, .7, .1, 1);
+  --t-fast: 200ms;
+  --t-slow: 600ms;
 }
-*{margin:0;padding:0;box-sizing:border-box}
-body{background:var(--frost);color:var(--ink);font-family:var(--sans);font-size:14.5px;
-  line-height:1.6;-webkit-font-smoothing:antialiased}
-.wrap{max-width:960px;margin:0 auto;padding:48px 40px 64px}
-@media(max-width:640px){.wrap{padding:32px 18px 48px}}
-strong{font-weight:600} em{font-style:normal;font-weight:600;color:var(--blue-deep)}
-p{margin:0 0 12px;max-width:68ch}
-h2{font-family:var(--display);font-size:22px;font-weight:650;line-height:1.2;letter-spacing:-.01em}
-h3{font-family:var(--display);font-size:15.5px;font-weight:600;margin:20px 0 8px}
-section{margin-bottom:56px}
 
-.meta-rail{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.08em;
-  text-transform:uppercase;color:var(--mist);display:flex;align-items:center;gap:10px;
-  padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:40px;flex-wrap:wrap}
-.meta-rail .brand{color:var(--ink)}
-.meta-rail .sep::before{content:"·";color:var(--line-strong)}
-.meta-rail .right{margin-left:auto}
-.meta-rail .mark{height:16px;width:auto;flex:none}
+/* ═══ Base (screen; print templates restate in pt) ═══════════ */
 
-.display{font-family:var(--display);font-size:clamp(34px,6vw,46px);font-weight:650;
-  line-height:1.05;letter-spacing:-.015em;max-width:20ch;text-wrap:balance;margin-bottom:14px}
-.lede{font-size:16px;line-height:1.55;color:var(--slate);max-width:58ch}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-.eyebrow{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.12em;
-  text-transform:uppercase;color:var(--blue);margin-bottom:6px}
-.eyebrow .idx{color:var(--mist);margin-right:8px}
-.thread{position:relative;height:2px;background:var(--line);margin:10px 0 24px}
-.thread::before{content:"";position:absolute;left:0;top:-2px;width:var(--node);height:var(--node);background:var(--blue)}
-.thread::after{content:"";position:absolute;left:0;top:0;width:48px;height:2px;background:var(--blue)}
+body {
+  background: var(--horizon);
+  color: var(--black);
+  font-family: var(--font);
+  font-stretch: var(--w-text);
+  font-size: 18px;                 /* Body 2 — the brand's reading size */
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-variant-numeric: tabular-nums;   /* numbers align everywhere */
+}
 
-/* palette */
-.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
-.swatch{border:1px solid var(--line);background:var(--paper)}
-.swatch .chip{height:56px}
-.swatch .meta{padding:8px 10px}
-.swatch .nm{font-weight:600;font-size:12.5px}
-.swatch .hx,.swatch .use{font-family:var(--mono);font-size:10.5px;color:var(--mist)}
+::selection { background: var(--seagrass); color: var(--black); }
 
-/* type specimen */
-.type-row{display:grid;grid-template-columns:150px 1fr;gap:20px;align-items:baseline;
-  padding:12px 0;border-bottom:1px solid var(--line)}
-.type-row .spec{font-family:var(--mono);font-size:10.5px;color:var(--mist);letter-spacing:.04em}
-@media(max-width:640px){.type-row{grid-template-columns:1fr;gap:4px}}
+/* ── The headline set (brand type styles, 1:1) ───────────────
+   H1 128/590/w132 · H2 96/700/w132 · H3W 64/510/w118 · H3 64/400/w110
+   H4W 36/650/w118 · H4 36/650/w100 · Body1 18/591/w120 · Body2 18/400/w100
+   Screen sizes below are fluid; the brand values are the desktop caps. */
+h1, .h1 { font-size: clamp(56px, 7.4vw, 128px); font-weight: 590; font-stretch: var(--w-display);
+          line-height: .98; letter-spacing: -.025em; }
+h2, .h2 { font-size: clamp(40px, 5.4vw, 96px);  font-weight: 700; font-stretch: var(--w-display);
+          line-height: 1.0; letter-spacing: -.025em; }
+.h3w    { font-size: clamp(30px, 3.8vw, 64px);  font-weight: 510; font-stretch: var(--w-wide);
+          line-height: 1.08; letter-spacing: -.015em; }
+h3, .h3 { font-size: clamp(30px, 3.8vw, 64px);  font-weight: 400; font-stretch: var(--w-title);
+          line-height: 1.08; letter-spacing: -.015em; }
+.h4w    { font-size: clamp(22px, 2.2vw, 36px);  font-weight: 650; font-stretch: var(--w-wide);
+          line-height: 1.15; letter-spacing: -.01em; }
+h4, .h4 { font-size: clamp(22px, 2.2vw, 36px);  font-weight: 650; font-stretch: var(--w-text);
+          line-height: 1.15; letter-spacing: -.01em; }
 
-/* metric */
-.metric-row{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--line);
-  border:1px solid var(--line);margin:16px 0}
-@media(max-width:640px){.metric-row{grid-template-columns:1fr 1fr}}
-.metric{background:var(--paper);padding:16px 18px}
-.metric-label{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.08em;
-  text-transform:uppercase;color:var(--mist);margin-bottom:8px}
-.metric-value{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:30px;
-  font-weight:600;line-height:1;letter-spacing:-.01em}
-.metric-value .unit{font-size:15px;font-weight:500;color:var(--mist)}
-.metric-note{font-size:12px;color:var(--slate);margin-top:8px}
-.metric.hero .metric-value{color:var(--blue)}
-.delta{font-family:var(--mono);font-size:11px;font-weight:500}
-.delta.up{color:var(--pos)} .delta.up::before{content:"▲ ";font-size:8px}
-.delta.down{color:var(--neg)} .delta.down::before{content:"▼ ";font-size:8px}
+.body1  { font-size: 18px; font-weight: 591; font-stretch: var(--w-label); line-height: 1.4; }
+p, .body2 { font-size: 18px; font-weight: 400; font-stretch: var(--w-text); line-height: 1.55; }
+p { margin: 0 0 16px; max-width: 68ch; }
 
-.tag{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:500;
-  letter-spacing:.06em;text-transform:uppercase;color:var(--blue-deep);background:var(--tint);
-  padding:2px 8px;border-radius:2px}
-.tag.ghost{background:transparent;border:1px solid var(--line-strong);color:var(--slate)}
+.lede   { font-size: 22px; line-height: 1.45; color: var(--dust); max-width: 46ch; }
+.small  { font-size: 15px; line-height: 1.5; }
+.caption{ font-size: 13px; line-height: 1.45; color: var(--mist); }
 
-table.ori{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0}
-table.ori th{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.07em;
-  text-transform:uppercase;color:var(--mist);text-align:left;padding:8px 12px 8px 0;
-  border-bottom:1px solid var(--line-strong)}
-table.ori td{padding:9px 12px 9px 0;border-bottom:1px solid var(--line);vertical-align:top}
-table.ori td.data,table.ori th.data{text-align:right}
-table.ori td.data{font-family:var(--mono);font-size:12.5px;font-variant-numeric:tabular-nums}
-table.ori tr.total td{border-top:2px solid var(--ink);border-bottom:none;font-weight:600}
-.scroll{overflow-x:auto}
+/* Label: Body 1 at micro size, uppercase — kickers, table heads, tags, UI */
+.label {
+  font-size: 12px; font-weight: 591; font-stretch: var(--w-label);
+  letter-spacing: .06em; text-transform: uppercase; line-height: 1.3;
+}
 
-.callout{background:var(--wash);border-left:2px solid var(--blue);padding:12px 16px;
-  margin:16px 0;font-size:13.5px;max-width:none}
-.callout .callout-label{font-family:var(--mono);font-size:10px;font-weight:500;
-  letter-spacing:.1em;text-transform:uppercase;color:var(--blue);display:block;margin-bottom:4px}
-.callout.warn{border-left-color:var(--warn)} .callout.warn .callout-label{color:var(--warn)}
+strong, b { font-weight: 650; }
+em, i { font-style: normal; font-weight: 650; }          /* italics banned */
 
-.quote{padding:4px 0 4px 18px;border-left:2px solid var(--line-strong);margin:16px 0}
-.quote p{font-size:15px;line-height:1.5;margin-bottom:6px}
-.quote cite{font-family:var(--mono);font-style:normal;font-size:11px;letter-spacing:.05em;
-  text-transform:uppercase;color:var(--mist)}
-.quote cite::before{content:"— ";color:var(--blue)}
+a { color: var(--day-deep); text-decoration: underline; text-decoration-thickness: 1px;
+    text-underline-offset: .18em; }
+a:hover { color: var(--black); }
 
-.persona-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
-@media(max-width:640px){.persona-grid{grid-template-columns:1fr}}
-.persona{display:grid;grid-template-columns:44px 1fr;gap:14px;background:var(--paper);
-  border:1px solid var(--line);padding:16px 18px}
-.persona .avatar{width:44px;height:44px;border-radius:50%;background:var(--tint);
-  color:var(--blue-deep);font-family:var(--mono);font-size:14px;font-weight:600;
-  display:flex;align-items:center;justify-content:center}
-.persona .name{font-weight:600;font-size:14px}
-.persona .role{font-size:12px;color:var(--mist);margin-bottom:8px}
-.persona .traits{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
-.persona q{font-size:13px;color:var(--slate)}
+/* ═══ Signature 1: Seagrass signal ═══════════════════════════
+   The one accent. On light it is a FILL under black ink (a marker);
+   on dark/horizon it is a glowing chip or ink. ≤1 per page/slide. */
+.hl {                                   /* marker behind a word or number */
+  background: var(--seagrass); color: var(--black);
+  border-radius: var(--r-xs); padding: 0 .18em; margin: 0 -.04em;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+.signal {                               /* glowing chip, from the swatch */
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--seagrass); color: var(--black);
+  border-radius: var(--r-m); padding: 10px 16px;
+  box-shadow: var(--glow);
+}
+.signal-dot {                           /* inline status / live dot */
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--seagrass); box-shadow: 0 0 10px 1px var(--seagrass-glow);
+  vertical-align: .1em;
+}
 
-.timeline{list-style:none;border-left:2px solid var(--line);margin:16px 0}
-.timeline li{position:relative;padding:0 0 18px 22px}
-.timeline li:last-child{padding-bottom:0}
-.timeline li::before{content:"";position:absolute;left:-4px;top:5px;width:var(--node);height:var(--node);background:var(--blue)}
-.timeline .when{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--mist);display:block}
-.timeline .what{font-weight:600}
+/* ═══ Signature 2: Kicker + page head ════════════════════════
+   Every content page/slide opens top-left with a bold uppercase
+   kicker (the guideline's "OVERVIEW"). Metadata sits right, quiet. */
+.page-head { display: flex; align-items: baseline; gap: 16px; }
+.kicker {
+  font-size: 14px; font-weight: 700; font-stretch: var(--w-label);
+  letter-spacing: .02em; text-transform: uppercase; color: var(--black);
+}
+.page-head .meta { margin-left: auto; font-size: 12px; color: var(--mist); }
+.page-head .meta span + span::before { content: " · "; }
 
-.figure{margin:16px 0}
-.figure svg{width:100%;height:auto;display:block;max-width:640px}
-.figcap{font-family:var(--mono);font-size:11px;color:var(--mist);margin-top:8px;display:flex;gap:8px}
-.figcap .fig-idx{color:var(--blue);white-space:nowrap}
+/* ═══ Signature 3: Section head (hairline + index + headline) ═
+   Open editorial layout: a 1px rule, a quiet index line, then the
+   assertion headline in a wide cut. No boxes, no color. */
+.section-head { border-top: 1px solid var(--cloud); padding-top: 14px; margin: 48px 0 20px; }
+.section-head .index {
+  display: block; font-size: 12px; font-weight: 591; font-stretch: var(--w-label);
+  letter-spacing: .06em; text-transform: uppercase; color: var(--mist); margin-bottom: 10px;
+}
+.section-head .index b { color: var(--black); font-weight: 700; margin-right: 10px; }
+.section-head h2, .section-head .h4w { margin: 0; }
 
-.night-demo{background:radial-gradient(ellipse 90% 80% at 50% -20%,#0A2458 0%,var(--night) 60%);
-  color:var(--ink-n);padding:36px 32px;margin:16px 0;position:relative;overflow:hidden}
-.night-demo .eyebrow{color:var(--blue-soft)}
-.night-demo h2{color:var(--ink-n)}
-.night-demo p{color:var(--mist-n)}
+/* ═══ Signature 4: Folio (every page) ════════════════════════
+   Hairline, lockup left, legal line centred, page number right —
+   exactly the guideline's page foot. */
+.folio {
+  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 16px;
+  border-top: 1px solid var(--cloud); padding-top: 10px; margin-top: 40px;
+  font-size: 9px; font-weight: 591; font-stretch: var(--w-label);
+  letter-spacing: .04em; text-transform: uppercase; color: var(--black);
+}
+.folio .lockup { height: 14px; width: auto; color: var(--black); display: block; }
+.folio .legal { text-align: center; white-space: nowrap; }
+.folio .pageno { justify-self: end; color: var(--mist); }
 
-.artifact-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media(max-width:640px){.artifact-grid{grid-template-columns:1fr}}
-.artifact{background:var(--paper);border:1px solid var(--line);padding:16px 18px}
-.artifact .file{font-family:var(--mono);font-size:10.5px;color:var(--blue);letter-spacing:.04em}
-.artifact h3{margin:6px 0 4px}
-.artifact p{font-size:13px;color:var(--slate);margin:0}
-.artifact .contract{font-family:var(--mono);font-size:10.5px;color:var(--mist);
-  border-top:1px solid var(--line);margin-top:10px;padding-top:8px}
+/* ═══ Signature 5: Chapter opener ═══════════════════════════
+   The guideline's divider page: fog ground, huge wide numeral +
+   title anchored bottom-left. Long docs and decks ≥ 12 slides only. */
+.chapter { background: var(--fog); display: flex; flex-direction: column; justify-content: flex-end; }
+.chapter .num, .chapter .title {
+  font-size: clamp(44px, 11vw, 160px); font-weight: 400; font-stretch: var(--w-display);
+  line-height: .95; letter-spacing: -.03em; color: var(--black); display: block;
+}
 
-.rules{list-style:none;counter-reset:inv}
-.rules li{counter-increment:inv;position:relative;padding:10px 0 10px 44px;border-bottom:1px solid var(--line);max-width:none}
-.rules li::before{content:counter(inv,decimal-leading-zero);position:absolute;left:0;top:11px;
-  font-family:var(--mono);font-size:11px;color:var(--blue)}
+/* ═══ Signature 6: Solar Horizon (atmosphere) ═══════════════
+   Dark backgrounds = key hero moments, more visuals than text.
+   CSS recreation of the official assets (assets/horizon/*.jpg).
+   Dawn is the hero direction; Day takes Real Black text. */
+.horizon { color: var(--on-dark); position: relative; isolation: isolate; }
+.horizon, .horizon.dawn {
+  background:
+    radial-gradient(62% 17% at 50% 99%, rgba(214,204,200,.78) 0%, rgba(214,204,200,0) 100%),
+    radial-gradient(110% 30% at 50% 102%, rgba(176,166,182,.8) 0%, rgba(140,132,170,.45) 45%, rgba(90,95,150,0) 100%),
+    linear-gradient(180deg, rgba(0,0,0,0) 58%, rgba(28,38,100,.38) 74%, rgba(0,0,0,0) 86%),
+    radial-gradient(90% 40% at 50% -6%, rgba(22,32,92,.8) 0%, rgba(22,32,92,0) 100%),
+    linear-gradient(180deg, #2E4190 0%, #3A50A3 30%, #3C509E 45%, #374A94 62%, #3D4A92 100%);
+}
+.horizon.day {
+  color: var(--black);
+  background:
+    radial-gradient(62% 17% at 50% 99%, rgba(226,234,248,.85) 0%, rgba(226,234,248,0) 100%),
+    radial-gradient(110% 30% at 50% 102%, rgba(196,214,246,.85) 0%, rgba(165,196,244,.45) 45%, rgba(120,165,242,0) 100%),
+    linear-gradient(180deg, rgba(0,0,0,0) 60%, rgba(80,130,225,.18) 75%, rgba(0,0,0,0) 86%),
+    radial-gradient(90% 40% at 50% -6%, rgba(55,95,205,.7) 0%, rgba(55,95,205,0) 100%),
+    linear-gradient(180deg, #4677DC 0%, #558DED 26%, #6A9CF2 48%, #6FA0F3 70%, #76A5F3 100%);
+}
+.horizon.dusk {
+  background:
+    radial-gradient(62% 17% at 50% 99%, rgba(206,164,144,.78) 0%, rgba(206,164,144,0) 100%),
+    radial-gradient(110% 30% at 50% 102%, rgba(170,130,138,.8) 0%, rgba(130,95,130,.45) 45%, rgba(80,60,120,0) 100%),
+    linear-gradient(180deg, rgba(0,0,0,0) 58%, rgba(30,26,80,.38) 74%, rgba(0,0,0,0) 86%),
+    radial-gradient(90% 40% at 50% -6%, rgba(24,24,66,.8) 0%, rgba(24,24,66,0) 100%),
+    linear-gradient(180deg, #2C2A62 0%, #3A3477 30%, #3B3576 45%, #373172 62%, #3E3473 100%);
+}
+.horizon.twilight {
+  background:
+    radial-gradient(62% 15% at 50% 100%, rgba(52,72,160,.85) 0%, rgba(52,72,160,0) 100%),
+    radial-gradient(110% 32% at 50% 102%, rgba(32,46,124,.85) 0%, rgba(20,30,98,.45) 50%, rgba(10,15,60,0) 100%),
+    radial-gradient(90% 40% at 50% -6%, rgba(3,6,28,.8) 0%, rgba(3,6,28,0) 100%),
+    linear-gradient(180deg, #060A29 0%, #070B2F 40%, #090D38 60%, #0D134A 80%, #121B5A 100%);
+}
+.horizon p, .horizon .lede { color: var(--on-dark-2); }
+.horizon.day p, .horizon.day .lede { color: var(--black); }
+.horizon .folio, .dark .folio { color: var(--on-dark); border-top-color: var(--rule-dark); }
+.horizon .folio .lockup, .dark .folio .lockup { color: var(--on-dark); }
+.horizon .folio .pageno, .dark .folio .pageno { color: var(--on-dark-2); }
+.horizon.day .folio, .horizon.day .folio .lockup { color: var(--black); border-top-color: rgba(31,41,55,.25); }
 
-.page-footer{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:10px;
-  letter-spacing:.08em;text-transform:uppercase;color:var(--mist);
-  border-top:1px solid var(--line);padding-top:12px;margin-top:8px}
-.page-footer::before{content:"";width:var(--node);height:var(--node);background:var(--blue);flex:none}
-.page-footer .right{margin-left:auto}
-code{font-family:var(--mono);font-size:.88em;background:var(--wash);
-  border:1px solid var(--line);border-radius:2px;padding:1px 5px}
+/* Functional dark: flat Real Black, for dark slides that carry text. */
+.dark { background: var(--black); color: var(--on-dark); }
+.dark p, .dark .lede { color: var(--on-dark-2); }
+.dark .panel { background: var(--dust); }
+
+/* ═══ Photo treatment ════════════════════════════════════════
+   Brighter tones, realism, large radii, soft cool shadow, and an
+   optional progressive blur at the lower edge. */
+.photo { position: relative; border-radius: var(--r-l); overflow: hidden;
+         box-shadow: var(--shadow-photo); background: var(--fog); }
+.photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.photo.soft::after {          /* progressive blur toward the bottom edge */
+  content: ""; position: absolute; inset: 55% 0 0 0;
+  -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 85%);
+          mask-image: linear-gradient(to bottom, transparent, #000 85%);
+}
+
+/* ═══ Metric row ═════════════════════════════════════════════
+   Spec-sheet layout: cells divided by hairlines, label above value.
+   The page's one key metric gets the Seagrass marker. */
+.metric-row { display: grid; grid-template-columns: repeat(4, 1fr);
+              border-top: 1px solid var(--cloud); border-bottom: 1px solid var(--rule); }
+.metric { padding: 16px 20px 18px 0; }
+.metric + .metric { border-left: 1px solid var(--rule); padding-left: 20px; }
+.metric-label { font-size: 12px; font-weight: 591; font-stretch: var(--w-label);
+                letter-spacing: .06em; text-transform: uppercase; color: var(--mist); margin-bottom: 12px; }
+.metric-value { font-size: 44px; font-weight: 590; font-stretch: var(--w-display);
+                line-height: 1; letter-spacing: -.02em; }
+.metric-value .unit { font-size: .45em; font-weight: 510; color: var(--dust); margin-left: 2px; letter-spacing: 0; }
+.metric.key .metric-value { background: var(--seagrass); border-radius: var(--r-xs);
+                            padding: 2px 8px 4px; margin-left: -8px; display: inline-block; }
+.metric-note { font-size: 13px; color: var(--dust); margin-top: 10px; }
+
+.delta { font-size: 13px; font-weight: 591; font-stretch: var(--w-label); }
+.delta.up { color: var(--pos); }   .delta.up::before   { content: "↑ "; }
+.delta.down { color: var(--neg); } .delta.down::before { content: "↓ "; }
+
+/* ═══ Tag ════════════════════════════════════════════════════ */
+.tag { display: inline-block; font-size: 11px; font-weight: 591; font-stretch: var(--w-label);
+       letter-spacing: .05em; text-transform: uppercase; color: var(--dust);
+       background: var(--fog); border-radius: var(--r-xs); padding: 3px 8px; }
+.tag.signal-tag { background: var(--seagrass); color: var(--black); }
+.tag.outline { background: transparent; box-shadow: inset 0 0 0 1px var(--cloud); }
+
+/* ═══ Table ══════════════════════════════════════════════════ */
+table.ori { width: 100%; border-collapse: collapse; font-size: 15px; margin: 16px 0; }
+table.ori th { font-size: 11px; font-weight: 591; font-stretch: var(--w-label); letter-spacing: .06em;
+               text-transform: uppercase; color: var(--mist); text-align: left;
+               padding: 10px 16px 10px 0; border-bottom: 1px solid var(--cloud); }
+table.ori td { padding: 12px 16px 12px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+table.ori .num { text-align: right; font-variant-numeric: tabular-nums; }
+table.ori tr.total td { border-top: 1px solid var(--black); border-bottom: 0; font-weight: 650; }
+table.ori tr.key td:first-child { box-shadow: inset 3px 0 0 var(--seagrass); padding-left: 12px; }
+table.ori tr.key td { font-weight: 650; }
+
+/* ═══ Callout ════════════════════════════════════════════════
+   A soft fog panel with a label. The insight variant carries the
+   signal dot; "the ask" may go dark. */
+.callout { background: var(--fog); border-radius: var(--r-m); padding: 18px 22px; margin: 20px 0; }
+.callout .callout-label { display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+  font-size: 11px; font-weight: 700; font-stretch: var(--w-label); letter-spacing: .06em;
+  text-transform: uppercase; color: var(--black); }
+.callout.insight .callout-label::before { content: ""; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--seagrass); box-shadow: 0 0 0 1px rgba(31,41,55,.18); }
+.callout.ask { background: var(--black); color: var(--on-dark); }
+.callout.ask .callout-label { color: var(--on-dark-2); }   /* not Seagrass: the ask doesn't spend the page's signal */
+.callout.risk { box-shadow: inset 3px 0 0 var(--neg); }
+.callout.risk .callout-label { color: var(--neg); }
+.callout.warn { box-shadow: inset 3px 0 0 var(--warn); }
+.callout.warn .callout-label { color: var(--warn); }
+
+/* ═══ Quote ══════════════════════════════════════════════════ */
+.quote p { font-size: 26px; font-weight: 510; font-stretch: var(--w-wide); line-height: 1.3;
+           letter-spacing: -.01em; max-width: 34ch; margin-bottom: 12px; }
+.quote cite { font-style: normal; font-size: 12px; font-weight: 591; font-stretch: var(--w-label);
+              letter-spacing: .06em; text-transform: uppercase; color: var(--mist); }
+
+/* ═══ Persona card (Socialtrait-native) ══════════════════════ */
+.persona { display: grid; grid-template-columns: 48px 1fr; gap: 16px; background: var(--paper);
+           border-radius: var(--r-m); padding: 18px 20px; box-shadow: var(--shadow-card); }
+.persona .avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--fog);
+                   display: flex; align-items: center; justify-content: center;
+                   font-size: 15px; font-weight: 650; font-stretch: var(--w-label); }
+.persona .name { font-weight: 650; }
+.persona .role { font-size: 13px; color: var(--mist); margin-bottom: 8px; }
+.persona .traits { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.persona q { font-size: 15px; color: var(--dust); }
+
+/* ═══ Spec list (key–value, the guideline's annotation column) ═ */
+.spec { display: grid; grid-template-columns: max-content 1fr; gap: 0 28px; font-size: 15px; }
+.spec dt, .spec dd { padding: 10px 0; border-bottom: 1px solid var(--rule); }
+.spec dt { font-size: 12px; color: var(--mist); padding-top: 12px; }
+
+/* ═══ Timeline ═══════════════════════════════════════════════ */
+.timeline { list-style: none; border-left: 1px solid var(--cloud); margin-left: 4px; }
+.timeline li { position: relative; padding: 0 0 22px 22px; }
+.timeline li::before { content: ""; position: absolute; left: -5px; top: 7px; width: 9px; height: 9px;
+                       border-radius: 50%; background: var(--horizon); box-shadow: inset 0 0 0 1px var(--black); }
+.timeline li.now::before { background: var(--seagrass); box-shadow: inset 0 0 0 1px var(--black), 0 0 10px 1px var(--seagrass-glow); }
+.timeline .when { display: block; font-size: 12px; font-weight: 591; font-stretch: var(--w-label);
+                  letter-spacing: .06em; text-transform: uppercase; color: var(--mist); }
+.timeline .what { font-weight: 650; }
+
+/* ═══ Code ═══════════════════════════════════════════════════ */
+code { font-family: var(--code); font-size: .86em; background: var(--fog);
+       border-radius: var(--r-xs); padding: 1px 6px; }
+pre { font-family: var(--code); font-size: 13px; line-height: 1.6; background: var(--black);
+      color: var(--on-dark); border-radius: var(--r-m); padding: 18px 20px; overflow-x: auto; margin: 16px 0; }
+pre code { background: none; padding: 0; }
+
+/* ═══ Figure ═════════════════════════════════════════════════ */
+.figure { margin: 24px 0; }
+.figure svg { width: 100%; height: auto; display: block; }
+.figcap { display: flex; gap: 10px; margin-top: 10px; font-size: 13px; color: var(--dust); }
+.figcap .fig-idx { font-weight: 700; font-stretch: var(--w-label); color: var(--black); white-space: nowrap; }
+.figcap .source { margin-left: auto; color: var(--mist); white-space: nowrap; }
+
+/* ═══ Buttons (screen) ═══════════════════════════════════════ */
+.btn { display: inline-flex; align-items: center; gap: 10px; font: inherit;
+       font-size: 15px; font-weight: 591; font-stretch: var(--w-label); line-height: 1;
+       padding: 15px 22px; border-radius: var(--r-m); border: 0; cursor: pointer;
+       text-decoration: none; transition: transform var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease); }
+.btn.primary { background: var(--black); color: var(--horizon); }
+.btn.primary:hover { transform: translateY(-1px); box-shadow: var(--shadow-card); }
+.btn.ghost { background: transparent; color: var(--black); box-shadow: inset 0 0 0 1px var(--cloud); }
+.horizon .btn.primary, .dark .btn.primary { background: var(--seagrass); color: var(--black); box-shadow: var(--glow); }
+.horizon .btn.ghost, .dark .btn.ghost { color: var(--on-dark); box-shadow: inset 0 0 0 1px var(--rule-dark); }
+.horizon.day .btn.primary { background: var(--black); color: var(--horizon); box-shadow: none; }
+
+/* ═══ Chart conventions (inline SVG) ═════════════════════════
+   On light:  1 #3E6FE7 day  2 #314188 dawn  3 #9DB8F5 day-soft  4 #CCCED1 cloud
+              highlight ONE series in day blue; others step down the ramp.
+   On dark/horizon: highlight #BAFE81 seagrass; others rgba(250,250,250,.55/.3).
+   Gridlines: 1px #E3E5E8 horizontal only · baseline 1px #CCCED1
+   Axis labels 11px mist; value labels 12px black, 591 weight, tabular.
+   Bars: top corners 3px radius (slight radii), gap ≥ 40% of bar width.
+   Lines: 2.5px, round joins; end-point dot 6px with 2px horizon ring.
+   Donut: stroke ring, butt caps, ≤ 5 segments, wide-cut metric centered. */
+
+
+/* ══ Specimen layout ══════════════════════════════════════════ */
+html { scroll-behavior: smooth; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 64px; }
+.band { padding: 112px 0; }
+.band.paper { background: var(--paper); }
+.band + .band:not(.horizon):not(.chapter-band):not(.dark) { border-top: 1px solid var(--rule); }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.rail { display: grid; grid-template-columns: 2fr 10fr; gap: 24px; }   /* annotation rail */
+.ann { font-size: 12px; line-height: 1.45; color: var(--mist); }
+.ann u { text-decoration: none; border-bottom: 1px solid var(--cloud); color: var(--dust); }
+.stack > * + * { margin-top: 16px; }
+.mt-0 { margin-top: 0 !important; }
+.intro { display: grid; grid-template-columns: 6fr 6fr; gap: 48px; align-items: end; margin: 40px 0 8px; }
+.intro .lede { max-width: 40ch; }
+
+/* nav */
+.nav { position: absolute; top: 0; left: 0; right: 0; z-index: 2; }
+.nav .wrap { display: flex; align-items: center; height: 88px; gap: 28px; }
+.nav .lockup { height: 22px; width: auto; color: var(--on-dark); }
+.nav a.link { color: var(--on-dark-2); text-decoration: none; font-size: 14px; font-weight: 591; font-stretch: var(--w-label); }
+.nav a.link:hover { color: var(--on-dark); }
+.nav .links { margin-left: auto; display: flex; gap: 28px; }
+
+/* hero */
+.hero { min-height: clamp(560px, 86vh, 820px); display: flex; align-items: center; text-align: center; }
+.hero .wrap { width: 100%; }
+.hero h1 { margin: 0 auto 28px; max-width: 13ch; }
+.hero .lede { margin: 0 auto 36px; max-width: 44ch; }
+.hero .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.hero .folio { position: absolute; left: 64px; right: 64px; bottom: 28px; margin: 0; }
+
+/* chapter band */
+.chapter-band { padding: 200px 0 64px; }
+.chapter-band .wrap { width: 100%; }
+.chapter-band .num, .chapter-band .title { font-size: clamp(44px, 11vw, 152px); }
+
+/* invariants */
+.inv { list-style: none; counter-reset: inv; display: grid; grid-template-columns: 1fr 1fr; gap: 0 48px; margin-top: 40px; }
+.inv li { counter-increment: inv; display: grid; grid-template-columns: 56px 1fr; padding: 20px 0; border-top: 1px solid var(--rule); }
+.inv li::before { content: counter(inv, decimal-leading-zero); font-size: 12px; font-weight: 700; font-stretch: var(--w-label); padding-top: 5px; }
+.inv b { display: block; font-size: 19px; font-weight: 650; font-stretch: var(--w-wide); letter-spacing: -.005em; margin-bottom: 4px; }
+.inv span { font-size: 15px; color: var(--dust); }
+
+/* logo */
+.logo-tile { border-radius: var(--r-l); min-height: 300px; display: flex; align-items: center; justify-content: center; position: relative; }
+.logo-tile.light { background: var(--paper); box-shadow: inset 0 0 0 1px var(--rule); }
+.logo-tile .cap { position: absolute; left: 20px; bottom: 16px; font-size: 12px; color: var(--mist); }
+.horizon .cap, .logo-tile.dark-tile .cap { color: var(--on-dark-2); }
+.logo-tile .lockup { height: 52px; width: auto; }
+.logo-tile .mark { height: 96px; width: auto; }
+.clear { position: relative; padding: 34px; box-shadow: inset 0 0 0 1px var(--cloud); border-radius: var(--r-s);
+         background-image: repeating-linear-gradient(45deg, var(--fog) 0 6px, transparent 6px 12px); }
+.clear > svg { display: block; background: var(--paper); }
+.dont { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 24px; }
+.dont figure { background: var(--fog); border-radius: var(--r-m); height: 132px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+.dont figcaption { font-size: 13px; color: var(--dust); margin-top: 10px; }
+.dont figure::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to top right, transparent calc(50% - .5px), var(--neg) 50%, transparent calc(50% + .5px)); opacity: .6; }
+
+/* type */
+.glyphs { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 32px; }
+.glyphs .lab { font-size: 12px; color: var(--dust); text-transform: uppercase; letter-spacing: .04em; padding-top: 12px; border-top: 1px solid var(--cloud); }
+.glyphs .aa { font-size: clamp(120px, 16vw, 220px); line-height: 1; letter-spacing: -.03em; margin: 12px 0 8px; }
+.glyphs .set { font-size: 30px; line-height: 1.2; }
+.glyphs .digits { font-size: 22px; margin-top: 18px; display: flex; gap: 32px; color: var(--black); }
+.typetable { margin-top: 48px; }
+.typetable .row { display: grid; grid-template-columns: 170px 1fr; gap: 24px; align-items: center; padding: 22px 0; border-top: 1px solid var(--cloud); }
+.typetable .row:last-child { border-bottom: 1px solid var(--cloud); }
+.typetable .sample { white-space: nowrap; overflow: hidden; text-overflow: clip; }
+
+/* color */
+.hz-tile { border-radius: var(--r-l); min-height: 420px; padding: 20px; display: flex; flex-direction: column; justify-content: space-between; }
+.hz-tile .name { font-size: 12px; font-weight: 591; font-stretch: var(--w-label); text-transform: uppercase; letter-spacing: .06em; }
+.hz-tile .hex { font-size: 12px; opacity: .85; }
+.hz-tile .signal { align-self: center; flex-direction: column; align-items: flex-start; gap: 2px; font-size: 11px; padding: 12px 16px; }
+.hz-tile .signal b { font-size: 11px; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; }
+.neutrals { display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: repeat(3, 112px); margin-top: 16px; border-radius: var(--r-l); overflow: hidden; }
+.neutrals > div { padding: 16px 20px; font-size: 12px; }
+.neutrals b { display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; font-stretch: var(--w-label); margin-bottom: 4px; }
+.sw-black { background: var(--black); color: var(--on-dark); grid-row: 1 / 3; grid-column: 1 / 3; }
+.sw-dust  { background: var(--dust); color: var(--on-dark); grid-row: 2; grid-column: 1; }
+.sw-cloud { background: var(--cloud); grid-row: 3; grid-column: 1; }
+.sw-horizon { background: var(--horizon); grid-row: 3; grid-column: 2; box-shadow: inset 0 0 0 1px var(--rule); }
+.sw-horizon-b { background: var(--horizon); grid-row: 4; grid-column: 1; box-shadow: inset 0 0 0 1px var(--rule); }
+.chips { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-top: 24px; }
+.chip { border-radius: var(--r-m); overflow: hidden; box-shadow: inset 0 0 0 1px var(--rule); background: var(--paper); }
+.chip i { display: block; height: 64px; }
+.chip span { display: block; padding: 10px 12px; font-size: 12px; line-height: 1.4; }
+.chip span b { display: block; font-weight: 650; font-size: 13px; }
+.usage { display: grid; grid-template-columns: 1fr 1fr; border-radius: var(--r-l); overflow: hidden; margin-top: 40px; }
+.usage > div { padding: 48px; min-height: 300px; display: flex; flex-direction: column; justify-content: space-between; }
+.usage .t { font-size: clamp(36px, 4.4vw, 60px); font-weight: 700; font-stretch: var(--w-display); line-height: 1; letter-spacing: -.025em; }
+.usage .u { font-size: 18px; font-weight: 591; font-stretch: var(--w-label); }
+.usage .d { background: linear-gradient(90deg, var(--black) 50%, var(--dust) 50%); color: var(--on-dark); }
+.usage .l { background: linear-gradient(90deg, var(--horizon) 50%, var(--cloud) 50%); }
+
+/* photo */
+.photo-demo { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+.photo.frame { aspect-ratio: 4 / 5; }
+.photo.frame .scene { position: absolute; inset: 0; }
+.photo.frame .sun { position: absolute; width: 46%; aspect-ratio: 1; border-radius: 50%; left: 27%; bottom: 18%;
+  background: radial-gradient(circle, rgba(255,255,255,.95), rgba(255,255,255,0) 70%); }
+.photo.frame .ui { position: absolute; left: 12%; right: 12%; top: 14%; background: rgba(255,255,255,.88); border-radius: var(--r-m);
+  padding: 16px 18px; color: var(--black); box-shadow: var(--shadow-card); }
+.photo.frame .ui .bar { height: 8px; border-radius: 4px; background: var(--fog); margin-top: 10px; }
+.photo.frame .ui .bar i { display: block; height: 100%; width: 72%; border-radius: 4px; background: var(--day); }
+.rules { list-style: none; }
+.rules li { padding: 16px 0; border-top: 1px solid var(--rule); display: grid; grid-template-columns: 72px 1fr; gap: 12px; font-size: 16px; }
+.rules li b { font-size: 12px; font-weight: 700; font-stretch: var(--w-label); text-transform: uppercase; letter-spacing: .06em; padding-top: 3px; }
+.rules li.no b { color: var(--neg); }
+.rules li.yes b { color: var(--pos); }
+
+/* components */
+.demo { background: var(--paper); border-radius: var(--r-l); box-shadow: inset 0 0 0 1px var(--rule); padding: 40px; }
+.demo + .demo { margin-top: 24px; }
+.demo-label { margin: 56px 0 14px; display: flex; gap: 12px; align-items: baseline; }
+.demo-label .label { color: var(--black); }
+.demo-label .ann { margin: 0; }
+.chart-dark { border-radius: var(--r-l); padding: 32px; }
+.artifact { display: block; background: var(--paper); border-radius: var(--r-m); padding: 24px; text-decoration: none; color: var(--black);
+  box-shadow: inset 0 0 0 1px var(--rule); transition: box-shadow var(--t-fast) var(--ease), transform var(--t-fast) var(--ease); }
+.artifact:hover { box-shadow: var(--shadow-card); transform: translateY(-2px); color: var(--black); }
+.artifact .label { color: var(--mist); }
+.artifact h4 { font-size: 22px; margin: 28px 0 6px; }
+.artifact p { font-size: 14px; color: var(--dust); margin: 0; }
+
+/* close */
+.close { padding: 160px 0 40px; text-align: center; }
+.close h2 { max-width: 16ch; margin: 0 auto 28px; }
+.close .folio { margin-top: 160px; text-align: left; }
+
+.grid-2 > *, .grid-3 > *, .grid-4 > *, .dont > *, .chips > * { min-width: 0; }
+.dont figure svg { max-width: 82%; }
+.table-scroll { overflow-x: auto; }
+@media (max-width: 900px) {
+  .demo { padding: 22px; }
+  .hz-tile { min-height: 300px; }
+  .wrap { padding: 0 20px; }
+  .band { padding: 72px 0; }
+  .grid-2, .grid-3, .glyphs, .photo-demo, .usage, .intro, .inv { grid-template-columns: 1fr; }
+  .grid-4, .dont, .chips { grid-template-columns: 1fr 1fr; }
+  .rail { grid-template-columns: 1fr; }
+  .typetable .row { grid-template-columns: 1fr; gap: 8px; }
+  .metric-row { grid-template-columns: 1fr 1fr; }
+  .metric:nth-child(3) { border-left: 0; padding-left: 0; }
+  .nav .links { display: none; }
+  .hero { padding: 120px 0 120px; }
+  .hero .folio { left: 20px; right: 20px; }
+  .chapter-band { padding: 120px 0 48px; }
+  .folio { grid-template-columns: auto 1fr; }
+  .folio .legal { display: none; }
+  .usage > div { padding: 28px; }
+}
 </style>
 </head>
 <body>
+<!-- ORI LOGO SYMBOLS — paste once, right after <body>. Do not edit paths.
+     Use:  <svg class="lockup" viewBox="0 0 1086.6 165.7"><use href="#st-lockup"/></svg>
+           <svg class="mark"   viewBox="0 0 171.7 165.7"><use href="#st-mark"/></svg>
+     Color follows CSS 'color' (currentColor): Real Black on light, white on dark/horizon. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="st-lockup" viewBox="0 0 1086.6 165.7"><path fill="currentColor" d="M7.7 165.4C7.0 165.2 6.5 164.6 6.3 163.8C6.2 163.4 5.9 162.7 5.7 162.2C5.5 161.7 5.1 160.7 4.9 160.0C4.7 159.3 4.3 158.1 4.1 157.4C3.2 154.8 2.7 153.2 2.5 151.9C2.3 151.2 2.1 150.0 1.9 149.4C1.7 148.7 1.5 147.4 1.4 146.5C1.3 145.7 1.2 144.5 1.1 144.1C0.5 141.3 0.4 140.3 0.2 135.5C0.0 128.7 0.3 123.9 1.0 119.8C1.2 118.6 1.4 116.9 1.5 116.1C1.6 115.3 1.9 114.2 2.0 113.7C2.1 113.1 2.4 112.1 2.5 111.3C3.2 108.3 4.7 103.7 6.8 98.6C7.6 96.6 9.7 92.0 10.2 91.2C10.5 90.8 11.0 89.8 11.5 89.1C13.1 86.3 13.5 85.6 13.9 85.1C14.9 83.9 15.0 82.8 14.1 81.5C13.2 80.3 11.2 77.0 10.8 76.1C10.6 75.8 10.3 75.3 10.2 75.1C9.8 74.6 8.8 72.6 8.4 71.4C8.2 71.0 8.0 70.4 7.8 70.2C7.7 69.9 7.4 69.2 7.1 68.7C6.9 68.1 6.5 67.0 6.1 66.1C5.4 64.4 4.1 60.7 3.7 59.1C3.5 58.5 3.2 57.7 3.1 57.1C2.9 56.6 2.7 55.9 2.6 55.5C2.5 55.0 2.2 53.7 2.0 52.6C1.7 51.4 1.5 50.0 1.4 49.5C1.4 48.7 1.1 47.0 0.7 45.1C0.5 43.9 0.3 42.1 0.2 38.4C0.0 31.9 0.2 26.8 0.9 23.1C1.1 22.2 1.3 20.7 1.4 19.8C1.7 17.6 2.7 13.3 3.7 10.1C4.3 7.9 5.5 4.6 5.8 4.1C5.9 3.9 6.1 3.4 6.2 3.0C6.5 2.0 7.2 0.7 7.5 0.4C8.0 0.0 9.2 0.1 11.4 0.8C12.1 1.0 13.2 1.4 13.7 1.5C15.4 2.0 18.2 3.0 19.1 3.5C19.6 3.7 20.1 3.9 20.3 4.0C20.5 4.0 20.9 4.2 21.2 4.3C21.5 4.5 22.2 4.7 22.7 4.9C23.3 5.1 23.9 5.4 24.1 5.6C24.4 5.7 25.3 6.2 26.2 6.6C27.2 7.0 28.1 7.5 28.2 7.6C28.4 7.7 28.8 7.9 29.2 8.1C30.5 8.9 34.2 11.1 34.7 11.5C35.0 11.8 35.8 12.3 36.4 12.6C37.0 13.0 37.8 13.5 38.0 13.8C38.3 14.0 38.9 14.5 39.4 14.8C40.2 15.4 41.5 16.4 44.1 18.6C45.5 19.8 51.5 25.8 52.5 27.1C55.3 30.4 56.3 31.7 56.7 32.4C57.0 32.8 57.5 33.5 57.8 33.8C58.0 34.2 58.5 34.9 58.9 35.4C59.2 36.0 59.8 36.9 60.2 37.4C60.8 38.5 61.4 39.4 62.4 41.0C62.7 41.5 63.3 42.8 63.9 43.9C64.4 44.9 64.9 46.0 65.0 46.1C65.1 46.3 65.3 46.7 65.4 47.0C65.8 47.8 66.1 48.0 67.0 48.1C67.8 48.2 68.0 48.1 70.0 47.6C70.8 47.4 72.0 47.2 73.6 47.1C74.9 47.0 76.4 46.8 77.1 46.7C77.7 46.6 78.6 46.5 79.0 46.5C79.4 46.5 80.5 46.4 81.3 46.3C83.3 46.1 88.4 46.1 90.3 46.3C91.1 46.4 92.2 46.5 92.8 46.5C93.4 46.5 94.1 46.6 94.4 46.6C94.6 46.7 95.5 46.8 96.3 46.9C99.1 47.1 101.2 47.4 102.1 47.7C104.4 48.5 105.7 48.2 106.2 47.0C106.4 46.6 106.6 46.2 106.7 46.0C106.9 45.8 107.3 44.9 107.7 44.0C108.2 43.1 108.8 41.9 109.1 41.4C109.4 41.0 110.0 39.9 110.5 39.2C111.9 36.8 112.4 35.9 112.8 35.4C113.1 35.1 113.6 34.3 114.0 33.7C115.3 31.8 117.4 29.1 119.5 26.7C120.9 25.1 126.5 19.5 127.2 19.0C127.6 18.7 128.3 18.1 128.8 17.6C131.0 15.6 136.0 12.0 140.4 9.4C141.4 8.8 142.5 8.1 142.9 7.9C143.3 7.6 144.3 7.1 145.1 6.8C146.5 6.2 146.8 6.0 148.0 5.4C148.2 5.2 148.8 5.0 149.2 4.8C149.6 4.7 150.2 4.4 150.5 4.3C155.9 2.0 161.9 0.1 163.6 0.1C164.1 0.1 164.8 1.0 165.2 2.1C165.4 2.6 165.8 3.6 166.1 4.3C166.4 4.9 166.6 5.5 166.6 5.6C166.6 5.7 166.9 6.6 167.2 7.6C168.1 10.2 168.7 12.4 169.1 13.9C169.2 14.6 169.5 15.8 169.7 16.6C170.0 17.4 170.2 18.9 170.4 20.4C170.6 21.7 170.8 23.3 170.9 23.9C171.7 28.4 171.5 44.8 170.7 47.0C170.6 47.1 170.5 48.1 170.4 49.2C170.2 50.3 170.0 51.7 169.8 52.4C169.6 53.0 169.3 54.3 169.1 55.2C168.8 56.7 168.6 57.5 167.7 60.1C167.1 62.1 166.2 64.6 165.9 65.2C165.8 65.5 165.5 66.2 165.4 66.6C165.3 67.0 165.1 67.5 165.0 67.8C164.8 68.1 164.6 68.7 164.4 69.2C164.3 69.6 164.0 70.2 163.9 70.4C163.7 70.5 163.2 71.6 162.7 72.7C161.6 75.0 159.4 78.9 157.9 81.1C156.8 82.7 156.8 83.4 157.6 84.7C157.9 85.0 158.2 85.7 158.5 86.1C158.7 86.6 159.3 87.6 159.8 88.4C161.2 90.7 161.8 91.7 162.7 93.8C163.2 94.8 163.8 95.9 163.9 96.1C164.0 96.3 164.3 96.9 164.6 97.6C165.2 99.4 165.8 100.9 166.1 101.6C166.3 101.9 166.6 102.6 166.7 103.0C166.8 103.5 167.0 104.2 167.2 104.6C167.7 105.7 168.6 109.1 169.3 111.9C169.4 112.4 169.6 113.3 169.8 113.8C170.0 114.4 170.2 116.0 170.4 117.3C170.6 118.7 170.8 120.4 170.9 121.0C171.7 125.7 171.5 141.9 170.7 144.2C170.6 144.2 170.5 145.0 170.4 145.9C170.2 147.9 170.0 148.7 169.7 149.8C169.6 150.2 169.3 151.3 169.1 152.1C168.8 153.8 168.1 156.1 167.5 157.9C167.3 158.6 166.9 159.5 166.8 160.1C166.6 160.7 166.3 161.5 166.1 161.9C165.9 162.3 165.6 163.1 165.4 163.6C164.8 165.5 164.4 165.7 161.7 165.4C159.3 165.2 158.5 165.1 157.6 164.7C157.2 164.5 156.4 164.2 155.7 164.0C154.4 163.6 152.6 163.0 151.2 162.3C150.7 162.1 150.1 161.8 149.8 161.8C149.5 161.7 149.0 161.4 148.5 161.2C148.1 161.0 147.0 160.4 146.1 160.0C145.2 159.5 144.2 159.0 144.0 158.9C143.7 158.7 143.1 158.4 142.6 158.1C141.5 157.6 139.8 156.6 139.4 156.4C136.3 154.4 133.4 152.4 132.6 151.7C132.4 151.5 131.7 150.9 131.0 150.5C130.4 150.1 129.3 149.2 128.5 148.5C127.8 147.8 126.7 146.9 126.2 146.4C124.8 145.2 121.1 141.4 120.1 140.2C119.6 139.6 118.8 138.7 118.2 138.1C116.2 135.8 112.4 130.5 110.7 127.5C110.3 126.9 109.7 125.8 109.3 125.3C108.8 124.3 107.6 122.1 106.3 119.5C105.5 118.0 105.1 117.9 100.5 118.9C92.8 120.5 79.2 120.5 70.5 118.7C66.8 118.0 66.1 118.1 65.5 119.3C65.4 119.6 65.1 120.1 64.9 120.4C64.7 120.6 64.5 121.2 64.3 121.6C63.2 124.4 58.3 132.1 55.5 135.7C51.4 140.7 47.9 144.3 42.0 149.5C41.6 149.8 40.9 150.4 40.4 150.7C39.9 151.1 39.2 151.6 38.9 151.9C37.9 152.7 32.7 156.1 31.5 156.8C31.0 157.1 30.4 157.4 30.2 157.6C30.0 157.7 29.4 158.0 29.0 158.2C28.5 158.5 28.1 158.7 28.0 158.8C27.7 159.0 25.1 160.3 24.7 160.4C24.6 160.5 23.9 160.8 23.3 161.1C21.0 162.2 18.4 163.3 16.0 164.0C15.2 164.2 14.4 164.5 14.1 164.6C13.4 165.0 12.3 165.2 10.6 165.4C9.8 165.4 8.9 165.5 8.6 165.6C8.4 165.6 7.9 165.5 7.7 165.4ZM257.5 150.1C255.5 150.0 253.5 149.7 252.2 149.4C251.7 149.2 250.7 149.0 249.9 148.9C248.4 148.6 244.6 147.5 243.6 147.1C243.3 147.0 242.6 146.7 242.0 146.5C241.4 146.3 240.8 146.0 240.6 145.9C240.4 145.7 239.5 145.3 238.5 144.8C237.5 144.4 236.5 143.8 236.1 143.6C235.8 143.3 235.4 143.0 235.2 142.9C234.5 142.6 232.1 140.8 231.0 139.9C230.5 139.4 229.7 138.7 229.3 138.4C228.7 137.9 227.8 136.9 226.5 135.4C225.5 134.1 226.4 132.8 229.4 131.3C229.7 131.1 230.3 130.8 230.5 130.6C232.1 129.6 238.6 128.0 241.4 128.0C244.0 128.0 249.7 129.4 252.2 130.7C252.7 130.9 253.7 131.3 254.4 131.4C255.1 131.6 255.9 131.8 256.2 131.9C257.9 132.6 266.3 133.3 267.9 132.9C268.1 132.8 269.0 132.6 269.8 132.4C277.0 130.9 280.6 123.0 276.3 117.8C275.4 116.6 273.5 115.3 272.2 114.9C271.9 114.8 271.4 114.7 271.1 114.5C270.5 114.2 267.9 113.2 266.2 112.7C265.5 112.5 264.2 112.1 263.4 111.9C262.5 111.6 261.3 111.3 260.7 111.2C260.1 111.1 259.3 110.9 258.9 110.7C258.5 110.6 257.7 110.4 257.0 110.3C256.4 110.1 255.5 109.9 255.1 109.7C254.7 109.5 254.0 109.2 253.7 109.1C252.2 108.7 249.2 107.8 248.5 107.4C248.1 107.2 247.6 107.0 247.4 106.9C245.9 106.3 241.8 104.3 241.0 103.6C240.8 103.5 240.1 103.0 239.5 102.6C237.7 101.5 234.6 98.7 233.6 97.3C233.4 97.0 233.0 96.4 232.7 96.1C231.5 94.6 230.0 91.7 229.6 90.3C229.5 89.7 229.2 88.9 229.0 88.5C228.6 87.3 228.5 86.7 228.3 84.4C227.9 80.3 228.2 76.4 229.0 74.4C229.2 74.2 229.4 73.5 229.6 72.9C230.7 68.8 234.9 63.3 239.5 60.2C241.6 58.8 245.2 56.8 246.5 56.4C247.0 56.3 247.7 56.0 248.1 55.8C248.6 55.5 249.5 55.2 250.3 55.1C251.0 54.9 252.0 54.7 252.3 54.6C252.7 54.5 253.8 54.3 254.7 54.2C255.7 54.1 256.8 53.9 257.4 53.8C259.0 53.4 266.3 53.4 268.0 53.7C268.7 53.9 270.2 54.1 271.2 54.2C272.3 54.3 273.6 54.5 274.2 54.6C274.7 54.8 275.7 55.0 276.3 55.1C277.0 55.3 277.9 55.5 278.3 55.7C278.8 55.9 279.6 56.2 280.2 56.4C281.1 56.6 282.2 57.1 285.3 58.5C286.0 58.8 286.8 59.2 287.2 59.5C287.6 59.8 288.5 60.3 289.3 60.7C290.1 61.1 290.9 61.6 291.2 61.8C291.4 62.0 292.2 62.5 292.9 63.0C295.8 65.1 298.1 67.3 298.1 68.2C298.1 68.8 296.3 70.9 293.2 74.1C291.5 75.8 289.1 77.1 287.2 77.4C286.1 77.6 282.6 77.5 281.9 77.3C281.1 77.0 277.9 75.4 277.0 74.8C276.2 74.3 275.4 73.9 273.2 72.9C272.6 72.7 271.9 72.4 271.5 72.2C270.7 71.9 267.8 71.0 266.4 70.7C264.3 70.2 260.2 70.4 258.0 71.1C257.5 71.2 256.6 71.5 256.1 71.6C253.3 72.4 251.3 74.4 250.3 77.2C249.5 79.3 249.5 80.1 250.0 81.6C250.2 82.2 250.4 82.9 250.5 83.3C251.0 85.3 254.4 88.1 257.8 89.2C258.1 89.3 258.7 89.5 259.0 89.7C260.4 90.4 266.0 92.2 268.6 92.7C269.3 92.9 270.3 93.2 270.9 93.4C271.5 93.6 272.5 93.9 273.2 94.0C273.9 94.2 274.7 94.4 274.9 94.5C275.2 94.6 275.9 94.9 276.4 95.0C277.0 95.2 277.6 95.4 277.9 95.5C278.1 95.7 278.9 96.0 279.6 96.3C281.6 96.9 282.4 97.3 283.9 98.1C285.8 99.0 289.2 101.2 289.8 101.8C290.1 102.0 290.7 102.5 291.1 102.8C292.7 103.9 295.2 107.1 296.5 109.4C297.2 110.5 298.1 113.2 298.2 114.4C298.3 114.9 298.4 115.5 298.5 115.8C298.6 116.0 298.7 116.8 298.7 117.5C298.8 118.2 298.9 119.2 299.0 119.7C299.3 120.7 299.3 122.1 299.1 122.8C299.0 123.1 298.9 123.7 298.9 124.1C298.0 129.6 297.3 131.7 294.9 135.4C293.3 137.9 290.4 141.1 288.5 142.5C287.9 142.9 287.1 143.4 286.8 143.7C286.4 144.0 285.7 144.4 285.1 144.8C284.6 145.1 283.7 145.5 283.3 145.8C282.9 146.0 282.2 146.4 281.7 146.5C281.3 146.7 280.6 147.0 280.3 147.2C279.4 147.6 276.2 148.7 275.2 148.9C274.8 149.0 274.0 149.2 273.4 149.3C270.8 150.1 263.1 150.5 257.5 150.1ZM354.6 150.1C353.1 150.0 351.1 149.7 350.4 149.5C350.1 149.4 349.1 149.2 348.1 149.0C346.3 148.7 342.6 147.6 341.7 147.1C341.4 147.0 340.7 146.7 340.1 146.5C339.5 146.3 338.8 146.0 338.5 145.8C338.2 145.6 337.6 145.3 337.2 145.1C336.4 144.8 335.4 144.2 334.4 143.6C330.7 141.2 330.6 141.1 328.5 139.3C325.8 137.0 322.4 133.4 320.9 131.2C320.6 130.7 320.2 130.1 319.9 129.8C319.4 129.0 317.3 125.6 316.9 124.6C316.7 124.2 316.4 123.6 316.2 123.3C316.0 123.0 315.8 122.4 315.6 121.9C315.4 121.4 315.1 120.5 314.9 120.0C314.3 118.6 313.9 117.2 313.6 116.1C312.5 111.5 312.4 111.1 312.2 109.3C311.6 102.9 311.9 94.1 312.9 90.7C313.0 90.2 313.2 89.4 313.3 88.8C313.4 88.2 313.7 87.3 313.9 86.8C314.1 86.2 314.3 85.5 314.4 85.0C314.9 83.3 317.3 78.1 318.7 75.8C322.0 70.6 326.7 65.4 330.9 62.6C331.6 62.1 332.3 61.6 332.4 61.5C332.6 61.4 333.2 61.0 333.9 60.6C334.5 60.3 335.4 59.7 335.8 59.5C337.0 58.7 341.0 56.8 342.3 56.4C342.7 56.3 343.5 56.0 344.0 55.8C345.4 55.2 348.4 54.6 351.4 54.2C352.8 54.0 354.1 53.8 354.4 53.7C355.1 53.5 364.4 53.4 365.4 53.7C365.8 53.8 367.1 54.0 368.2 54.1C369.3 54.2 370.5 54.4 371.0 54.4C373.1 54.8 375.6 55.5 376.4 55.9C376.8 56.1 377.4 56.3 377.7 56.4C378.8 56.6 383.6 58.9 384.3 59.5C384.6 59.7 385.4 60.1 386.0 60.5C386.7 60.9 387.5 61.3 387.8 61.6C388.1 61.8 388.8 62.3 389.4 62.7C391.4 64.0 395.1 67.5 396.8 69.6C397.3 70.2 397.8 70.8 397.9 70.8C397.9 70.9 398.3 71.4 398.8 72.0C399.2 72.7 399.7 73.4 399.9 73.7C400.1 74.0 400.5 74.4 400.6 74.8C400.8 75.1 401.3 76.0 401.8 76.8C402.3 77.7 402.8 78.7 403.0 79.1C403.2 79.5 403.5 80.1 403.7 80.4C404.1 80.9 404.7 82.6 405.5 84.8C405.7 85.4 405.9 86.3 406.1 86.6C406.5 87.6 407.4 92.3 407.6 93.8C407.7 94.5 407.8 95.7 407.9 96.4C407.9 97.2 408.0 98.2 408.1 98.6C408.3 99.9 408.3 104.4 408.1 105.7C408.0 106.3 407.8 107.8 407.7 109.0C407.5 110.2 407.3 111.7 407.2 112.3C406.5 115.9 406.2 117.0 405.8 117.9C405.6 118.4 405.3 119.0 405.3 119.3C405.2 119.9 404.2 122.5 403.9 123.1C403.7 123.4 403.3 124.1 403.0 124.8C402.4 126.0 401.1 128.3 400.3 129.5C398.9 131.5 398.0 132.8 397.6 133.2C397.4 133.5 396.8 134.1 396.5 134.6C395.2 136.2 393.6 137.7 390.0 140.7C389.7 140.9 388.7 141.6 387.9 142.1C387.1 142.7 386.1 143.3 385.8 143.6C383.2 145.4 376.2 148.2 372.5 148.9C371.6 149.1 370.4 149.4 369.7 149.6C367.5 150.1 359.2 150.4 354.6 150.1ZM461.7 150.1C460.1 150.0 458.6 149.7 457.2 149.3C456.6 149.2 455.7 148.9 455.1 148.8C453.2 148.5 448.2 146.6 447.0 145.8C446.8 145.7 446.0 145.2 445.1 144.8C444.2 144.4 443.3 143.8 443.0 143.6C442.8 143.4 442.3 143.1 442.0 142.9C440.9 142.3 439.9 141.6 438.9 140.6C438.3 140.1 437.2 139.2 436.5 138.6C434.2 136.7 429.7 131.2 428.3 128.6C428.1 128.2 427.7 127.5 427.4 126.9C427.0 126.3 426.6 125.5 426.4 125.0C426.1 124.6 425.9 124.1 425.8 123.9C425.7 123.7 425.5 123.1 425.3 122.6C425.1 122.0 424.8 121.3 424.6 121.0C423.9 119.6 422.9 116.0 422.3 113.0C420.7 104.8 421.2 92.0 423.3 86.6C423.5 86.2 423.7 85.5 423.9 84.9C424.0 84.3 424.4 83.3 424.6 82.8C424.9 82.2 425.1 81.6 425.2 81.4C425.3 81.0 426.3 78.8 426.6 78.3C426.8 78.0 427.1 77.4 427.3 76.9C427.8 76.0 427.9 75.7 429.3 73.5C431.5 70.1 435.7 65.5 438.5 63.3C439.1 62.9 439.8 62.3 440.1 62.1C440.6 61.7 441.6 61.0 443.8 59.6C445.1 58.8 449.3 56.7 450.2 56.4C450.6 56.3 451.3 56.0 451.9 55.8C453.2 55.2 456.6 54.4 459.0 54.1C459.7 54.1 460.9 53.9 461.7 53.7C463.6 53.4 471.7 53.4 473.4 53.8C474.0 53.9 475.1 54.1 476.0 54.1C478.0 54.3 482.6 55.3 483.6 55.7C484.1 55.9 485.0 56.2 485.6 56.4C488.1 57.3 491.2 58.7 492.2 59.4C492.5 59.7 493.3 60.1 493.9 60.4C494.4 60.7 495.3 61.2 495.7 61.5C496.1 61.8 496.7 62.2 497.0 62.4C498.6 63.5 502.3 67.1 504.2 69.4C505.7 71.4 505.7 71.5 503.9 73.7C503.4 74.3 502.8 75.1 502.4 75.5C502.1 75.9 501.3 76.8 500.8 77.4C498.0 80.9 494.9 82.0 490.6 81.2C489.1 80.9 488.0 80.4 485.4 78.5C484.7 78.1 483.9 77.5 483.6 77.4C483.3 77.2 482.9 77.0 482.6 76.8C482.2 76.4 479.8 75.3 479.2 75.2C479.0 75.2 478.4 74.9 477.9 74.6C477.3 74.3 476.5 74.1 475.9 73.9C475.3 73.8 474.3 73.6 473.6 73.4C469.7 72.5 463.1 73.1 459.7 74.7C459.1 75.0 458.4 75.3 458.2 75.3C457.0 75.7 454.1 77.5 452.2 79.2C447.4 83.3 444.1 89.3 442.9 96.2C442.6 97.8 442.5 105.1 442.7 106.8C443.1 109.7 444.5 114.0 445.5 115.6C445.7 115.9 446.0 116.4 446.1 116.7C446.8 118.3 450.1 122.6 451.4 123.6C451.7 123.8 452.3 124.3 452.7 124.6C455.9 127.5 460.4 129.7 463.8 130.1C464.5 130.2 465.5 130.4 466.0 130.5C467.5 130.9 471.2 130.9 472.7 130.5C473.2 130.4 474.3 130.2 475.0 130.1C476.7 129.9 479.3 129.1 480.2 128.5C480.6 128.2 481.2 127.9 481.6 127.8C482.4 127.4 483.7 126.6 485.6 125.4C488.2 123.6 490.1 123.0 492.8 123.0C496.4 123.0 498.6 124.1 501.0 127.0C501.6 127.7 502.4 128.7 502.8 129.1C503.2 129.6 503.8 130.4 504.2 130.9C505.6 132.7 505.6 132.8 504.3 134.4C502.6 136.6 497.8 140.7 494.9 142.4C494.1 142.8 493.3 143.3 492.9 143.6C492.1 144.1 490.5 144.9 490.0 145.1C489.7 145.2 489.0 145.5 488.4 145.8C486.4 146.8 482.4 148.2 480.3 148.7C479.7 148.8 478.2 149.1 477.0 149.4C475.9 149.7 474.5 149.9 474.0 150.0C472.7 150.2 463.4 150.3 461.7 150.1ZM604.2 150.2C602.2 150.0 601.3 149.8 600.3 149.5C599.7 149.3 598.6 149.0 598.0 148.9C596.3 148.5 593.1 147.2 591.1 146.1C590.9 146.0 590.4 145.7 590.1 145.5C588.6 144.7 587.4 143.9 586.7 143.5C584.5 141.8 583.9 141.3 582.7 140.2C580.6 138.3 580.3 138.0 579.3 136.8C577.5 134.7 576.9 133.8 576.1 132.7C575.7 132.1 575.2 131.3 575.0 131.0C573.7 129.3 570.8 123.4 570.0 121.0C569.7 120.0 569.2 118.4 568.9 117.5C568.6 116.6 568.3 115.4 568.2 114.8C568.2 114.3 568.0 113.2 567.8 112.4C566.6 106.9 566.6 97.0 567.9 90.7C568.1 89.7 568.3 88.4 568.4 87.9C568.4 87.4 568.7 86.5 568.9 85.9C569.1 85.3 569.4 84.5 569.5 84.1C569.6 83.7 569.8 82.9 570.0 82.4C570.2 81.9 570.4 81.3 570.4 81.1C570.5 81.0 570.7 80.3 571.0 79.7C571.3 79.1 571.9 78.0 572.2 77.3C572.8 76.0 573.5 74.8 574.8 72.8C576.3 70.3 576.6 69.9 577.0 69.4C577.3 69.2 577.5 68.8 577.6 68.7C578.9 66.7 583.9 62.1 586.4 60.5C586.9 60.2 587.8 59.6 588.2 59.3C589.5 58.5 593.0 56.7 593.9 56.4C594.4 56.2 595.0 56.0 595.3 55.8C596.1 55.4 600.4 54.3 602.4 54.1C603.3 54.0 604.5 53.8 605.0 53.7C606.5 53.4 612.9 53.4 614.5 53.8C615.2 53.9 616.4 54.1 617.0 54.1C617.7 54.2 618.6 54.3 619.0 54.4C621.1 55.0 622.8 55.5 623.5 55.8C623.9 56.0 624.6 56.3 625.0 56.4C626.9 57.1 631.1 59.7 633.3 61.6C633.7 62.0 634.3 62.5 634.5 62.7C634.7 62.9 635.4 63.7 636.1 64.4C637.5 66.0 637.9 66.4 638.4 66.4C638.9 66.4 638.9 66.3 639.0 61.0C639.1 55.5 639.0 55.5 640.0 55.3C640.6 55.1 658.6 55.1 659.7 55.3C660.4 55.3 660.6 55.4 660.8 55.7L661.1 56.0L661.1 101.6C661.1 151.8 661.2 147.9 660.3 148.3C659.8 148.6 640.7 148.8 639.8 148.5C638.8 148.1 638.8 148.2 638.7 142.8C638.7 138.5 638.7 138.0 638.5 137.7C638.1 137.1 637.7 137.3 636.7 138.2C635.3 139.7 632.2 142.4 631.4 142.8C631.2 142.9 630.7 143.2 630.3 143.6C628.1 145.2 621.3 148.3 618.6 148.9C617.9 149.0 616.9 149.3 616.3 149.5C614.6 150.1 607.5 150.5 604.2 150.2ZM901.6 150.2C900.1 150.1 898.2 149.7 897.4 149.4C897.0 149.3 896.1 149.0 895.4 148.9C893.5 148.5 889.1 146.7 887.7 145.7C887.4 145.5 886.6 145.0 885.9 144.6C885.3 144.3 884.5 143.8 884.3 143.6C884.1 143.4 883.4 142.9 882.9 142.5C881.9 141.8 878.0 138.3 878.0 138.1C878.0 138.1 877.5 137.6 877.0 137.0C875.8 135.8 873.9 133.2 872.9 131.6C872.5 131.0 872.0 130.2 871.7 129.8C870.3 127.7 869.0 125.1 868.5 123.7C868.4 123.2 868.1 122.5 867.9 122.2C867.7 121.9 867.5 121.4 867.4 121.2C867.4 121.0 867.2 120.3 867.0 119.7C866.8 119.1 866.5 117.9 866.3 117.1C866.1 116.2 865.8 115.1 865.7 114.6C865.2 113.0 864.7 109.4 864.5 105.9C864.4 105.0 864.3 103.6 864.2 102.8C864.1 101.8 864.1 101.2 864.2 100.3C864.3 99.7 864.4 98.3 864.5 97.3C864.5 96.2 864.7 94.4 864.8 93.4C865.0 92.3 865.2 91.0 865.2 90.4C865.3 89.8 865.5 89.0 865.7 88.5C865.9 88.1 866.2 87.0 866.4 86.2C867.0 83.6 867.5 81.7 867.9 81.1C868.1 80.8 868.3 80.2 868.5 79.8C869.2 77.8 871.8 73.2 873.9 70.3C876.3 66.9 880.6 62.7 883.6 60.7C884.4 60.1 885.2 59.6 885.5 59.4C886.1 58.9 890.4 56.7 891.4 56.3C891.9 56.2 892.6 55.9 893.0 55.7C893.9 55.2 897.2 54.4 900.0 54.1C900.8 54.0 902.0 53.8 902.5 53.7C906.7 52.9 917.2 54.1 921.1 55.9C921.7 56.1 922.4 56.4 922.7 56.5C923.6 56.8 927.2 58.8 928.2 59.6C928.5 59.8 929.0 60.2 929.4 60.5C930.9 61.7 932.7 63.3 933.7 64.6C934.9 66.0 935.3 66.4 935.7 66.4C936.3 66.4 936.3 66.2 936.4 60.8L936.4 55.9L936.8 55.6C937.3 55.1 937.9 55.1 948.2 55.2C958.4 55.2 957.9 55.2 958.2 56.0C958.4 56.5 958.4 147.1 958.2 147.6C957.8 148.6 958.5 148.6 947.8 148.6C937.3 148.6 937.2 148.6 936.7 148.0C936.4 147.6 936.4 147.4 936.4 142.6C936.3 136.2 936.3 136.2 934.1 138.4C931.9 140.4 931.0 141.2 927.8 143.5C927.4 143.8 926.4 144.4 925.7 144.8C924.9 145.1 924.1 145.6 923.8 145.8C923.2 146.2 921.5 146.9 919.7 147.6C919.0 147.9 918.2 148.2 918.0 148.3C917.8 148.4 916.9 148.7 915.9 148.9C915.0 149.2 913.9 149.5 913.5 149.6C911.7 150.1 910.7 150.2 906.5 150.2C904.2 150.2 902.0 150.2 901.6 150.2ZM17.3 149.2C18.7 148.7 22.7 146.7 23.9 145.9C24.3 145.7 25.3 145.1 26.0 144.6C26.8 144.2 27.6 143.7 27.9 143.5C28.1 143.3 28.4 143.1 28.6 143.0C29.2 142.7 33.8 139.1 35.7 137.5C36.7 136.6 41.8 131.5 42.2 131.0C42.5 130.6 42.9 130.1 43.2 129.7C44.1 128.9 46.9 125.1 48.1 123.3C48.6 122.4 49.3 121.4 49.6 120.9C49.9 120.5 50.5 119.5 50.9 118.6C51.3 117.8 51.9 116.8 52.1 116.5C53.3 114.8 53.0 113.7 50.7 112.8C48.4 111.8 47.1 111.1 45.4 110.2C44.9 109.8 43.7 109.2 42.8 108.7C41.3 107.9 36.6 104.8 35.1 103.7C34.7 103.4 34.0 102.9 33.5 102.5C33.0 102.1 32.3 101.6 32.0 101.3C31.7 101.0 30.8 100.3 30.1 99.7C29.4 99.1 28.1 98.0 27.3 97.2C23.6 93.6 23.9 93.4 19.7 101.9C18.5 104.4 16.9 108.6 16.5 110.3C16.4 110.8 16.1 111.6 15.9 112.2C15.7 112.7 15.4 113.6 15.4 114.1C15.3 114.5 15.1 115.5 14.9 116.3C14.8 117.0 14.5 118.5 14.4 119.6C14.2 120.7 14.0 121.9 14.0 122.3C13.9 122.6 13.8 123.4 13.7 123.9C13.7 124.4 13.6 125.0 13.5 125.2C13.4 125.5 13.3 127.0 13.3 128.6C13.3 130.2 13.2 131.7 13.2 131.8C13.1 133.5 13.6 139.5 13.9 140.6C13.9 140.9 14.1 142.1 14.3 143.4C14.7 146.5 15.3 148.9 15.7 149.3C16.0 149.7 15.9 149.7 17.3 149.2ZM156.0 149.1C156.4 148.7 157.1 146.4 157.3 144.8C157.4 144.1 157.7 142.2 157.9 140.8C158.7 134.8 158.7 126.6 157.7 121.8C157.7 121.5 157.5 120.5 157.4 119.6C157.3 118.8 157.1 117.5 156.9 116.7C156.7 116.0 156.4 114.8 156.2 114.0C156.1 113.3 155.9 112.3 155.7 111.9C155.6 111.5 155.4 110.7 155.2 110.2C155.1 109.6 154.8 108.8 154.5 108.2C154.3 107.7 154.1 107.0 154.0 106.7C153.8 106.2 153.0 104.1 152.2 102.4C152.0 102.0 151.7 101.3 151.6 100.9C151.4 100.6 151.2 100.0 151.0 99.7C150.7 99.3 150.2 98.3 149.8 97.4C148.3 94.5 147.7 94.2 145.9 95.9C142.0 99.5 139.4 101.7 138.0 102.6C137.5 102.9 137.0 103.3 136.7 103.6C136.5 103.8 135.2 104.7 133.9 105.6C130.5 107.9 130.2 108.0 128.8 108.8C128.1 109.1 127.4 109.5 127.3 109.6C127.0 109.9 122.3 112.2 121.2 112.6C119.6 113.2 119.0 113.9 119.0 114.8C119.0 115.6 122.1 121.3 124.1 123.9C124.4 124.4 125.3 125.6 126.1 126.7C126.8 127.8 127.8 129.0 128.2 129.4C128.6 129.8 129.1 130.4 129.4 130.8C130.0 131.7 134.0 135.8 135.1 136.7C135.6 137.1 136.2 137.6 136.5 137.9C137.8 139.1 142.2 142.5 143.1 142.9C143.3 143.0 143.7 143.3 143.9 143.5C144.1 143.7 145.0 144.3 145.9 144.8C146.7 145.2 147.6 145.8 147.8 145.9C148.6 146.5 152.4 148.4 153.7 149.0C155.0 149.5 155.6 149.5 156.0 149.1ZM525.5 148.5C525.1 148.4 524.8 148.2 524.7 148.0L524.4 147.6L524.4 101.8L524.4 56.0L524.6 55.7C525.1 55.2 527.4 55.2 529.2 55.8C529.4 55.9 530.2 56.2 530.9 56.3C532.7 56.8 536.1 58.5 537.2 59.5C537.4 59.7 538.0 60.2 538.5 60.6C541.4 62.7 544.1 67.1 545.4 71.7L546.0 73.8L546.1 110.7C546.1 152.4 546.2 148.2 545.1 148.5C544.5 148.7 526.2 148.7 525.5 148.5ZM686.6 148.4C686.4 148.3 686.2 148.1 686.1 147.8C685.8 147.3 685.7 19.0 686.0 18.5C686.3 17.9 686.3 17.9 696.8 17.9C707.6 17.9 707.4 17.9 707.8 18.6C708.0 19.0 708.0 22.3 708.0 83.3L707.9 147.4L707.7 147.9C707.5 148.2 707.2 148.4 707.0 148.5C706.3 148.7 687.0 148.7 686.6 148.4ZM743.5 148.5C742.6 148.0 742.7 151.9 742.6 112.2C742.6 85.7 742.5 76.8 742.4 76.6C741.9 75.8 742.6 75.8 733.4 75.8C728.8 75.7 725.0 75.6 724.8 75.6C724.2 75.3 724.2 75.3 724.3 65.2L724.3 55.8L724.6 55.5L724.9 55.2L733.3 55.1C739.7 55.1 741.9 55.0 742.1 54.9C742.6 54.6 742.6 54.5 742.6 43.3C742.6 31.5 742.6 32.2 743.4 31.8C744.1 31.5 762.8 31.5 763.5 31.9C764.4 32.3 764.4 31.6 764.4 43.5L764.4 54.4L764.8 54.7L765.1 55.1L774.3 55.1C784.2 55.2 784.0 55.2 784.3 55.9C784.6 56.3 784.6 74.4 784.3 74.9C783.9 75.7 784.5 75.7 774.4 75.8C765.5 75.8 765.4 75.8 765.0 76.1C764.3 76.6 764.4 74.6 764.4 112.2C764.4 151.1 764.4 147.7 763.6 148.3C763.1 148.6 744.3 148.8 743.5 148.5ZM801.7 148.4C800.8 147.9 800.9 152.7 800.9 101.8C800.9 73.2 800.9 56.2 801.0 56.0C801.3 55.2 800.9 55.2 811.0 55.2C821.0 55.1 821.3 55.1 821.8 55.6L822.2 55.9L822.2 62.1C822.3 68.6 822.3 69.0 822.9 69.0C823.3 69.0 824.0 68.3 824.9 67.0C826.5 64.6 831.0 60.4 833.7 58.6C838.1 55.9 840.8 54.7 844.1 54.1C845.0 54.0 846.1 53.8 846.6 53.7C847.8 53.4 853.6 53.5 854.6 53.8C855.0 53.9 855.9 54.1 856.7 54.2C860.4 54.7 860.8 55.2 859.9 58.0C859.6 58.9 859.3 60.1 859.2 60.7C859.1 61.3 858.9 62.2 858.7 62.6C858.6 63.1 858.4 64.1 858.2 64.8C858.1 65.6 857.8 66.8 857.6 67.4C857.4 68.1 857.1 69.1 857.0 69.8C856.8 70.5 856.5 71.9 856.2 72.8C856.0 73.8 855.6 75.2 855.4 76.1C854.7 79.1 854.5 79.2 852.0 78.3C847.4 76.5 841.3 76.4 837.2 78.0C834.2 79.2 830.7 81.4 828.9 83.3C827.0 85.2 824.8 88.7 824.4 90.3C824.3 90.7 824.0 91.4 823.8 91.9C822.9 93.9 822.9 92.4 822.9 121.5C822.8 149.8 822.8 147.9 822.1 148.3C821.4 148.7 802.4 148.8 801.7 148.4ZM986.9 148.5C986.3 148.4 986.0 148.1 985.8 147.7C985.5 147.2 985.4 57.2 985.6 56.2C986.0 55.0 987.3 54.9 991.3 56.1C998.5 58.1 1003.7 62.9 1006.3 70.0C1007.0 71.8 1007.0 71.9 1007.5 76.1C1007.8 78.4 1007.6 147.5 1007.3 147.9C1006.9 148.6 1007.2 148.6 996.9 148.6C991.6 148.6 987.1 148.6 986.9 148.5ZM1046.0 148.5C1045.4 148.5 1045.0 148.2 1044.8 147.8C1044.6 147.5 1044.5 145.1 1044.5 112.1C1044.4 83.6 1044.4 76.6 1044.3 76.4C1043.9 75.7 1044.0 75.8 1035.6 75.8C1027.4 75.8 1027.3 75.7 1026.7 75.1L1026.3 74.7L1026.3 65.4C1026.3 56.2 1026.3 56.0 1026.5 55.8C1027.0 55.2 1027.1 55.2 1035.6 55.1L1043.9 55.1L1044.1 54.8L1044.4 54.5L1044.5 43.5C1044.6 32.0 1044.5 32.2 1045.2 31.9C1045.6 31.7 1065.0 31.5 1065.6 31.7C1066.4 32.0 1066.4 31.4 1066.4 43.5L1066.4 54.5L1066.7 54.8L1067.0 55.1L1076.2 55.1C1086.3 55.2 1086.0 55.2 1086.3 55.9C1086.6 56.6 1086.6 74.2 1086.3 74.8C1085.9 75.7 1086.5 75.7 1076.3 75.8L1067.1 75.8L1066.8 76.1C1066.4 76.6 1066.4 76.8 1066.4 112.5C1066.4 151.3 1066.4 148.2 1065.5 148.5C1065.1 148.6 1047.0 148.7 1046.0 148.5ZM362.7 130.6C368.9 129.7 372.4 128.1 376.4 124.6C378.7 122.5 379.6 121.5 382.7 116.6C383.1 115.9 383.6 114.6 384.2 112.8C384.4 112.3 384.7 111.4 384.9 110.9C385.3 109.7 385.4 109.2 385.6 107.2C385.7 106.3 385.8 104.9 385.9 104.0C386.1 102.1 386.2 101.3 386.0 100.4C385.9 100.0 385.8 98.8 385.7 97.8C385.6 95.3 385.3 93.7 384.9 92.7C384.7 92.2 384.4 91.4 384.3 91.0C383.2 86.8 378.8 80.6 375.1 77.9C374.7 77.7 374.0 77.2 373.6 76.9C373.1 76.6 372.2 76.0 371.4 75.7C370.6 75.3 369.5 74.8 369.0 74.6C368.6 74.3 367.9 74.1 367.5 74.0C367.2 73.9 366.2 73.7 365.4 73.5C361.1 72.5 353.9 73.0 350.8 74.7C350.4 74.9 349.8 75.2 349.5 75.3C347.7 75.8 343.4 78.8 342.1 80.4C341.8 80.8 341.3 81.4 340.9 81.7C340.1 82.6 338.2 85.4 337.8 86.3C337.6 86.7 337.3 87.3 337.1 87.6C336.9 87.9 336.6 88.5 336.5 88.9C336.4 89.3 336.1 89.8 336.0 90.2C335.8 90.5 335.6 91.3 335.4 91.9C335.3 92.6 335.0 93.6 334.8 94.2C333.8 97.7 333.9 106.7 335.0 110.3C335.2 110.9 335.5 111.8 335.6 112.3C336.7 116.1 339.3 120.5 342.2 123.4C344.6 125.7 348.6 128.4 350.9 129.1C351.3 129.3 352.0 129.5 352.4 129.6C352.8 129.8 353.7 130.0 354.4 130.1C355.1 130.2 356.0 130.3 356.5 130.4C357.9 130.8 361.2 130.9 362.7 130.6ZM619.0 130.3C621.7 129.8 624.0 129.0 625.0 128.4C625.4 128.1 625.8 127.9 625.9 127.9C626.4 127.9 629.3 125.8 631.1 124.1C633.3 122.0 636.1 117.9 636.9 115.6C637.1 115.2 637.4 114.5 637.6 114.0C637.8 113.6 638.1 112.7 638.2 112.2C638.4 111.6 638.6 110.9 638.7 110.6C639.5 108.3 639.8 99.0 639.1 94.8C638.9 93.4 638.0 90.4 637.5 89.3C635.7 85.4 634.8 83.8 633.4 82.1C633.0 81.6 632.5 81.0 632.4 80.8C631.4 79.4 626.5 75.8 625.0 75.3C624.8 75.3 624.2 75.0 623.5 74.7C621.0 73.4 615.7 72.7 612.1 73.0C609.6 73.2 606.1 74.0 605.0 74.6C604.7 74.8 604.1 75.1 603.7 75.2C599.8 76.7 594.8 81.6 592.7 86.1C592.4 86.7 592.0 87.4 591.9 87.6C591.7 87.8 591.5 88.3 591.4 88.6C591.3 89.0 591.1 89.6 590.9 90.0C590.8 90.4 590.5 91.2 590.4 91.8C590.3 92.4 590.1 93.5 589.8 94.2C588.9 97.2 589.0 107.4 589.9 109.7C590.0 109.9 590.2 110.7 590.4 111.4C591.5 117.1 595.1 122.7 599.8 126.1C600.6 126.8 601.5 127.4 601.8 127.6C602.2 127.8 602.8 128.1 603.2 128.4C604.0 128.9 607.2 129.9 608.2 130.1C608.6 130.1 609.5 130.2 610.2 130.4C613.0 130.9 615.9 130.9 619.0 130.3ZM914.7 130.6C915.2 130.5 916.3 130.3 917.1 130.1C923.0 129.2 929.4 124.7 932.6 119.0C933.5 117.4 934.7 115.0 934.9 114.4C934.9 114.2 935.2 113.4 935.5 112.7C935.8 111.9 936.1 110.8 936.3 109.5C936.5 108.4 936.7 107.4 936.7 107.1C936.9 106.6 937.2 103.1 937.2 101.6C937.2 98.1 936.3 92.9 935.4 90.5C934.7 88.7 932.5 84.3 931.9 83.5C931.4 82.9 931.2 82.5 929.7 80.7C928.5 79.3 925.1 76.6 923.4 75.8C920.5 74.5 919.7 74.1 918.9 73.9C918.3 73.8 917.6 73.6 917.1 73.5C915.3 72.9 912.1 72.8 908.4 73.1C906.8 73.3 903.4 74.1 902.4 74.6C902.0 74.8 901.4 75.1 901.0 75.2C900.3 75.5 898.7 76.4 898.3 76.7C898.2 76.9 897.7 77.2 897.2 77.6C894.3 79.5 890.2 84.8 889.4 87.6C889.3 87.8 889.0 88.3 888.8 88.7C888.7 89.0 888.4 89.7 888.3 90.2C888.2 90.7 888.0 91.5 887.8 92.0C887.6 92.5 887.4 93.5 887.3 94.3C887.2 95.0 887.0 96.3 886.8 97.2C886.4 99.7 886.6 104.7 887.1 107.9C887.8 112.4 888.3 113.8 890.2 117.9C892.2 121.9 896.2 126.1 900.0 127.9C900.5 128.2 901.0 128.5 901.2 128.6C901.7 129.0 904.4 129.8 906.2 130.1C907.1 130.3 908.1 130.5 908.5 130.6C909.6 130.8 913.5 130.8 914.7 130.6ZM89.2 106.7C90.9 106.7 92.5 106.6 92.7 106.6C99.9 105.5 100.5 105.3 100.7 104.2C100.8 103.7 100.2 100.5 99.8 99.1C99.6 98.4 99.4 97.2 99.2 95.6C99.1 94.2 98.9 92.4 98.8 91.6C98.5 89.2 98.5 88.7 98.4 83.8C98.4 80.8 98.4 78.6 98.5 77.7C98.7 75.8 98.9 74.0 99.0 72.9C99.1 72.4 99.2 71.3 99.2 70.6C99.3 69.8 99.6 68.4 99.8 67.4C100.2 65.7 100.7 62.6 100.7 62.0C100.7 61.2 98.9 60.6 95.2 60.2C94.3 60.1 93.1 60.0 92.5 59.9C91.9 59.8 90.9 59.8 90.3 59.8C89.8 59.7 88.9 59.7 88.5 59.6C87.4 59.3 84.3 59.3 83.2 59.6C82.7 59.7 81.9 59.8 81.4 59.8C80.9 59.8 80.1 59.8 79.6 59.9C79.2 59.9 78.1 60.1 77.2 60.1C75.5 60.3 72.0 60.9 71.5 61.2C71.0 61.5 70.9 61.9 71.2 63.0C71.3 63.6 71.4 64.5 71.5 65.1C71.6 65.6 71.7 66.6 71.9 67.2C72.0 67.8 72.2 69.2 72.3 70.1C72.4 71.1 72.6 72.4 72.7 73.1C72.8 73.7 72.9 74.7 73.0 75.2C73.1 75.8 73.2 76.6 73.2 77.1C73.4 78.3 73.4 88.5 73.2 89.4C73.1 89.9 73.0 90.5 73.0 90.8C73.0 91.1 72.9 92.0 72.7 92.7C72.6 93.5 72.4 95.0 72.3 96.1C72.2 97.2 72.0 98.5 71.9 98.9C71.8 99.2 71.7 100.1 71.6 100.8C71.4 101.5 71.3 102.4 71.2 102.9C70.7 104.7 71.2 105.2 73.7 105.7C77.7 106.4 80.3 106.7 82.8 106.8C83.6 106.8 84.6 106.8 85.0 106.9C85.5 106.9 85.9 106.9 86.0 106.9C86.1 106.9 87.6 106.8 89.2 106.7ZM58.0 100.5C58.3 100.1 58.3 100.3 58.9 97.2C59.3 94.8 59.5 93.3 59.9 90.0C59.9 89.4 60.0 88.5 60.1 88.0C60.3 86.7 60.3 79.3 60.1 77.9C60.0 77.2 59.8 76.1 59.7 75.4C59.7 74.7 59.6 73.4 59.5 72.7C59.4 71.9 59.2 70.7 59.0 70.0C58.9 69.3 58.6 68.2 58.6 67.7C58.2 65.5 57.6 65.1 55.7 65.9C53.4 66.9 52.5 67.4 50.2 68.6C49.8 68.9 49.0 69.3 48.4 69.6C47.9 69.9 47.0 70.5 46.4 70.9C45.8 71.4 44.5 72.3 43.5 73.0C42.4 73.7 41.6 74.3 41.5 74.4C41.5 74.5 40.8 75.0 40.0 75.7C39.0 76.4 37.4 77.8 35.5 79.7L32.6 82.6L32.6 83.1C32.9 85.3 44.9 95.3 49.5 97.3C49.9 97.4 50.3 97.6 50.5 97.8C51.1 98.3 55.6 100.5 56.2 100.7C56.9 100.9 57.6 100.8 58.0 100.5ZM118.1 99.4C119.6 98.7 120.9 98.0 121.1 97.9C121.3 97.8 121.7 97.5 122.1 97.3C123.6 96.5 124.1 96.2 125.8 95.1C126.8 94.4 127.7 93.8 127.8 93.7C128.1 93.5 132.0 90.5 133.3 89.4C134.5 88.5 138.5 84.4 138.8 83.9C139.5 82.6 138.9 81.9 133.0 76.7C132.7 76.4 132.1 76.0 131.8 75.7C131.5 75.4 130.9 75.0 130.7 74.7C130.4 74.5 130.0 74.2 129.7 74.0C128.4 73.1 127.7 72.6 127.0 72.1C125.7 71.1 122.6 69.2 119.2 67.3C117.7 66.6 115.1 65.5 114.7 65.5C114.0 65.5 113.5 66.3 113.3 67.3C113.3 67.6 113.0 68.6 112.8 69.5C112.3 71.3 112.1 73.1 111.9 75.8C111.8 76.8 111.7 77.9 111.6 78.4C111.4 79.5 111.5 86.8 111.6 88.1C111.7 88.6 111.8 90.2 112.0 91.7C112.2 93.6 112.4 94.9 112.7 96.4C113.0 97.6 113.3 98.8 113.3 99.1C113.6 101.3 114.3 101.3 118.1 99.4ZM24.7 71.3C24.9 71.2 25.3 70.9 25.7 70.5C26.0 70.2 26.6 69.7 26.9 69.4C27.3 69.2 28.0 68.5 28.5 68.0C30.7 66.0 33.8 63.5 36.8 61.4C38.0 60.5 42.6 57.7 43.9 57.0C44.7 56.6 45.7 56.0 46.1 55.7C46.6 55.5 47.2 55.1 47.6 55.0C48.0 54.9 48.4 54.7 48.4 54.6C48.5 54.6 48.9 54.4 49.4 54.2C49.8 54.0 50.5 53.7 50.9 53.5C51.3 53.2 51.7 53.0 51.8 53.0C51.9 53.0 52.1 52.8 52.3 52.6C53.0 52.1 52.8 50.8 52.0 49.6C51.8 49.4 51.4 48.5 50.9 47.7C50.4 46.8 50.0 46.0 49.9 45.8C49.7 45.7 49.4 45.1 49.0 44.5C48.7 43.9 48.1 43.0 47.7 42.5C47.3 42.0 46.9 41.3 46.7 41.1C46.6 40.8 46.2 40.3 45.9 39.9C45.5 39.5 44.9 38.7 44.4 38.0C42.5 35.5 37.2 30.0 34.6 27.9C32.4 26.1 29.7 24.1 27.7 22.7C24.9 20.9 24.5 20.7 23.6 20.2C23.2 20.0 22.6 19.7 22.4 19.6C21.8 19.1 17.3 17.0 16.6 16.8C16.1 16.7 15.7 16.9 15.5 17.3C15.2 17.8 14.5 20.8 14.4 21.8C14.3 23.0 13.9 26.0 13.5 28.1C13.4 28.6 13.2 32.3 13.2 34.7C13.2 37.7 13.5 41.4 13.9 43.5C14.0 44.2 14.2 45.6 14.4 46.7C14.5 47.8 14.8 49.3 14.9 50.1C15.1 50.9 15.3 51.9 15.4 52.3C15.4 52.8 15.7 53.6 15.9 54.1C16.2 54.6 16.4 55.4 16.5 55.9C16.9 58.0 18.7 62.4 21.5 68.0C23.1 71.3 23.7 71.9 24.7 71.3ZM148.2 71.3C148.8 70.9 149.6 69.5 150.2 67.8C150.4 67.5 150.6 66.9 150.8 66.7C151.4 65.8 153.7 60.7 154.0 59.4C154.1 59.0 154.4 58.2 154.7 57.7C154.9 57.1 155.2 56.3 155.2 55.9C155.3 55.5 155.5 54.8 155.7 54.4C155.9 53.9 156.1 53.0 156.2 52.3C156.4 51.6 156.6 50.6 156.8 50.0C157.1 49.1 157.3 47.8 158.2 41.4C158.7 38.1 158.4 26.9 157.8 25.2C157.8 25.1 157.6 24.1 157.5 23.0C157.3 21.9 157.1 20.4 156.9 19.7C156.7 19.0 156.5 18.2 156.4 18.0C156.1 16.5 155.4 16.5 151.9 18.3C150.4 19.0 148.9 19.8 148.5 20.0C143.0 22.7 132.4 31.4 129.1 35.8C128.8 36.3 128.2 37.0 127.9 37.3C126.8 38.5 123.0 43.8 122.4 44.9C122.3 45.1 122.0 45.6 121.8 45.9C120.6 47.8 119.2 50.7 119.0 51.5C118.9 52.2 119.2 52.7 120.0 53.0C120.3 53.2 120.7 53.4 121.0 53.6C121.2 53.7 121.8 54.0 122.2 54.2C123.6 54.7 124.8 55.3 125.4 55.7C125.8 55.9 126.6 56.3 127.2 56.6C128.3 57.2 130.7 58.6 132.0 59.5C132.4 59.8 133.2 60.3 133.7 60.6C134.3 61.0 135.0 61.5 135.2 61.7C135.5 61.8 136.2 62.4 136.9 62.8C139.2 64.5 143.3 67.9 145.6 70.2C147.0 71.5 147.4 71.7 148.2 71.3ZM532.3 35.7C529.6 35.3 529.1 35.2 528.3 34.7C527.9 34.5 527.3 34.3 526.9 34.1C521.5 32.1 519.2 22.5 522.7 16.6C524.3 13.8 527.9 11.3 530.8 10.8C533.1 10.5 535.1 10.3 536.1 10.5C536.6 10.6 537.3 10.6 537.8 10.6C542.8 10.6 547.9 15.0 548.5 19.8C549.0 23.2 549.0 22.9 548.7 25.1C548.4 27.6 548.4 27.7 547.5 29.3C546.5 31.2 544.6 33.2 543.0 33.9C542.5 34.2 541.7 34.6 541.4 34.8C540.5 35.2 540.1 35.3 537.5 35.7C534.9 36.1 535.2 36.1 532.3 35.7ZM995.7 35.9C995.6 35.9 994.9 35.8 994.2 35.7C990.7 35.3 990.7 35.3 988.6 34.3C985.8 32.9 984.5 31.5 983.4 28.6C982.2 25.6 982.3 20.9 983.5 18.0C985.1 13.9 989.0 11.0 993.2 10.7C993.8 10.7 994.6 10.6 995.0 10.5C995.9 10.3 998.4 10.5 1000.7 10.8C1004.3 11.4 1008.4 14.6 1009.3 17.6C1009.4 18.0 1009.7 18.8 1009.9 19.4C1011.4 24.0 1009.4 30.5 1005.7 33.1C1004.9 33.7 1002.3 35.1 1001.7 35.2C1001.2 35.4 996.4 36.0 996.2 36.0C996.1 36.0 995.9 36.0 995.7 35.9Z"/></symbol>
+  <symbol id="st-mark" viewBox="0 0 171.7 165.7"><path fill="currentColor" d="M7.7 165.4C7.0 165.2 6.5 164.6 6.3 163.8C6.2 163.4 5.9 162.7 5.7 162.2C5.5 161.7 5.1 160.7 4.9 160.0C4.7 159.3 4.3 158.1 4.1 157.4C3.2 154.8 2.7 153.2 2.5 151.9C2.3 151.2 2.1 150.0 1.9 149.4C1.7 148.7 1.5 147.4 1.4 146.5C1.3 145.7 1.2 144.5 1.1 144.1C0.5 141.3 0.4 140.3 0.2 135.5C0.0 128.7 0.3 123.9 1.0 119.8C1.2 118.6 1.4 116.9 1.5 116.1C1.6 115.3 1.9 114.2 2.0 113.7C2.1 113.1 2.4 112.1 2.5 111.3C3.2 108.3 4.7 103.7 6.8 98.6C7.6 96.6 9.7 92.0 10.2 91.2C10.5 90.8 11.0 89.8 11.5 89.1C13.1 86.3 13.5 85.6 13.9 85.1C14.9 83.9 15.0 82.8 14.1 81.5C13.2 80.3 11.2 77.0 10.8 76.1C10.6 75.8 10.3 75.3 10.2 75.1C9.8 74.6 8.8 72.6 8.4 71.4C8.2 71.0 8.0 70.4 7.8 70.2C7.7 69.9 7.4 69.2 7.1 68.7C6.9 68.1 6.5 67.0 6.1 66.1C5.4 64.4 4.1 60.7 3.7 59.1C3.5 58.5 3.2 57.7 3.1 57.1C2.9 56.6 2.7 55.9 2.6 55.5C2.5 55.0 2.2 53.7 2.0 52.6C1.7 51.4 1.5 50.0 1.4 49.5C1.4 48.7 1.1 47.0 0.7 45.1C0.5 43.9 0.3 42.1 0.2 38.4C0.0 31.9 0.2 26.8 0.9 23.1C1.1 22.2 1.3 20.7 1.4 19.8C1.7 17.6 2.7 13.3 3.7 10.1C4.3 7.9 5.5 4.6 5.8 4.1C5.9 3.9 6.1 3.4 6.2 3.0C6.5 2.0 7.2 0.7 7.5 0.4C8.0 0.0 9.2 0.1 11.4 0.8C12.1 1.0 13.2 1.4 13.7 1.5C15.4 2.0 18.2 3.0 19.1 3.5C19.6 3.7 20.1 3.9 20.3 4.0C20.5 4.0 20.9 4.2 21.2 4.3C21.5 4.5 22.2 4.7 22.7 4.9C23.3 5.1 23.9 5.4 24.1 5.6C24.4 5.7 25.3 6.2 26.2 6.6C27.2 7.0 28.1 7.5 28.2 7.6C28.4 7.7 28.8 7.9 29.2 8.1C30.5 8.9 34.2 11.1 34.7 11.5C35.0 11.8 35.8 12.3 36.4 12.6C37.0 13.0 37.8 13.5 38.0 13.8C38.3 14.0 38.9 14.5 39.4 14.8C40.2 15.4 41.5 16.4 44.1 18.6C45.5 19.8 51.5 25.8 52.5 27.1C55.3 30.4 56.3 31.7 56.7 32.4C57.0 32.8 57.5 33.5 57.8 33.8C58.0 34.2 58.5 34.9 58.9 35.4C59.2 36.0 59.8 36.9 60.2 37.4C60.8 38.5 61.4 39.4 62.4 41.0C62.7 41.5 63.3 42.8 63.9 43.9C64.4 44.9 64.9 46.0 65.0 46.1C65.1 46.3 65.3 46.7 65.4 47.0C65.8 47.8 66.1 48.0 67.0 48.1C67.8 48.2 68.0 48.1 70.0 47.6C70.8 47.4 72.0 47.2 73.6 47.1C74.9 47.0 76.4 46.8 77.1 46.7C77.7 46.6 78.6 46.5 79.0 46.5C79.4 46.5 80.5 46.4 81.3 46.3C83.3 46.1 88.4 46.1 90.3 46.3C91.1 46.4 92.2 46.5 92.8 46.5C93.4 46.5 94.1 46.6 94.4 46.6C94.6 46.7 95.5 46.8 96.3 46.9C99.1 47.1 101.2 47.4 102.1 47.7C104.4 48.5 105.7 48.2 106.2 47.0C106.4 46.6 106.6 46.2 106.7 46.0C106.9 45.8 107.3 44.9 107.7 44.0C108.2 43.1 108.8 41.9 109.1 41.4C109.4 41.0 110.0 39.9 110.5 39.2C111.9 36.8 112.4 35.9 112.8 35.4C113.1 35.1 113.6 34.3 114.0 33.7C115.3 31.8 117.4 29.1 119.5 26.7C120.9 25.1 126.5 19.5 127.2 19.0C127.6 18.7 128.3 18.1 128.8 17.6C131.0 15.6 136.0 12.0 140.4 9.4C141.4 8.8 142.5 8.1 142.9 7.9C143.3 7.6 144.3 7.1 145.1 6.8C146.5 6.2 146.8 6.0 148.0 5.4C148.2 5.2 148.8 5.0 149.2 4.8C149.6 4.7 150.2 4.4 150.5 4.3C155.9 2.0 161.9 0.1 163.6 0.1C164.1 0.1 164.8 1.0 165.2 2.1C165.4 2.6 165.8 3.6 166.1 4.3C166.4 4.9 166.6 5.5 166.6 5.6C166.6 5.7 166.9 6.6 167.2 7.6C168.1 10.2 168.7 12.4 169.1 13.9C169.2 14.6 169.5 15.8 169.7 16.6C170.0 17.4 170.2 18.9 170.4 20.4C170.6 21.7 170.8 23.3 170.9 23.9C171.7 28.4 171.5 44.8 170.7 47.0C170.6 47.1 170.5 48.1 170.4 49.2C170.2 50.3 170.0 51.7 169.8 52.4C169.6 53.0 169.3 54.3 169.1 55.2C168.8 56.7 168.6 57.5 167.7 60.1C167.1 62.1 166.2 64.6 165.9 65.2C165.8 65.5 165.5 66.2 165.4 66.6C165.3 67.0 165.1 67.5 165.0 67.8C164.8 68.1 164.6 68.7 164.4 69.2C164.3 69.6 164.0 70.2 163.9 70.4C163.7 70.5 163.2 71.6 162.7 72.7C161.6 75.0 159.4 78.9 157.9 81.1C156.8 82.7 156.8 83.4 157.6 84.7C157.9 85.0 158.2 85.7 158.5 86.1C158.7 86.6 159.3 87.6 159.8 88.4C161.2 90.7 161.8 91.7 162.7 93.8C163.2 94.8 163.8 95.9 163.9 96.1C164.0 96.3 164.3 96.9 164.6 97.6C165.2 99.4 165.8 100.9 166.1 101.6C166.3 101.9 166.6 102.6 166.7 103.0C166.8 103.5 167.0 104.2 167.2 104.6C167.7 105.7 168.6 109.1 169.3 111.9C169.4 112.4 169.6 113.3 169.8 113.8C170.0 114.4 170.2 116.0 170.4 117.3C170.6 118.7 170.8 120.4 170.9 121.0C171.7 125.7 171.5 141.9 170.7 144.2C170.6 144.2 170.5 145.0 170.4 145.9C170.2 147.9 170.0 148.7 169.7 149.8C169.6 150.2 169.3 151.3 169.1 152.1C168.8 153.8 168.1 156.1 167.5 157.9C167.3 158.6 166.9 159.5 166.8 160.1C166.6 160.7 166.3 161.5 166.1 161.9C165.9 162.3 165.6 163.1 165.4 163.6C164.8 165.5 164.4 165.7 161.7 165.4C159.3 165.2 158.5 165.1 157.6 164.7C157.2 164.5 156.4 164.2 155.7 164.0C154.4 163.6 152.6 163.0 151.2 162.3C150.7 162.1 150.1 161.8 149.8 161.8C149.5 161.7 149.0 161.4 148.5 161.2C148.1 161.0 147.0 160.4 146.1 160.0C145.2 159.5 144.2 159.0 144.0 158.9C143.7 158.7 143.1 158.4 142.6 158.1C141.5 157.6 139.8 156.6 139.4 156.4C136.3 154.4 133.4 152.4 132.6 151.7C132.4 151.5 131.7 150.9 131.0 150.5C130.4 150.1 129.3 149.2 128.5 148.5C127.8 147.8 126.7 146.9 126.2 146.4C124.8 145.2 121.1 141.4 120.1 140.2C119.6 139.6 118.8 138.7 118.2 138.1C116.2 135.8 112.4 130.5 110.7 127.5C110.3 126.9 109.7 125.8 109.3 125.3C108.8 124.3 107.6 122.1 106.3 119.5C105.5 118.0 105.1 117.9 100.5 118.9C92.8 120.5 79.2 120.5 70.5 118.7C66.8 118.0 66.1 118.1 65.5 119.3C65.4 119.6 65.1 120.1 64.9 120.4C64.7 120.6 64.5 121.2 64.3 121.6C63.2 124.4 58.3 132.1 55.5 135.7C51.4 140.7 47.9 144.3 42.0 149.5C41.6 149.8 40.9 150.4 40.4 150.7C39.9 151.1 39.2 151.6 38.9 151.9C37.9 152.7 32.7 156.1 31.5 156.8C31.0 157.1 30.4 157.4 30.2 157.6C30.0 157.7 29.4 158.0 29.0 158.2C28.5 158.5 28.1 158.7 28.0 158.8C27.7 159.0 25.1 160.3 24.7 160.4C24.6 160.5 23.9 160.8 23.3 161.1C21.0 162.2 18.4 163.3 16.0 164.0C15.2 164.2 14.4 164.5 14.1 164.6C13.4 165.0 12.3 165.2 10.6 165.4C9.8 165.4 8.9 165.5 8.6 165.6C8.4 165.6 7.9 165.5 7.7 165.4ZM17.3 149.2C18.7 148.7 22.7 146.7 23.9 145.9C24.3 145.7 25.3 145.1 26.0 144.6C26.8 144.2 27.6 143.7 27.9 143.5C28.1 143.3 28.4 143.1 28.6 143.0C29.2 142.7 33.8 139.1 35.7 137.5C36.7 136.6 41.8 131.5 42.2 131.0C42.5 130.6 42.9 130.1 43.2 129.7C44.1 128.9 46.9 125.1 48.1 123.3C48.6 122.4 49.3 121.4 49.6 120.9C49.9 120.5 50.5 119.5 50.9 118.6C51.3 117.8 51.9 116.8 52.1 116.5C53.3 114.8 53.0 113.7 50.7 112.8C48.4 111.8 47.1 111.1 45.4 110.2C44.9 109.8 43.7 109.2 42.8 108.7C41.3 107.9 36.6 104.8 35.1 103.7C34.7 103.4 34.0 102.9 33.5 102.5C33.0 102.1 32.3 101.6 32.0 101.3C31.7 101.0 30.8 100.3 30.1 99.7C29.4 99.1 28.1 98.0 27.3 97.2C23.6 93.6 23.9 93.4 19.7 101.9C18.5 104.4 16.9 108.6 16.5 110.3C16.4 110.8 16.1 111.6 15.9 112.2C15.7 112.7 15.4 113.6 15.4 114.1C15.3 114.5 15.1 115.5 14.9 116.3C14.8 117.0 14.5 118.5 14.4 119.6C14.2 120.7 14.0 121.9 14.0 122.3C13.9 122.6 13.8 123.4 13.7 123.9C13.7 124.4 13.6 125.0 13.5 125.2C13.4 125.5 13.3 127.0 13.3 128.6C13.3 130.2 13.2 131.7 13.2 131.8C13.1 133.5 13.6 139.5 13.9 140.6C13.9 140.9 14.1 142.1 14.3 143.4C14.7 146.5 15.3 148.9 15.7 149.3C16.0 149.7 15.9 149.7 17.3 149.2ZM156.0 149.1C156.4 148.7 157.1 146.4 157.3 144.8C157.4 144.1 157.7 142.2 157.9 140.8C158.7 134.8 158.7 126.6 157.7 121.8C157.7 121.5 157.5 120.5 157.4 119.6C157.3 118.8 157.1 117.5 156.9 116.7C156.7 116.0 156.4 114.8 156.2 114.0C156.1 113.3 155.9 112.3 155.7 111.9C155.6 111.5 155.4 110.7 155.2 110.2C155.1 109.6 154.8 108.8 154.5 108.2C154.3 107.7 154.1 107.0 154.0 106.7C153.8 106.2 153.0 104.1 152.2 102.4C152.0 102.0 151.7 101.3 151.6 100.9C151.4 100.6 151.2 100.0 151.0 99.7C150.7 99.3 150.2 98.3 149.8 97.4C148.3 94.5 147.7 94.2 145.9 95.9C142.0 99.5 139.4 101.7 138.0 102.6C137.5 102.9 137.0 103.3 136.7 103.6C136.5 103.8 135.2 104.7 133.9 105.6C130.5 107.9 130.2 108.0 128.8 108.8C128.1 109.1 127.4 109.5 127.3 109.6C127.0 109.9 122.3 112.2 121.2 112.6C119.6 113.2 119.0 113.9 119.0 114.8C119.0 115.6 122.1 121.3 124.1 123.9C124.4 124.4 125.3 125.6 126.1 126.7C126.8 127.8 127.8 129.0 128.2 129.4C128.6 129.8 129.1 130.4 129.4 130.8C130.0 131.7 134.0 135.8 135.1 136.7C135.6 137.1 136.2 137.6 136.5 137.9C137.8 139.1 142.2 142.5 143.1 142.9C143.3 143.0 143.7 143.3 143.9 143.5C144.1 143.7 145.0 144.3 145.9 144.8C146.7 145.2 147.6 145.8 147.8 145.9C148.6 146.5 152.4 148.4 153.7 149.0C155.0 149.5 155.6 149.5 156.0 149.1ZM89.2 106.7C90.9 106.7 92.5 106.6 92.7 106.6C99.9 105.5 100.5 105.3 100.7 104.2C100.8 103.7 100.2 100.5 99.8 99.1C99.6 98.4 99.4 97.2 99.2 95.6C99.1 94.2 98.9 92.4 98.8 91.6C98.5 89.2 98.5 88.7 98.4 83.8C98.4 80.8 98.4 78.6 98.5 77.7C98.7 75.8 98.9 74.0 99.0 72.9C99.1 72.4 99.2 71.3 99.2 70.6C99.3 69.8 99.6 68.4 99.8 67.4C100.2 65.7 100.7 62.6 100.7 62.0C100.7 61.2 98.9 60.6 95.2 60.2C94.3 60.1 93.1 60.0 92.5 59.9C91.9 59.8 90.9 59.8 90.3 59.8C89.8 59.7 88.9 59.7 88.5 59.6C87.4 59.3 84.3 59.3 83.2 59.6C82.7 59.7 81.9 59.8 81.4 59.8C80.9 59.8 80.1 59.8 79.6 59.9C79.2 59.9 78.1 60.1 77.2 60.1C75.5 60.3 72.0 60.9 71.5 61.2C71.0 61.5 70.9 61.9 71.2 63.0C71.3 63.6 71.4 64.5 71.5 65.1C71.6 65.6 71.7 66.6 71.9 67.2C72.0 67.8 72.2 69.2 72.3 70.1C72.4 71.1 72.6 72.4 72.7 73.1C72.8 73.7 72.9 74.7 73.0 75.2C73.1 75.8 73.2 76.6 73.2 77.1C73.4 78.3 73.4 88.5 73.2 89.4C73.1 89.9 73.0 90.5 73.0 90.8C73.0 91.1 72.9 92.0 72.7 92.7C72.6 93.5 72.4 95.0 72.3 96.1C72.2 97.2 72.0 98.5 71.9 98.9C71.8 99.2 71.7 100.1 71.6 100.8C71.4 101.5 71.3 102.4 71.2 102.9C70.7 104.7 71.2 105.2 73.7 105.7C77.7 106.4 80.3 106.7 82.8 106.8C83.6 106.8 84.6 106.8 85.0 106.9C85.5 106.9 85.9 106.9 86.0 106.9C86.1 106.9 87.6 106.8 89.2 106.7ZM58.0 100.5C58.3 100.1 58.3 100.3 58.9 97.2C59.3 94.8 59.5 93.3 59.9 90.0C59.9 89.4 60.0 88.5 60.1 88.0C60.3 86.7 60.3 79.3 60.1 77.9C60.0 77.2 59.8 76.1 59.7 75.4C59.7 74.7 59.6 73.4 59.5 72.7C59.4 71.9 59.2 70.7 59.0 70.0C58.9 69.3 58.6 68.2 58.6 67.7C58.2 65.5 57.6 65.1 55.7 65.9C53.4 66.9 52.5 67.4 50.2 68.6C49.8 68.9 49.0 69.3 48.4 69.6C47.9 69.9 47.0 70.5 46.4 70.9C45.8 71.4 44.5 72.3 43.5 73.0C42.4 73.7 41.6 74.3 41.5 74.4C41.5 74.5 40.8 75.0 40.0 75.7C39.0 76.4 37.4 77.8 35.5 79.7L32.6 82.6L32.6 83.1C32.9 85.3 44.9 95.3 49.5 97.3C49.9 97.4 50.3 97.6 50.5 97.8C51.1 98.3 55.6 100.5 56.2 100.7C56.9 100.9 57.6 100.8 58.0 100.5ZM118.1 99.4C119.6 98.7 120.9 98.0 121.1 97.9C121.3 97.8 121.7 97.5 122.1 97.3C123.6 96.5 124.1 96.2 125.8 95.1C126.8 94.4 127.7 93.8 127.8 93.7C128.1 93.5 132.0 90.5 133.3 89.4C134.5 88.5 138.5 84.4 138.8 83.9C139.5 82.6 138.9 81.9 133.0 76.7C132.7 76.4 132.1 76.0 131.8 75.7C131.5 75.4 130.9 75.0 130.7 74.7C130.4 74.5 130.0 74.2 129.7 74.0C128.4 73.1 127.7 72.6 127.0 72.1C125.7 71.1 122.6 69.2 119.2 67.3C117.7 66.6 115.1 65.5 114.7 65.5C114.0 65.5 113.5 66.3 113.3 67.3C113.3 67.6 113.0 68.6 112.8 69.5C112.3 71.3 112.1 73.1 111.9 75.8C111.8 76.8 111.7 77.9 111.6 78.4C111.4 79.5 111.5 86.8 111.6 88.1C111.7 88.6 111.8 90.2 112.0 91.7C112.2 93.6 112.4 94.9 112.7 96.4C113.0 97.6 113.3 98.8 113.3 99.1C113.6 101.3 114.3 101.3 118.1 99.4ZM24.7 71.3C24.9 71.2 25.3 70.9 25.7 70.5C26.0 70.2 26.6 69.7 26.9 69.4C27.3 69.2 28.0 68.5 28.5 68.0C30.7 66.0 33.8 63.5 36.8 61.4C38.0 60.5 42.6 57.7 43.9 57.0C44.7 56.6 45.7 56.0 46.1 55.7C46.6 55.5 47.2 55.1 47.6 55.0C48.0 54.9 48.4 54.7 48.4 54.6C48.5 54.6 48.9 54.4 49.4 54.2C49.8 54.0 50.5 53.7 50.9 53.5C51.3 53.2 51.7 53.0 51.8 53.0C51.9 53.0 52.1 52.8 52.3 52.6C53.0 52.1 52.8 50.8 52.0 49.6C51.8 49.4 51.4 48.5 50.9 47.7C50.4 46.8 50.0 46.0 49.9 45.8C49.7 45.7 49.4 45.1 49.0 44.5C48.7 43.9 48.1 43.0 47.7 42.5C47.3 42.0 46.9 41.3 46.7 41.1C46.6 40.8 46.2 40.3 45.9 39.9C45.5 39.5 44.9 38.7 44.4 38.0C42.5 35.5 37.2 30.0 34.6 27.9C32.4 26.1 29.7 24.1 27.7 22.7C24.9 20.9 24.5 20.7 23.6 20.2C23.2 20.0 22.6 19.7 22.4 19.6C21.8 19.1 17.3 17.0 16.6 16.8C16.1 16.7 15.7 16.9 15.5 17.3C15.2 17.8 14.5 20.8 14.4 21.8C14.3 23.0 13.9 26.0 13.5 28.1C13.4 28.6 13.2 32.3 13.2 34.7C13.2 37.7 13.5 41.4 13.9 43.5C14.0 44.2 14.2 45.6 14.4 46.7C14.5 47.8 14.8 49.3 14.9 50.1C15.1 50.9 15.3 51.9 15.4 52.3C15.4 52.8 15.7 53.6 15.9 54.1C16.2 54.6 16.4 55.4 16.5 55.9C16.9 58.0 18.7 62.4 21.5 68.0C23.1 71.3 23.7 71.9 24.7 71.3ZM148.2 71.3C148.8 70.9 149.6 69.5 150.2 67.8C150.4 67.5 150.6 66.9 150.8 66.7C151.4 65.8 153.7 60.7 154.0 59.4C154.1 59.0 154.4 58.2 154.7 57.7C154.9 57.1 155.2 56.3 155.2 55.9C155.3 55.5 155.5 54.8 155.7 54.4C155.9 53.9 156.1 53.0 156.2 52.3C156.4 51.6 156.6 50.6 156.8 50.0C157.1 49.1 157.3 47.8 158.2 41.4C158.7 38.1 158.4 26.9 157.8 25.2C157.8 25.1 157.6 24.1 157.5 23.0C157.3 21.9 157.1 20.4 156.9 19.7C156.7 19.0 156.5 18.2 156.4 18.0C156.1 16.5 155.4 16.5 151.9 18.3C150.4 19.0 148.9 19.8 148.5 20.0C143.0 22.7 132.4 31.4 129.1 35.8C128.8 36.3 128.2 37.0 127.9 37.3C126.8 38.5 123.0 43.8 122.4 44.9C122.3 45.1 122.0 45.6 121.8 45.9C120.6 47.8 119.2 50.7 119.0 51.5C118.9 52.2 119.2 52.7 120.0 53.0C120.3 53.2 120.7 53.4 121.0 53.6C121.2 53.7 121.8 54.0 122.2 54.2C123.6 54.7 124.8 55.3 125.4 55.7C125.8 55.9 126.6 56.3 127.2 56.6C128.3 57.2 130.7 58.6 132.0 59.5C132.4 59.8 133.2 60.3 133.7 60.6C134.3 61.0 135.0 61.5 135.2 61.7C135.5 61.8 136.2 62.4 136.9 62.8C139.2 64.5 143.3 67.9 145.6 70.2C147.0 71.5 147.4 71.7 148.2 71.3Z"/></symbol>
+</svg>
 
-<div class="wrap">
 
-  <div class="meta-rail">
-    <svg class="mark" viewBox="0 0 287 284" aria-hidden="true"><g fill="none" stroke="#2F80ED" stroke-miterlimit="10"><path stroke-width="22" d="M274 224.764C274.015 239.135 271.631 253.408 266.943 267C247.163 261.024 229.089 250.466 214.202 236.193C199.315 221.92 188.039 204.337 181.3 184.888C156.641 192.273 130.344 192.273 105.685 184.888C98.9461 204.336 87.6718 221.918 72.7863 236.191C57.9007 250.465 39.8279 261.023 20.05 267C13.9067 249.161 11.74 230.204 13.7005 211.447C15.661 192.691 21.7016 174.583 31.4025 158.385C41.1035 142.186 54.2321 128.284 69.8759 117.645C85.52 107.006 103.303 99.8841 121.991 96.7762C140.68 93.6682 159.823 94.6476 178.093 99.6464C196.362 104.645 213.319 113.544 227.784 125.724C242.25 137.903 253.877 153.071 261.858 170.175C269.839 187.279 273.982 205.907 274 224.764Z"/><path stroke-width="26" d="M274 59.2205C273.985 78.0792 269.843 96.708 261.863 113.813C253.884 130.918 242.258 146.088 227.792 158.27C213.328 170.45 196.371 179.351 178.102 184.351C159.832 189.351 140.688 190.332 121.999 187.225C103.31 184.118 85.5253 176.997 69.8806 166.359C54.2357 155.72 41.1061 141.818 31.4044 125.619C21.7027 109.42 15.6614 91.312 13.7007 72.5545C11.7398 53.7973 13.9065 34.8399 20.05 17C39.8293 22.9763 57.9036 33.534 72.7905 47.8073C87.6778 62.0808 98.9528 79.6628 105.693 99.1123C130.349 91.7282 156.643 91.7282 181.3 99.1123C188.04 79.6628 199.315 62.0808 214.202 47.8073C229.089 33.534 247.163 22.9763 266.943 17C271.629 30.5871 274.014 44.855 274 59.2205Z"/><path stroke-width="26" d="M112 141.992C112.025 170.03 103.09 197.33 86.5201 219.846C69.95 242.362 46.6257 258.897 20.004 267C12.8603 245.981 11.1461 223.475 15.0229 201.603C18.8998 179.731 28.2399 159.216 42.1619 141.992C28.2424 124.771 18.9038 104.259 15.027 82.3897C11.1502 60.5207 12.863 38.0165 20.004 17C46.6233 25.1021 69.9459 41.6346 86.5157 64.1481C103.086 86.6612 112.022 113.958 112 141.992Z"/><path stroke-width="26" d="M244.278 142C258.467 159.222 267.987 179.736 271.938 201.607C275.89 223.477 274.142 245.982 266.862 267C239.72 258.898 215.937 242.367 199.033 219.854C182.128 197.342 173 170.043 173 142C173 113.957 182.128 86.6581 199.033 64.1456C215.937 41.6328 239.72 25.1021 266.862 17C274.142 38.0173 275.89 60.5231 271.938 82.3934C267.987 104.264 258.467 124.778 244.278 142Z"/></g></svg>
-    <span class="brand">Socialtrait</span><span class="sep"></span>
-    <span>Design system</span><span class="sep"></span>
-    <span>2026-07-07</span>
-    <span class="right">Ori v1.0 · specimen</span>
+<!-- ═══ Hero — Dawn, the hero color direction ═══ -->
+<nav class="nav">
+  <div class="wrap">
+    <svg class="lockup" viewBox="0 0 1086.6 165.7" aria-label="Socialtrait"><use href="#st-lockup"/></svg>
+    <div class="links">
+      <a class="link" href="#overview">Overview</a><a class="link" href="#logo">Logo</a>
+      <a class="link" href="#type">Typography</a><a class="link" href="#color">Color</a>
+      <a class="link" href="#components">Components</a><a class="link" href="#artifacts">Artifacts</a>
+    </div>
   </div>
+</nav>
+<header class="horizon dawn hero">
+  <div class="wrap">
+    <h1>Ori, version two.</h1>
+    <p class="lede">Socialtrait's design system, rebuilt on Brand Concept Guidelines V2 — so every document, deck, and page an agent makes is on brand by construction.</p>
+    <div class="actions">
+      <a class="btn primary" href="#artifacts">Browse the templates</a>
+      <a class="btn ghost" href="#overview">Read the rules</a>
+    </div>
+  </div>
+  <footer class="folio">
+    <svg class="lockup" viewBox="0 0 1086.6 165.7"><use href="#st-lockup"/></svg>
+    <span class="legal">Socialtrait © 2026</span>
+    <span class="pageno">Ori 2.0 · Specimen</span>
+  </footer>
+</header>
 
-  <header style="margin-bottom:56px">
-    <p class="eyebrow">織 · The weave</p>
-    <div class="display">Ori is how Socialtrait documents look</div>
-    <p class="lede">A constraint system for agents: cool graph-paper surfaces, mono-set
-    data, hairline structure, one Signal Blue accent. Every rule on this page is also
-    obeyed by this page.</p>
-  </header>
-
-  <section>
-    <p class="eyebrow"><span class="idx">01</span>Invariants</p>
-    <h2>Ten rules that make a page Ori</h2>
-    <div class="thread"></div>
-    <ol class="rules">
-      <li>Cool canvas — Frost <code>#FAFBFE</code>; white only on cards; warm tones never.</li>
-      <li>One accent — Signal Blue <code>#2F80ED</code>. Navy is structure, not accent.</li>
-      <li>Sans + mono only. Serif banned; italics banned — emphasis is <strong>weight</strong> or <em>blue</em>.</li>
-      <li>Every meaningful number is mono with tabular figures.</li>
-      <li>Hairlines are 1px; the only thick line is the 2px blue thread.</li>
-      <li>The 6px node square appears at least once per page, at most once per component.</li>
-      <li>Flush-left axis, ragged right. Centering only on slide covers and heros.</li>
-      <li>Sharp geometry: radius 0 by default, 2px chips, 6px cards. No pills.</li>
-      <li>Flat: no print shadows; screen gets lift and hover only; one sanctioned gradient (night hero).</li>
-      <li>Color means data — green/red for deltas only; nothing decorated with color.</li>
+<!-- ═══ Overview ═══ -->
+<section class="band" id="overview">
+  <div class="wrap">
+    <div class="page-head"><span class="kicker">Overview</span><span class="meta"><span>Ori 2.0</span><span>Brand Concept Guidelines V2 · 2026-08-26</span></span></div>
+    <div class="intro">
+      <h2 class="h3w" style="font-size:clamp(30px,3.4vw,48px)">Clarity, restraint, and a sense of forward motion.</h2>
+      <p class="lede">The guideline's idea — what feels like the future has, in a sense, already happened — expressed as rules an agent can't get wrong: open editorial layouts, calm instrument-grade type, and color that moves between light and dark depending on whether a moment needs <strong>atmosphere</strong> or <strong>function</strong>.</p>
+    </div>
+    <ol class="inv">
+      <li><div><b>Light for function, dark for moments</b><span>Read-pages on Horizon; Solar Horizon and Real Black only for covers, heros, statements, closes.</span></div></li>
+      <li><div><b>One signal</b><span>Seagrass, once per surface. On light it's a fill under black ink — never text.</span></div></li>
+      <li><div><b>Atmosphere, not decoration</b><span>Blues live in the four horizons and in data. Headlines are never blue.</span></div></li>
+      <li><div><b>One family, many widths</b><span>SF Pro (Archivo fallback). Wide cuts display; normal width reads.</span></div></li>
+      <li><div><b>Sentence case</b><span>Uppercase belongs to kickers, labels, and the folio.</span></div></li>
+      <li><div><b>Numbers are figures</b><span>Tabular everywhere; the numbers a page argues with take the wide cut.</span></div></li>
+      <li><div><b>Open layouts</b><span>Hairlines and whitespace hold the structure. No boxed sections.</span></div></li>
+      <li><div><b>Slight radii</b><span>4 · 8 · 12 · 24px — softened, never sharp, never toy-round.</span></div></li>
+      <li><div><b>Depth is earned</b><span>Soft cool shadows on photos and cards. Glow belongs to Seagrass alone.</span></div></li>
+      <li><div><b>The folio closes every page</b><span>Hairline, lockup, legal line, page number. Logo in black or white.</span></div></li>
     </ol>
-  </section>
-
-  <section>
-    <p class="eyebrow"><span class="idx">02</span>Color</p>
-    <h2>Brand-true palette, keyed to the mark</h2>
-    <div class="thread"></div>
-    <div class="swatches">
-      <div class="swatch"><div class="chip" style="background:#2F80ED"></div>
-        <div class="meta"><div class="nm">Signal Blue</div><div class="hx">#2F80ED</div><div class="use">the accent</div></div></div>
-      <div class="swatch"><div class="chip" style="background:#000416"></div>
-        <div class="meta"><div class="nm">Ink</div><div class="hx">#000416</div><div class="use">primary text</div></div></div>
-      <div class="swatch"><div class="chip" style="background:#213C60"></div>
-        <div class="meta"><div class="nm">Navy</div><div class="hx">#213C60</div><div class="use">structure, chart 2</div></div></div>
-      <div class="swatch"><div class="chip" style="background:#02122A"></div>
-        <div class="meta"><div class="nm">Night</div><div class="hx">#02122A</div><div class="use">dark sections</div></div></div>
-      <div class="swatch"><div class="chip" style="background:#4A4D5A"></div>
-        <div class="meta"><div class="nm">Slate</div><div class="hx">#4A4D5A</div><div class="use">secondary text</div></div></div>
-      <div class="swatch"><div class="chip" style="background:#8A94AB"></div>
-        <div class="meta"><div class="nm">Mist</div><div class="hx">#8A94AB</div><div class="use">captions, labels</div></div></div>
-      <div class="swatch"><div class="chip" style="background:#7EAFF1"></div>
-        <div class="meta"><div class="nm">Blue soft</div><div class="hx">#7EAFF1</div><div class="use">chart 3</div></div></div>
-      <div class="swatch"><div class="chip" style="background:#B6D1F7"></div>
-        <div class="meta"><div class="nm">Blue faint</div><div class="hx">#B6D1F7</div><div class="use">chart 4</div></div></div>
-      <div class="swatch"><div class="chip" style="background:#E3EEFC"></div>
-        <div class="meta"><div class="nm">Tint</div><div class="hx">#E3EEFC</div><div class="use">tags, chart 5</div></div></div>
-      <div class="swatch"><div class="chip" style="background:#EFF5FD"></div>
-        <div class="meta"><div class="nm">Wash</div><div class="hx">#EFF5FD</div><div class="use">callouts</div></div></div>
-      <div class="swatch"><div class="chip" style="background:#FAFBFE;border-bottom:1px solid #E3E8F4"></div>
-        <div class="meta"><div class="nm">Frost</div><div class="hx">#FAFBFE</div><div class="use">page canvas</div></div></div>
-      <div class="swatch"><div class="chip" style="background:#E3E8F4"></div>
-        <div class="meta"><div class="nm">Line</div><div class="hx">#E3E8F4</div><div class="use">hairlines</div></div></div>
-    </div>
-    <p style="margin-top:16px">A finished page is roughly <strong>90% neutral, 8% line, 2% blue</strong>.
-    When two things compete for blue, one loses it.</p>
-  </section>
-
-  <section>
-    <p class="eyebrow"><span class="idx">03</span>Typography</p>
-    <h2>Inter Display argues, Plex Mono measures</h2>
-    <div class="thread"></div>
-    <div class="type-row"><div class="spec">display · 42px · 650</div>
-      <div style="font-family:var(--display);font-size:42px;font-weight:650;line-height:1.05;letter-spacing:-.015em">Know before you ship</div></div>
-    <div class="type-row"><div class="spec">h1 · 29px · 650</div>
-      <div style="font-family:var(--display);font-size:29px;font-weight:650;line-height:1.15;letter-spacing:-.01em">Headings are sentence-case assertions</div></div>
-    <div class="type-row"><div class="spec">h2 · 20px · 600</div>
-      <div style="font-family:var(--display);font-size:20px;font-weight:600;line-height:1.25">Creators beat brand voice 3:1 with Gen-Z</div></div>
-    <div class="type-row"><div class="spec">body · 14px · 400</div>
-      <div style="max-width:60ch">Body text is Inter at a 1.6 line height, sixty to seventy characters wide, flush left. Emphasis is <strong>weight</strong> or <em>Signal Blue</em> — never italics.</div></div>
-    <div class="type-row"><div class="spec">label · 10.5px · mono</div>
-      <div style="font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--mist)">Prediction accuracy · panel size · 2026-07-07</div></div>
-    <div class="type-row"><div class="spec">metric · 32px · mono</div>
-      <div style="font-family:var(--mono);font-size:32px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.01em">87% · $1.2k · 2,400</div></div>
-  </section>
-
-  <section>
-    <p class="eyebrow"><span class="idx">04</span>Signature elements</p>
-    <h2>Meta rail, thread rule, node — and one crisp mark</h2>
-    <div class="thread"></div>
-    <p>Three moves make a page recognizably Ori, and all three come from the brand mark's
-    interlaced geometry: the <strong>meta rail</strong> you saw at the top of this page, the
-    <strong>eyebrow + thread rule</strong> opening this section (a 2px thread anchored by the
-    6px node square), and the <strong>node footer</strong> that closes every printed page.
-    Section indexes are two-digit mono because Ori documents argue in sequence.</p>
-    <p>The logo follows one rule per surface: the <strong>mark rides the meta rail</strong>
-    at cap height on every branded page (white on night), covers add the
-    <strong>wordmark as a bottom-left imprint</strong>, and resumes stay unbranded.
-    The logo is always small, crisp, and complete — <em>never</em> a watermark,
-    never cropped, never tinted, never redrawn.</p>
-    <div class="callout">
-      <span class="callout-label">Insight</span>
-      This callout is the fourth signature: a wash strip with a 2px blue thread, used once
-      per section to carry the conclusion — <strong>the “so what”, never decoration</strong>.
-    </div>
-  </section>
-
-  <section>
-    <p class="eyebrow"><span class="idx">05</span>Components</p>
-    <h2>The working set</h2>
-    <div class="thread"></div>
-
-    <h3>Metric row — the one-pager's argument</h3>
-    <div class="metric-row">
-      <div class="metric hero">
-        <div class="metric-label">Prediction accuracy</div>
-        <div class="metric-value">87<span class="unit">%</span></div>
-        <div class="metric-note"><span class="delta up">12pt</span> vs. panel baseline</div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">Time to insight</div>
-        <div class="metric-value">4<span class="unit">hrs</span></div>
-        <div class="metric-note">was 3 weeks with panels</div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">Cost per study</div>
-        <div class="metric-value">$1.2<span class="unit">k</span></div>
-        <div class="metric-note"><span class="delta down">−94%</span> vs. field research</div>
-      </div>
-      <div class="metric">
-        <div class="metric-label">Pilot campaigns</div>
-        <div class="metric-value">3</div>
-        <div class="metric-note">CPG · fintech · retail</div>
-      </div>
-    </div>
-    <p>One cell — and only one — colors its value blue: the number the page argues for.</p>
-
-    <h3>Tags</h3>
-    <p><span class="tag">Creator-native</span> <span class="tag">Deal-driven</span>
-    <span class="tag ghost">Control cell</span></p>
-
-    <h3>Table</h3>
-    <div class="scroll">
-    <table class="ori">
-      <thead><tr><th>Phase</th><th>Accounts</th><th class="data">Studies</th><th class="data">Budget</th></tr></thead>
-      <tbody>
-        <tr><td>Jul — onboard</td><td>4 existing pipeline</td><td class="data">8</td><td class="data">$14k</td></tr>
-        <tr><td>Aug — scale</td><td>4 new logos</td><td class="data">12</td><td class="data">$21k</td></tr>
-        <tr><td>Sep — validate</td><td>2 enterprise</td><td class="data">6</td><td class="data">$18k</td></tr>
-        <tr class="total"><td>Total</td><td></td><td class="data">26</td><td class="data">$53k</td></tr>
-      </tbody>
-    </table>
-    </div>
-
-    <h3>Persona cards — Socialtrait-native evidence</h3>
-    <div class="persona-grid">
-      <div class="persona">
-        <div class="avatar">MA</div>
-        <div>
-          <div class="name">Maya</div>
-          <div class="role">Simulated Gen-Z shopper · cell A1</div>
-          <div class="traits"><span class="tag">Creator-native</span><span class="tag">Deal-driven</span></div>
-          <q>If the brand says it, it's an ad. If a creator I follow says it, I'll actually look.</q>
-        </div>
-      </div>
-      <div class="persona">
-        <div class="avatar">RD</div>
-        <div>
-          <div class="name">Raj</div>
-          <div class="role">Simulated loyalist · cell D2</div>
-          <div class="traits"><span class="tag">8× repeat buyer</span><span class="tag">Email-first</span></div>
-          <q>Why is some influencer telling me about a brand I already use?</q>
-        </div>
-      </div>
-    </div>
-    <p>Simulated quotes are always cited to their persona — honest provenance is a content
-    invariant, not a style choice.</p>
-
-    <h3>Quote &amp; timeline</h3>
-    <div class="quote">
-      <p>"The simulation caught in four hours what our panel would have told us three weeks
-      after launch."</p>
-      <cite>VP Growth · pilot client</cite>
-    </div>
-    <ul class="timeline">
-      <li><span class="when">2026-04</span><span class="what">Pilot kickoff</span> — three enterprise accounts instrumented</li>
-      <li><span class="when">2026-06</span><span class="what">Validation</span> — 12 of 12 campaign rankings matched in-market</li>
-      <li><span class="when">2026-07</span><span class="what">Expansion ask</span> — ten accounts, one quarter</li>
-    </ul>
-  </section>
-
-  <section>
-    <p class="eyebrow"><span class="idx">06</span>Charts</p>
-    <h2>One blue series; everything else stands back</h2>
-    <div class="thread"></div>
-    <div class="figure">
-      <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Time to insight comparison">
-        <g font-family="IBM Plex Mono, SF Mono, monospace" font-size="10" fill="#8A94AB">
-          <text x="0" y="52">Field study</text>
-          <text x="0" y="102">Online panel</text>
-          <text x="0" y="152">Socialtrait</text>
-        </g>
-        <line x1="120" y1="20" x2="120" y2="170" stroke="#C9D2E8" stroke-width="1"/>
-        <rect x="120" y="38" width="460" height="20" fill="#B6D1F7"/>
-        <rect x="120" y="88" width="300" height="20" fill="#7EAFF1"/>
-        <rect x="120" y="138" width="18" height="20" fill="#2F80ED"/>
-        <g font-family="IBM Plex Mono, SF Mono, monospace" font-size="11" fill="#000416">
-          <text x="588" y="52">28 d</text>
-          <text x="428" y="102">19 d</text>
-          <text x="146" y="152">4 h</text>
-        </g>
-      </svg>
-      <div class="figcap"><span class="fig-idx">FIG 01</span>
-        <span>Median time from question to segmented result. SOURCE: pilot instrumentation.</span></div>
-    </div>
-    <p>Square bars, horizontal gridlines only, mono axis labels, values labeled directly —
-    no legends below three series. Series ramp: <code>#2F80ED</code> →
-    <code>#213C60</code> → <code>#7EAFF1</code> → <code>#B6D1F7</code> → <code>#E3EEFC</code>.</p>
-  </section>
-
-  <section>
-    <p class="eyebrow"><span class="idx">07</span>Night</p>
-    <h2>Dark sections exist only on screens</h2>
-    <div class="thread"></div>
-    <div class="night-demo">
-      <p class="eyebrow">Audience simulation</p>
-      <h2 style="font-family:var(--display);font-weight:650;letter-spacing:-.012em;max-width:20ch;text-wrap:balance">Know how your audience reacts before you ship</h2>
-      <p style="max-width:48ch;margin-top:10px">Landing heros, slide covers, and closing slides go Night
-      <code style="background:rgba(47,128,237,.14);border-color:#14294D;color:#B6D1F7">#02122A</code> —
-      with the system's one sanctioned gradient. Print body pages never go dark.</p>
-    </div>
-  </section>
-
-  <section>
-    <p class="eyebrow"><span class="idx">08</span>Artifacts</p>
-    <h2>Seven templates, each with a density contract</h2>
-    <div class="thread"></div>
-    <div class="artifact-grid">
-      <div class="artifact"><span class="file">templates/one-pager.html</span>
-        <h3>One-pager</h3><p>Exec brief where the metric row is the argument.</p>
-        <div class="contract">1 page exactly · metrics 3–4 · ends with THE ASK</div></div>
-      <div class="artifact"><span class="file">templates/report.html</span>
-        <h3>Insight report</h3><p>Claim → evidence → "so what" strip, per section.</p>
-        <div class="contract">3–6 sections · 1 evidence shape each · METHOD callout</div></div>
-      <div class="artifact"><span class="file">templates/long-doc.html</span>
-        <h3>Long doc</h3><p>White papers and specs, with cover recipe and TOC.</p>
-        <div class="contract">pages 60–85% full · ≤1 figure/page · exec summary ≤1p</div></div>
-      <div class="artifact"><span class="file">templates/slides.html</span>
-        <h3>Slides</h3><p>1280×720; night cover, assertion titles, pinned takeaways.</p>
-        <div class="contract">ghost test · 1 evidence/slide · takeaway ≤14 words</div></div>
-      <div class="artifact"><span class="file">templates/resume.html</span>
-        <h3>Resume</h3><p>Dense single page; every bullet ends in an outcome.</p>
-        <div class="contract">action+scope+result+outcome · 1-line bullets</div></div>
-      <div class="artifact"><span class="file">templates/meeting-minutes.html</span>
-        <h3>Meeting minutes</h3><p>TL;DR first; decisions and actions carry referenceable IDs.</p>
-        <div class="contract">TL;DR ≤25 words · D-ids · A-ids w/ owner+due · status chips</div></div>
-      <div class="artifact"><span class="file">templates/landing-page.html</span>
-        <h3>Landing page</h3><p>Night hero, proof strip, one primary CTA per viewport.</p>
-        <div class="contract">hero ≤9 words · real proof only · breakpoint 900px</div></div>
-    </div>
-    <p style="margin-top:16px">Agents copy the template and edit body content only —
-    the CSS is law, the tokens change in one place (<code>tokens/ori.css</code>), and the
-    pre-ship checklist in <code>references/anti-patterns.md</code> gates delivery.</p>
-  </section>
-
-  <div class="page-footer">
-    <span>Socialtrait / Ori v1.0</span>
-    <span class="right">socialtrait/Ori · specimen</span>
   </div>
+</section>
 
-</div>
+<!-- ═══ 01 Logo ═══ -->
+<section class="chapter chapter-band" id="logo">
+  <div class="wrap"><span class="num">01</span><span class="title">Logo</span></div>
+</section>
+<section class="band">
+  <div class="wrap">
+    <div class="page-head"><span class="kicker">Logo lockup — refined</span><span class="meta"><span>assets/logo/</span></span></div>
+    <div class="intro">
+      <h2 class="h4w">The mark and wordmark, finally one system.</h2>
+      <p class="lede">Rebuilt from four equal circles and two concentric inner circles on a shared grid, unified into one path, softened with slight corner radii. Less aggressive, more human, more ownable — and the only logo going forward.</p>
+    </div>
+    <div class="grid-2" style="margin-top:40px">
+      <div class="logo-tile light"><svg class="lockup" viewBox="0 0 1086.6 165.7" style="color:var(--black)"><use href="#st-lockup"/></svg><span class="cap">Lockup · black on light — the default</span></div>
+      <div class="logo-tile horizon dawn"><svg class="lockup" viewBox="0 0 1086.6 165.7" style="color:#fff"><use href="#st-lockup"/></svg><span class="cap">Lockup · white on Dawn, Dusk, Twilight, Real Black</span></div>
+    </div>
+    <div class="grid-3" style="margin-top:24px">
+      <div class="logo-tile light"><svg class="mark" viewBox="0 0 171.7 165.7" style="color:var(--black)"><use href="#st-mark"/></svg><span class="cap">Mark · only where the lockup can't fit</span></div>
+      <div class="logo-tile horizon day"><svg class="lockup" viewBox="0 0 1086.6 165.7" style="color:var(--black);height:40px"><use href="#st-lockup"/></svg><span class="cap" style="color:var(--black)">Black on Day</span></div>
+      <div class="logo-tile light" style="flex-direction:column;gap:12px">
+        <div class="clear"><svg viewBox="0 0 1086.6 165.7" style="height:40px;color:var(--black)"><use href="#st-lockup"/></svg></div>
+        <span class="cap">Clear space · the mark's inner aperture, all sides</span>
+      </div>
+    </div>
+    <div class="dont">
+      <div><figure><svg viewBox="0 0 1086.6 165.7" style="height:26px;color:var(--day)"><use href="#st-lockup"/></svg></figure><figcaption>Don't color it — black or white only.</figcaption></div>
+      <div><figure><svg viewBox="0 0 1086.6 165.7" style="height:26px;color:var(--black);transform:rotate(-12deg)"><use href="#st-lockup"/></svg></figure><figcaption>Don't rotate, skew, or outline.</figcaption></div>
+      <div><figure><svg viewBox="0 0 171.7 165.7" style="height:260px;color:var(--black);opacity:.08;position:absolute;right:-60px"><use href="#st-mark"/></svg></figure><figcaption>Don't watermark, crop, or bleed.</figcaption></div>
+      <div><figure><span style="font-size:30px;font-weight:700;font-stretch:125%">socialtrait</span></figure><figcaption>Don't retype the wordmark.</figcaption></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 02 Typography ═══ -->
+<section class="chapter chapter-band" id="type">
+  <div class="wrap"><span class="num">02</span><span class="title">Typography</span></div>
+</section>
+<section class="band">
+  <div class="wrap">
+    <div class="page-head"><span class="kicker">Typeface</span><span class="meta"><span>SF Pro · fallback Archivo</span></span></div>
+    <div class="glyphs">
+      <div>
+        <div class="lab">Primary typeface: SF Pro W120</div>
+        <div class="aa" style="font-weight:700;font-stretch:120%">aa</div>
+        <div class="set" style="font-weight:510;font-stretch:120%">abcdefghijklmno<br>pqrstuvwxyz</div>
+        <div class="digits" style="font-stretch:120%"><span>0123456789</span><span>~!@#$%^&amp;*()_+</span></div>
+      </div>
+      <div>
+        <div class="lab">Secondary typeface: SF Pro Regular</div>
+        <div class="aa" style="font-weight:600">aa</div>
+        <div class="set">abcdefghijklmnopq<br>rstuvwxyz</div>
+        <div class="digits"><span>0123456789</span><span>~!@#$%^&amp;*()_+</span></div>
+      </div>
+    </div>
+
+    <div class="section-head" style="margin-top:96px"><span class="index"><b>02.1</b>Typography styles</span><h2 class="h4w">Eight styles. Personality comes from width.</h2></div>
+    <div class="typetable">
+      <div class="row"><div class="ann"><u>SF Pro Variable</u><br>Size 128px<br>Wght 590<br>Wdth 132</div><div class="sample h1" style="font-size:clamp(48px,7vw,104px)">H1 Headline</div></div>
+      <div class="row"><div class="ann"><u>SF Pro Variable</u><br>Size 96px<br>Wght 700<br>Wdth 132</div><div class="sample h2" style="font-size:clamp(40px,5.6vw,84px)">H2 Headline</div></div>
+      <div class="row"><div class="ann"><u>SF Pro Variable</u><br>Size 64px<br>Wght 510<br>Wdth 118</div><div class="sample h3w" style="font-size:clamp(30px,4vw,60px)">H3 Headline Wide</div></div>
+      <div class="row"><div class="ann"><u>SF Pro Variable</u><br>Size 64px<br>Wght 400<br>Wdth 110</div><div class="sample h3" style="font-size:clamp(30px,4vw,60px)">H3 Headline</div></div>
+      <div class="row"><div class="ann"><u>SF Pro Variable</u><br>Size 36px<br>Wght 650<br>Wdth 118</div><div class="sample h4w">H4 Headline Wide</div></div>
+      <div class="row"><div class="ann"><u>SF Pro Variable</u><br>Size 36px<br>Wght 650<br>Wdth 100</div><div class="sample h4">H4 Headline</div></div>
+      <div class="row"><div class="ann"><u>SF Pro Variable</u><br>Size 18px<br>Wght 591<br>Wdth 120</div><div class="sample body1">Body 1 — labels, kickers, buttons, the instrument voice</div></div>
+      <div class="row"><div class="ann"><u>SF Pro Variable</u><br>Size 18px<br>Wght 400<br>Wdth 100</div><div class="sample body2">Body 2 — reading text, calm and plain, at normal width</div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ 03 Color ═══ -->
+<section class="chapter chapter-band" id="color">
+  <div class="wrap"><span class="num">03</span><span class="title">Color</span></div>
+</section>
+<section class="band">
+  <div class="wrap">
+    <div class="page-head"><span class="kicker">Solar Horizon + Seagrass</span><span class="meta"><span>Atmosphere · Signal · Neutrals</span></span></div>
+    <div class="grid-4" style="margin-top:40px">
+      <div class="hz-tile horizon dawn"><div><div class="name">Dawn — hero color direction</div><div class="hex">#314188</div></div><span class="signal"><b>Seagrass</b>#BAFE81</span><div class="hex">White text</div></div>
+      <div class="hz-tile horizon day"><div><div class="name">Day</div><div class="hex">#3E6FE7</div></div><span class="signal"><b>Seagrass</b>#BAFE81</span><div class="hex">Real Black text</div></div>
+      <div class="hz-tile horizon dusk"><div><div class="name">Dusk</div><div class="hex">#2A2759</div></div><span class="signal"><b>Seagrass</b>#BAFE81</span><div class="hex">White text</div></div>
+      <div class="hz-tile horizon twilight"><div><div class="name">Twilight</div><div class="hex">#070B2F</div></div><span class="signal"><b>Seagrass</b>#BAFE81</span><div class="hex">White text</div></div>
+    </div>
+    <div class="neutrals">
+      <div class="sw-black"><b>Real Black</b>RGB 31, 41, 55 · #1F2937</div>
+      <div class="sw-dust"><b>Dust</b>RGB 83, 91, 101 · #535B65</div>
+      <div class="sw-cloud"><b>Cloud</b>RGB 204, 206, 209 · #CCCED1</div>
+      <div class="sw-horizon"><b>Horizon</b>RGB 250, 250, 250 · #FAFAFA</div>
+    </div>
+    <div class="chips">
+      <div class="chip"><i style="background:var(--mist)"></i><span><b>Mist</b>#80868F · captions</span></div>
+      <div class="chip"><i style="background:var(--rule)"></i><span><b>Rule</b>#E3E5E8 · hairline</span></div>
+      <div class="chip"><i style="background:var(--fog)"></i><span><b>Fog</b>#F1F2F4 · panels</span></div>
+      <div class="chip"><i style="background:var(--day-deep)"></i><span><b>Day deep</b>#2F5BCC · links</span></div>
+      <div class="chip"><i style="background:var(--pos)"></i><span><b>Pos</b>#2F7A12 · deltas</span></div>
+      <div class="chip"><i style="background:var(--neg)"></i><span><b>Neg</b>#C23B32 · deltas, risk</span></div>
+    </div>
+    <div class="usage">
+      <div class="d"><div class="t">dark<br>background</div><div class="u">Key hero moments — more visuals than text.</div></div>
+      <div class="l"><div class="t">light<br>background</div><div class="u">Functional pages — more text than visuals.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 04 Photography ═══ -->
+<section class="chapter chapter-band" id="photo">
+  <div class="wrap"><span class="num">04</span><span class="title">Photography</span></div>
+</section>
+<section class="band">
+  <div class="wrap">
+    <div class="page-head"><span class="kicker">Image treatment</span><span class="meta"><span>.photo · .photo.soft</span></span></div>
+    <div class="photo-demo" style="margin-top:40px">
+      <div class="photo frame soft" role="img" aria-label="Treatment frame: 24px radius, cool shadow, progressive blur at the lower edge">
+        <div class="scene horizon day"></div><div class="sun"></div>
+        <div class="ui"><span class="label">Simulated panel · live</span><div style="font-size:30px;font-weight:590;font-stretch:125%;margin-top:6px">72%</div><div class="bar"><i></i></div></div>
+      </div>
+      <div>
+        <h2 class="h4w" style="margin-bottom:20px">Bright, real, and softened at the edges.</h2>
+        <ul class="rules">
+          <li class="yes"><b>Do</b>Brighter tones, realism, natural light. Use real photographs as the baseline for any AI editing.</li>
+          <li class="yes"><b>Do</b>Large corner radii (24px), the soft cool shadow, and progressive blur toward one edge.</li>
+          <li class="no"><b>Don't</b>Darker, moody, or green-toned imagery. Stock clichés. 3D blobs.</li>
+          <li class="no"><b>Don't</b>Use a photo to fill a sparse page, or ship a placeholder box.</li>
+        </ul>
+        <p class="caption" style="margin-top:14px">Frame above is a CSS composition demonstrating the treatment; drop a real photograph into <code>.photo</code> to apply it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 05 Components ═══ -->
+<section class="chapter chapter-band" id="components">
+  <div class="wrap"><span class="num">05</span><span class="title">Components</span></div>
+</section>
+<section class="band">
+  <div class="wrap">
+    <div class="page-head"><span class="kicker">Components</span><span class="meta"><span>tokens/ori.css</span></span></div>
+
+    <div class="demo-label"><span class="label">Page head · section head · signal</span><span class="ann">Kicker top-left, quiet meta right; hairline → index → assertion; one Seagrass mark per page</span></div>
+    <div class="demo">
+      <div class="page-head"><span class="kicker">Insight report</span><span class="meta"><span>Gen-Z beauty panel</span><span>2026-10-07</span><span>Confidential</span></span></div>
+      <h2 class="h3w" style="font-size:44px;margin:32px 0 14px">Creators move intent <span class="hl">3.1×</span> further than brands</h2>
+      <p class="lede" style="max-width:56ch">Across 1,200 simulated Gen-Z shoppers, creator endorsement outperformed brand-owned messaging in every category we tested.</p>
+      <header class="section-head"><span class="index"><b>01</b>Audience signal</span><h3 class="h4w">Trust follows the face, not the logo</h3></header>
+      <p>Shoppers discount brand claims they can't attribute to a person. The effect is strongest where products touch skin — skincare and fragrance — and weakest in accessories.</p>
+    </div>
+
+    <div class="demo-label"><span class="label">Metric row</span><span class="ann">Spec-sheet seams; label above; one <code>.key</code></span></div>
+    <div class="demo">
+      <div class="metric-row">
+        <div class="metric key"><div class="metric-label">Intent lift</div><div class="metric-value">3.1<span class="unit">×</span></div><div class="metric-note"><span class="delta up">0.4 vs Q2</span></div></div>
+        <div class="metric"><div class="metric-label">Panel size</div><div class="metric-value">1,200</div><div class="metric-note">Simulated personas</div></div>
+        <div class="metric"><div class="metric-label">Accuracy</div><div class="metric-value">87<span class="unit">%</span></div><div class="metric-note">vs. live A/B</div></div>
+        <div class="metric"><div class="metric-label">Turnaround</div><div class="metric-value">48<span class="unit">h</span></div><div class="metric-note"><span class="delta down">6h slower</span></div></div>
+      </div>
+    </div>
+
+    <div class="demo-label"><span class="label">Callouts</span><span class="ann">Insight once per section · ask once per document · risk/warn by inset bar</span></div>
+    <div class="grid-2">
+      <div class="demo stack">
+        <div class="callout insight mt-0"><span class="callout-label">Insight</span>Shift 30% of brand-owned spend into creator seeding before the Q4 drop.</div>
+        <div class="callout risk"><span class="callout-label">Risk</span>Creator fatigue rises after three sponsored posts per month.</div>
+      </div>
+      <div class="demo"><div class="callout ask mt-0" style="height:100%"><span class="callout-label">The ask</span><p style="color:var(--on-dark);font-size:20px;font-weight:510;font-stretch:118%;line-height:1.35;margin:0">Approve a 10-account pilot by October 24 so results land before Q1 planning.</p></div></div>
+    </div>
+
+    <div class="demo-label"><span class="label">Table · tags</span><span class="ann">Caps head over Cloud; Rule rows; numbers right; one key row</span></div>
+    <div class="demo">
+      <div class="table-scroll"><table class="ori" style="min-width:560px">
+        <thead><tr><th>Segment</th><th>Channel</th><th class="num">Intent</th><th class="num">Share</th><th class="num">Δ vs Q2</th></tr></thead>
+        <tbody>
+          <tr class="key"><td>Creator-led</td><td><span class="tag signal-tag">Recommended</span></td><td class="num">62%</td><td class="num">41%</td><td class="num"><span class="delta up">18 pts</span></td></tr>
+          <tr><td>Peer reviews</td><td><span class="tag">Organic</span></td><td class="num">48%</td><td class="num">27%</td><td class="num"><span class="delta up">6 pts</span></td></tr>
+          <tr><td>Brand-owned</td><td><span class="tag outline">Paid</span></td><td class="num">21%</td><td class="num">32%</td><td class="num"><span class="delta down">4 pts</span></td></tr>
+          <tr class="total"><td>All channels</td><td></td><td class="num">44%</td><td class="num">100%</td><td class="num">+7 pts</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="demo-label"><span class="label">Quote · persona · spec list · timeline</span><span class="ann">Simulated voices cite the persona, never pass as human research</span></div>
+    <div class="grid-2">
+      <div class="demo">
+        <div class="quote"><p>“If someone I follow actually uses it, I'll try it. If it's just the brand talking, I scroll.”</p><cite>— Maya · Simulated Gen-Z shopper</cite></div>
+        <div class="persona" style="margin-top:28px">
+          <div class="avatar">MR</div>
+          <div><div class="name">Maya Reyes</div><div class="role">21 · Austin · skincare-first</div>
+            <div class="traits"><span class="tag">Creator-led</span><span class="tag">Value-seeking</span></div>
+            <q>Reviews from people with my skin type beat any ad.</q></div>
+        </div>
+      </div>
+      <div class="demo">
+        <dl class="spec">
+          <dt>Panel</dt><dd>1,200 simulated personas, US, 18–26</dd>
+          <dt>Fieldwork</dt><dd>2026-09-28 → 2026-10-02</dd>
+          <dt>Method</dt><dd>Paired-stimulus exposure, intent on a 7-point scale</dd>
+          <dt>Owner</dt><dd>Insights team</dd>
+        </dl>
+        <ol class="timeline" style="margin-top:32px">
+          <li><span class="when">Sep 28</span><span class="what">Panel calibrated</span></li>
+          <li><span class="when">Oct 02</span><span class="what">Fieldwork closed</span></li>
+          <li class="now"><span class="when">Oct 07 · now</span><span class="what">Readout to brand team</span></li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="demo-label"><span class="label">Charts</span><span class="ann">Light: Day highlights, the ramp steps down · Dark: Seagrass highlights</span></div>
+    <div class="grid-2">
+      <div class="demo">
+        <figure class="figure mt-0" style="margin:0">
+          <svg viewBox="0 0 520 280" role="img" aria-label="Purchase intent by source: creator 62%, peer 48%, retail 33%, brand 21%">
+            <g font-family="SF Pro, Archivo, sans-serif" font-size="11" fill="#80868F" style="font-stretch:120%">
+              <line x1="40" x2="520" y1="230" y2="230" stroke="#CCCED1"/>
+              <line x1="40" x2="520" y1="172" y2="172" stroke="#E3E5E8"/><line x1="40" x2="520" y1="114" y2="114" stroke="#E3E5E8"/><line x1="40" x2="520" y1="56" y2="56" stroke="#E3E5E8"/>
+              <text x="30" y="234" text-anchor="end">0</text><text x="30" y="176" text-anchor="end">20</text><text x="30" y="118" text-anchor="end">40</text><text x="30" y="60" text-anchor="end">60</text>
+              <path d="M78 230 V53 a3 3 0 0 1 3 -3 h62 a3 3 0 0 1 3 3 V230 Z" fill="#3E6FE7"/>
+              <path d="M196 230 V94 a3 3 0 0 1 3 -3 h62 a3 3 0 0 1 3 3 V230 Z" fill="#314188"/>
+              <path d="M314 230 V138 a3 3 0 0 1 3 -3 h62 a3 3 0 0 1 3 3 V230 Z" fill="#9DB8F5"/>
+              <path d="M432 230 V172 a3 3 0 0 1 3 -3 h62 a3 3 0 0 1 3 3 V230 Z" fill="#CCCED1"/>
+              <g fill="#1F2937" font-size="12" font-weight="591" text-anchor="middle"><text x="112" y="42">62%</text><text x="230" y="83">48%</text><text x="348" y="127">33%</text><text x="466" y="161">21%</text></g>
+              <g text-anchor="middle"><text x="112" y="250">Creator</text><text x="230" y="250">Peer</text><text x="348" y="250">Retail</text><text x="466" y="250">Brand</text></g>
+            </g>
+          </svg>
+          <figcaption class="figcap"><span class="fig-idx">Fig 01</span><span>Creators lead purchase intent across sources.</span><span class="source">Source: Socialtrait panel, n=1,200</span></figcaption>
+        </figure>
+      </div>
+      <div class="chart-dark horizon twilight">
+        <figure class="figure" style="margin:0">
+          <svg viewBox="0 0 520 280" role="img" aria-label="Intent over six weeks: creator-led rises from 38 to 62; brand-led flat near 21">
+            <g font-family="SF Pro, Archivo, sans-serif" font-size="11" fill="rgba(250,250,250,.6)" style="font-stretch:120%">
+              <line x1="20" x2="500" y1="230" y2="230" stroke="rgba(250,250,250,.3)"/>
+              <line x1="20" x2="500" y1="150" y2="150" stroke="rgba(250,250,250,.12)"/><line x1="20" x2="500" y1="70" y2="70" stroke="rgba(250,250,250,.12)"/>
+              <polyline points="40,166 128,150 216,128 304,110 392,86 480,62" fill="none" stroke="#BAFE81" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+              <polyline points="40,178 128,176 216,181 304,176 392,179 480,177" fill="none" stroke="rgba(250,250,250,.55)" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>
+              <circle cx="480" cy="62" r="5" fill="#BAFE81" stroke="#070B2F" stroke-width="2"/>
+              <circle cx="480" cy="177" r="5" fill="rgba(250,250,250,.75)" stroke="#070B2F" stroke-width="2"/>
+              <g font-size="12" font-weight="591"><text x="470" y="46" text-anchor="end" fill="#BAFE81">Creator-led 62</text><text x="470" y="200" text-anchor="end" fill="#FAFAFA">Brand-led 21</text></g>
+              <g text-anchor="middle"><text x="40" y="250">W1</text><text x="128" y="250">W2</text><text x="216" y="250">W3</text><text x="304" y="250">W4</text><text x="392" y="250">W5</text><text x="480" y="250">W6</text></g>
+            </g>
+          </svg>
+          <figcaption class="figcap" style="color:var(--on-dark-2)"><span class="fig-idx" style="color:var(--on-dark)">Fig 02</span><span>The gap widens every week.</span><span class="source" style="color:var(--on-dark-2)">Source: Socialtrait panel</span></figcaption>
+        </figure>
+      </div>
+    </div>
+
+    <div class="demo-label"><span class="label">Buttons · code</span><span class="ann">One primary per viewport · on dark the primary becomes the signal</span></div>
+    <div class="grid-2">
+      <div class="demo" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap"><a class="btn primary">Run a simulation</a><a class="btn ghost">Read the method</a><code>font-stretch: 132%</code></div>
+      <div class="demo horizon dawn" style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;box-shadow:none"><a class="btn primary">Run a simulation</a><a class="btn ghost">Read the method</a></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Artifacts ═══ -->
+<section class="band paper" id="artifacts">
+  <div class="wrap">
+    <div class="page-head"><span class="kicker">Artifacts</span><span class="meta"><span>templates/</span></span></div>
+    <h2 class="h4w" style="margin:32px 0 32px">Copy a template. Edit the content. Ship.</h2>
+    <div class="grid-4">
+      <a class="artifact" href="templates/one-pager.html"><span class="label">A4 · 1 page</span><h4>One-pager</h4><p>The metric row is the argument.</p></a>
+      <a class="artifact" href="templates/report.html"><span class="label">A4 · light</span><h4>Insight report</h4><p>Claim, evidence, insight — per section.</p></a>
+      <a class="artifact" href="templates/long-doc.html"><span class="label">A4 · Dawn cover</span><h4>Long doc</h4><p>White papers and specs, with chapter openers.</p></a>
+      <a class="artifact" href="templates/slides.html"><span class="label">1280×720</span><h4>Slides</h4><p>Light evidence, dark moments.</p></a>
+      <a class="artifact" href="templates/meeting-minutes.html"><span class="label">A4 · 1–3 pages</span><h4>Minutes</h4><p>Decisions D-ids, actions A-ids.</p></a>
+      <a class="artifact" href="templates/resume.html"><span class="label">A4 · unbranded</span><h4>Resume</h4><p>Dense, quantified, one page.</p></a>
+      <a class="artifact" href="templates/landing-page.html"><span class="label">Responsive</span><h4>Landing page</h4><p>Dawn hero, Seagrass CTA.</p></a>
+      <a class="artifact" href="https://github.com/socialtrait/Ori/tree/main/scripts"><span class="label">docx · pptx</span><h4>Office</h4><p>Native generators for Google Docs and Slides.</p></a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Close — Dusk ═══ -->
+<section class="horizon dusk close">
+  <div class="wrap">
+    <h2 class="h2">Light does the work. Dark makes the moment.</h2>
+    <span class="signal label">Seagrass marks what matters</span>
+    <footer class="folio">
+      <svg class="lockup" viewBox="0 0 1086.6 165.7"><use href="#st-lockup"/></svg>
+      <span class="legal">Socialtrait © 2026</span>
+      <span class="pageno">Ori 2.0 · Brand Concept Guidelines V2</span>
+    </footer>
+  </div>
+</section>
 </body>
 </html>

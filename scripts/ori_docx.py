@@ -1,493 +1,1024 @@
 #!/usr/bin/env python3
-"""Ori-native DOCX generator (see references/office.md).
+"""Ori v2 DOCX generator (spec: references/office.md, references/design.md).
 
-Encodes Ori's token system for Word / Google Docs. Agents import OriDoc
-and compose documents from the same components the HTML templates use.
-Running this file directly writes ori-docx-demo.docx as a visual check.
+Encodes the Ori v2 token system for Word / Google Docs. Agents import
+OriDoc and compose documents from the same components the HTML templates
+use: page head, title, lede, metric row, section head, body, callout (+ the
+ask), table, quote, spec list, figure, chapter opener, folio, and the
+meeting-minutes set (logistics, agenda, decisions, actions, smallprint).
+
+docx is a *light* medium: Horizon canvas, Real Black ink, one Seagrass
+signal per page, hairlines for structure. Horizons and dark surfaces never
+appear in docx (print rule).
+
+    python3 scripts/ori_docx.py [OUT.docx]
+
+writes a demo exercising every component (default: $TMPDIR/ori-docx-demo.docx,
+never inside the repo).
 """
+import re
+import sys
+import tempfile
 from pathlib import Path
 
 from docx import Document
-from docx.enum.table import WD_TABLE_ALIGNMENT
-from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_TAB_ALIGNMENT
+from docx.enum.section import WD_SECTION
+from docx.enum.table import WD_CELL_VERTICAL_ALIGNMENT, WD_ROW_HEIGHT_RULE
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING, WD_TAB_ALIGNMENT
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
-from docx.shared import Cm, Mm, Pt, RGBColor
+from docx.shared import Mm, Pt, RGBColor
 
-# ── Ori tokens (mirror tokens/ori.css; change there first) ──────────
-BLUE = RGBColor(0x2F, 0x80, 0xED)
-BLUE_DEEP = RGBColor(0x11, 0x60, 0xC6)
-NAVY = RGBColor(0x21, 0x3C, 0x60)
-INK = RGBColor(0x00, 0x04, 0x16)
-SLATE = RGBColor(0x4A, 0x4D, 0x5A)
-MIST = RGBColor(0x8A, 0x94, 0xAB)
-POS = RGBColor(0x0E, 0x8A, 0x5C)
-NEG = RGBColor(0xD6, 0x45, 0x45)
-LINE = "E3E8F4"
-LINE_STRONG = "C9D2E8"
-WASH = "EFF5FD"
-WARN = "B7791F"
+# ── Ori v2 tokens (mirror tokens/ori.css; change there first) ───────
+HEX = {
+    "black": "1F2937",     # Real Black — primary text
+    "dust": "535B65",      # secondary text
+    "mist": "80868F",      # captions, labels, page numbers
+    "cloud": "CCCED1",     # strong hairline
+    "rule": "E3E5E8",      # default hairline
+    "fog": "F1F2F4",       # panel fill
+    "horizon": "FAFAFA",   # the light canvas
+    "paper": "FFFFFF",
+    "seagrass": "BAFE81",  # the one signal (fill under black ink)
+    "dawn": "314188",
+    "day": "3E6FE7",
+    "day_deep": "2F5BCC",  # links / blue text on light
+    "day_soft": "9DB8F5",
+    "pos": "2F7A12",
+    "neg": "C23B32",
+    "warn": "9A6206",
+}
+C = {k: RGBColor.from_string(v) for k, v in HEX.items()}
 
-SANS = "Inter"
-MONO = "IBM Plex Mono"
+FONT = "Archivo"            # SF Pro's open fallback; on Google Fonts
+CODE = "JetBrains Mono"     # code only
 
-ASSETS = Path(__file__).resolve().parent.parent / "assets" / "logo" / "png"
+ROOT = Path(__file__).resolve().parent.parent
+LOGO = ROOT / "assets" / "logo" / "png"
 
-MARGINS = {  # T, R, B, L in mm — mirrors design.md §4.2
-    "one-pager": (14, 16, 14, 16),
-    "long-doc": (18, 20, 20, 20),
-    "report": (16, 18, 18, 18),
-    "resume": (12, 14, 12, 14),
-    "minutes": (16, 18, 18, 18),
+LEGAL = "Confidential material. Socialtrait © 2026. All rights reserved."
+LEGAL_PUBLIC = "Socialtrait © 2026"
+
+MARGINS = {  # T, R, B, L in mm — design.md §4.4
+    "one-pager": (14, 16, 12, 16),
+    "long-doc": (18, 20, 14, 20),
+    "report": (16, 18, 14, 18),
+    "resume": (12, 14, 10, 14),
+    "minutes": (16, 18, 14, 18),
+}
+
+# Print scale, design.md §3.3 (pt)
+SZ = {"title": 26, "section": 15, "sub": 11, "lede": 12, "body": 9.5,
+      "small": 8.5, "label": 7, "kicker": 9, "metric": 26, "folio": 6,
+      "quote": 14, "callout": 10.5}
+
+# ── OOXML child order (Word rejects out-of-order children) ──────────
+_ORDER = {
+    "w:rPr": ["w:rStyle", "w:rFonts", "w:b", "w:bCs", "w:i", "w:iCs",
+              "w:caps", "w:smallCaps", "w:strike", "w:dstrike", "w:outline",
+              "w:shadow", "w:emboss", "w:imprint", "w:noProof",
+              "w:snapToGrid", "w:vanish", "w:webHidden", "w:color",
+              "w:spacing", "w:w", "w:kern", "w:position", "w:sz", "w:szCs",
+              "w:highlight", "w:u", "w:effect", "w:bdr", "w:shd",
+              "w:fitText", "w:vertAlign", "w:rtl", "w:cs", "w:em", "w:lang"],
+    "w:pPr": ["w:pStyle", "w:keepNext", "w:keepLines", "w:pageBreakBefore",
+              "w:framePr", "w:widowControl", "w:numPr",
+              "w:suppressLineNumbers", "w:pBdr", "w:shd", "w:tabs",
+              "w:suppressAutoHyphens", "w:kinsoku", "w:wordWrap",
+              "w:overflowPunct", "w:topLinePunct", "w:autoSpaceDE",
+              "w:autoSpaceDN", "w:bidi", "w:adjustRightInd", "w:snapToGrid",
+              "w:spacing", "w:ind", "w:contextualSpacing", "w:mirrorIndents",
+              "w:suppressOverlap", "w:jc", "w:textDirection",
+              "w:textAlignment", "w:textboxTightWrap", "w:outlineLvl",
+              "w:divId", "w:cnfStyle", "w:rPr", "w:sectPr", "w:pPrChange"],
+    "w:tcPr": ["w:cnfStyle", "w:tcW", "w:gridSpan", "w:hMerge", "w:vMerge",
+               "w:tcBorders", "w:shd", "w:noWrap", "w:tcMar",
+               "w:textDirection", "w:tcFitText", "w:vAlign", "w:hideMark"],
+    "w:tblPr": ["w:tblStyle", "w:tblpPr", "w:tblOverlap", "w:bidiVisual",
+                "w:tblStyleRowBandSize", "w:tblStyleColBandSize", "w:tblW",
+                "w:jc", "w:tblCellSpacing", "w:tblInd", "w:tblBorders",
+                "w:shd", "w:tblLayout", "w:tblCellMar", "w:tblLook"],
 }
 
 
-# ── low-level oxml helpers ───────────────────────────────────────────
-def _p_border(paragraph, edge="bottom", size=4, color=LINE, space=4):
-    """Paragraph border. size is in 1/8 pt (4 = 0.5pt)."""
+def _set_child(parent, tag, order_key):
+    """Replace-or-insert child `tag` at its schema position; return it."""
+    old = parent.find(qn(tag))
+    if old is not None:
+        parent.remove(old)
+    el = OxmlElement(tag)
+    seq = _ORDER[order_key]
+    later = seq[seq.index(tag) + 1:]
+    for sib in parent:
+        if sib.tag in {qn(t) for t in later}:
+            sib.addprevious(el)
+            return el
+    parent.append(el)
+    return el
+
+
+def _edges(parent, spec):
+    """spec: {edge: (sz_eighths, hex) | None}. None → val=none."""
+    for edge in ("top", "left", "bottom", "right", "insideH", "insideV"):
+        if edge not in spec:
+            continue
+        el = OxmlElement(f"w:{edge}")
+        if spec[edge] is None:
+            el.set(qn("w:val"), "nil")
+        else:
+            sz, color = spec[edge]
+            el.set(qn("w:val"), "single")
+            el.set(qn("w:sz"), str(sz))
+            el.set(qn("w:space"), "0")
+            el.set(qn("w:color"), color)
+        parent.append(el)
+
+
+HAIR = 6          # 1px ≈ 0.75pt = 6 eighths
+NONE_ALL = {e: None for e in ("top", "left", "bottom", "right",
+                              "insideH", "insideV")}
+
+
+def _tbl_borders(table, spec):
+    b = _set_child(table._tbl.tblPr, "w:tblBorders", "w:tblPr")
+    _edges(b, {**NONE_ALL, **spec})
+
+
+def _tbl_cell_margins(table, top=0, left=0, bottom=0, right=0):
+    m = _set_child(table._tbl.tblPr, "w:tblCellMar", "w:tblPr")
+    for edge, v in (("top", top), ("left", left), ("bottom", bottom),
+                    ("right", right)):
+        el = OxmlElement(f"w:{edge}")
+        el.set(qn("w:w"), str(int(v * 20)))
+        el.set(qn("w:type"), "dxa")
+        m.append(el)
+
+
+def _tbl_fixed(table, width_emu):
+    tblPr = table._tbl.tblPr
+    w = _set_child(tblPr, "w:tblW", "w:tblPr")
+    w.set(qn("w:w"), str(int(width_emu / 635)))   # EMU → twips
+    w.set(qn("w:type"), "dxa")
+    ind = _set_child(tblPr, "w:tblInd", "w:tblPr")
+    ind.set(qn("w:w"), "0")
+    ind.set(qn("w:type"), "dxa")
+    lay = _set_child(tblPr, "w:tblLayout", "w:tblPr")
+    lay.set(qn("w:type"), "fixed")
+    table.autofit = False
+
+
+def _cell_borders(cell, spec):
+    b = _set_child(cell._tc.get_or_add_tcPr(), "w:tcBorders", "w:tcPr")
+    _edges(b, spec)
+
+
+def _cell_shade(cell, hex_fill):
+    s = _set_child(cell._tc.get_or_add_tcPr(), "w:shd", "w:tcPr")
+    s.set(qn("w:val"), "clear")
+    s.set(qn("w:color"), "auto")
+    s.set(qn("w:fill"), hex_fill)
+
+
+def _cell_margins(cell, top=None, left=None, bottom=None, right=None):
+    m = _set_child(cell._tc.get_or_add_tcPr(), "w:tcMar", "w:tcPr")
+    for edge, v in (("top", top), ("left", left), ("bottom", bottom),
+                    ("right", right)):
+        if v is None:
+            continue
+        el = OxmlElement(f"w:{edge}")
+        el.set(qn("w:w"), str(int(v * 20)))
+        el.set(qn("w:type"), "dxa")
+        m.append(el)
+
+
+def _p_border(paragraph, edge, sz, color, space=4):
     pPr = paragraph._p.get_or_add_pPr()
-    pBdr = pPr.find(qn("w:pBdr"))
-    if pBdr is None:
-        pBdr = OxmlElement("w:pBdr")
-        pPr.append(pBdr)
+    bdr = pPr.find(qn("w:pBdr"))
+    if bdr is None:
+        bdr = _set_child(pPr, "w:pBdr", "w:pPr")
     el = OxmlElement(f"w:{edge}")
     el.set(qn("w:val"), "single")
-    el.set(qn("w:sz"), str(size))
+    el.set(qn("w:sz"), str(sz))
     el.set(qn("w:space"), str(space))
     el.set(qn("w:color"), color)
-    pBdr.append(el)
+    # pBdr children order: top, left, bottom, right, between
+    order = ["top", "left", "bottom", "right", "between"]
+    for sib in bdr:
+        if order.index(sib.tag.split("}")[1]) > order.index(edge):
+            sib.addprevious(el)
+            break
+    else:
+        bdr.append(el)
 
 
-def _shade(cell, hex_fill):
-    shd = OxmlElement("w:shd")
-    shd.set(qn("w:val"), "clear")
-    shd.set(qn("w:fill"), hex_fill)
-    cell._tc.get_or_add_tcPr().append(shd)
+def _font(run, name=FONT):
+    run.font.name = name
+    rf = run._r.get_or_add_rPr().get_or_add_rFonts()
+    for a in ("w:ascii", "w:hAnsi", "w:cs", "w:eastAsia"):
+        rf.set(qn(a), name)
 
 
-def _cell_borders(cell, edges, size=4, color=LINE):
-    tcPr = cell._tc.get_or_add_tcPr()
-    borders = OxmlElement("w:tcBorders")
-    for edge in edges:
-        el = OxmlElement(f"w:{edge}")
-        el.set(qn("w:val"), "single")
-        el.set(qn("w:sz"), str(size))
-        el.set(qn("w:color"), color)
-        borders.append(el)
-    tcPr.append(borders)
+def _tracking(run, pt):
+    sp = _set_child(run._r.get_or_add_rPr(), "w:spacing", "w:rPr")
+    sp.set(qn("w:val"), str(int(round(pt * 20))))
 
 
-def _attach_tbl_borders(table, borders):
-    """Insert w:tblBorders at its schema position: before tblLayout /
-    tblCellMar / tblLook if present, else append. Word tolerates disorder;
-    strict OOXML validators don't."""
-    tblPr = table._tbl.tblPr
-    for tag in ("w:tblBorders",):          # replace an existing block
-        old = tblPr.find(qn(tag))
-        if old is not None:
-            tblPr.remove(old)
-    for tag in ("w:tblLayout", "w:tblCellMar", "w:tblLook"):
-        ref = tblPr.find(qn(tag))
-        if ref is not None:
-            ref.addprevious(borders)
-            return
-    tblPr.append(borders)
+def _run_shade(run, hex_fill):
+    s = _set_child(run._r.get_or_add_rPr(), "w:shd", "w:rPr")
+    s.set(qn("w:val"), "clear")
+    s.set(qn("w:color"), "auto")
+    s.set(qn("w:fill"), hex_fill)
 
 
-def _no_table_borders(table):
-    borders = OxmlElement("w:tblBorders")
-    for edge in ("top", "left", "bottom", "right", "insideH", "insideV"):
-        el = OxmlElement(f"w:{edge}")
-        el.set(qn("w:val"), "none")
-        borders.append(el)
-    _attach_tbl_borders(table, borders)
+def _field(paragraph, instr, cached="1"):
+    """PAGE / NUMPAGES field with a cached result (shown by renderers that
+    don't compute fields)."""
+    runs = []
+    for kind in ("begin", "instr", "separate", "text", "end"):
+        r = paragraph.add_run()
+        if kind == "instr":
+            it = OxmlElement("w:instrText")
+            it.set(qn("xml:space"), "preserve")
+            it.text = f" {instr} "
+            r._r.append(it)
+        elif kind == "text":
+            r.text = cached
+        else:
+            fc = OxmlElement("w:fldChar")
+            fc.set(qn("w:fldCharType"), kind)
+            r._r.append(fc)
+        runs.append(r)
+    return runs
 
 
-def _outer_table_borders(table, size=4, color=LINE):
-    """Hairline box around the table, no inner rules."""
-    borders = OxmlElement("w:tblBorders")
-    for edge in ("top", "left", "bottom", "right"):
-        el = OxmlElement(f"w:{edge}")
-        el.set(qn("w:val"), "single")
-        el.set(qn("w:sz"), str(size))
-        el.set(qn("w:color"), color)
-        borders.append(el)
-    for edge in ("insideH", "insideV"):
-        el = OxmlElement(f"w:{edge}")
-        el.set(qn("w:val"), "none")
-        borders.append(el)
-    _attach_tbl_borders(table, borders)
+def _clear_style_tabs(style):
+    pPr = style.element.get_or_add_pPr()
+    tabs = pPr.find(qn("w:tabs"))
+    if tabs is not None:
+        pPr.remove(tabs)
 
 
-def _tracking(run, twentieths=12):
-    """Letter-spacing in 1/20 pt (12 ≈ 0.6pt — mono label tracking)."""
-    rPr = run._r.get_or_add_rPr()
-    sp = OxmlElement("w:spacing")
-    sp.set(qn("w:val"), str(twentieths))
-    rPr.append(sp)
-
-
-def _field(paragraph, instr):
-    """Insert a field code (PAGE / NUMPAGES) into a paragraph."""
-    run = paragraph.add_run()
-    begin = OxmlElement("w:fldChar")
-    begin.set(qn("w:fldCharType"), "begin")
-    instr_el = OxmlElement("w:instrText")
-    instr_el.set(qn("xml:space"), "preserve")
-    instr_el.text = f" {instr} "
-    end = OxmlElement("w:fldChar")
-    end.set(qn("w:fldCharType"), "end")
-    for el in (begin, instr_el, end):
-        run._r.append(el)
-    return run
+_MARKUP = re.compile(r"(</?b>|</?hl>)")
 
 
 # ── the document builder ─────────────────────────────────────────────
 class OriDoc:
-    def __init__(self, doc_type="Document", doc_id="ST-DOC-000",
-                 date="", classification="Internal", artifact="long-doc"):
+    """Ori v2 Word document.
+
+    doc_type   → the page-head kicker (``Statement of work``)
+    doc_id     → folio doc-id (``ST-SOW-007``)
+    date, classification, meta → right-aligned page-head metadata
+    artifact   → one-pager | long-doc | report | minutes | resume
+    public     → folio legal line becomes ``Socialtrait © 2026``
+    candidate  → resume only: name in the unbranded folio
+    """
+
+    def __init__(self, doc_type="Document", doc_id="ST-DOC-000", date="",
+                 classification="Internal", artifact="long-doc", meta=(),
+                 public=False, candidate=""):
         self.doc = Document()
-        self.doc_id = doc_id
+        self.doc_type, self.doc_id = doc_type, doc_id
+        self.artifact = artifact
+        self.resume = artifact == "resume"
+        self.public, self.candidate = public, candidate
+        self.meta = [x for x in (*meta, date, classification) if x]
+
         sec = self.doc.sections[0]
         sec.page_width, sec.page_height = Mm(210), Mm(297)
         t, r, b, l = MARGINS.get(artifact, MARGINS["long-doc"])
         sec.top_margin, sec.right_margin = Mm(t), Mm(r)
         sec.bottom_margin, sec.left_margin = Mm(b), Mm(l)
-        n = self.doc.styles["Normal"]
-        n.font.name, n.font.size, n.font.color.rgb = SANS, Pt(10), INK
-        n.paragraph_format.space_after = Pt(6)
-        n.paragraph_format.line_spacing = 1.5
-        self._usable = (sec.page_width - sec.left_margin
-                        - sec.right_margin)
-        self._meta_rail(doc_type, date, classification)
-        self._footer()
+        sec.header_distance = Mm(max(5, t - 9))
+        sec.footer_distance = Mm(max(4, b - 8))
+        self._usable = sec.page_width - sec.left_margin - sec.right_margin
+        self._usable_h = sec.page_height - sec.top_margin - sec.bottom_margin
 
-    # ── chrome ──
-    def _meta_rail(self, doc_type, date, classification):
-        p = self.doc.add_paragraph()
-        p.paragraph_format.tab_stops.add_tab_stop(
-            Cm(17.0), WD_TAB_ALIGNMENT.RIGHT)
-        logo = ASSETS / "mark.png"
-        if logo.exists():
-            p.add_run().add_picture(str(logo), height=Pt(12))
-            self._mono(p, "  ")
-        self._mono(p, "SOCIALTRAIT", color=INK, bold=True)
-        parts = [x for x in (doc_type, date) if x]
-        self._mono(p, "  ·  " + "  ·  ".join(x.upper() for x in parts))
-        self._mono(p, "\t" + classification.upper())
-        _p_border(p, "bottom", size=4, color=LINE, space=6)
-        p.paragraph_format.space_after = Pt(14)
+        self._base_styles()
+        self._font_table()
+        self._canvas()
+        if not self.resume:
+            self._page_head(sec.header)
+        self._folio(sec.footer)
+        self.doc.core_properties.author = "Socialtrait"
+        self.doc.core_properties.comments = "Ori 2"
 
-    def _footer(self):
-        f = self.doc.sections[0].footer
-        p = f.paragraphs[0]
-        p.paragraph_format.tab_stops.add_tab_stop(
-            Cm(17.0), WD_TAB_ALIGNMENT.RIGHT)
-        self._mono(p, "▪ ", color=BLUE, size=7.5)
-        self._mono(p, f"SOCIALTRAIT / ORI · {self.doc_id}\t", size=7.5)
-        self._mono(p, "PAGE ", size=7.5)
-        r = _field(p, "PAGE")
-        self._style_run(r, MONO, 7.5, MIST)
-        self._mono(p, " / ", size=7.5)
-        r = _field(p, "NUMPAGES")
-        self._style_run(r, MONO, 7.5, MIST)
-        _p_border(p, "top", size=4, color=LINE, space=6)
+    # ── setup ──
+    def _base_styles(self):
+        st = self.doc.styles
+        n = st["Normal"]
+        n.font.name, n.font.size = FONT, Pt(SZ["body"])
+        n.font.color.rgb = C["black"]
+        rf = n.element.get_or_add_rPr().get_or_add_rFonts()
+        for a in ("w:ascii", "w:hAnsi", "w:cs", "w:eastAsia"):
+            rf.set(qn(a), FONT)
+        for a in ("w:asciiTheme", "w:hAnsiTheme", "w:cstheme",
+                  "w:eastAsiaTheme"):
+            if rf.get(qn(a)) is not None:
+                del rf.attrib[qn(a)]
+        pf = n.paragraph_format
+        pf.space_before, pf.space_after = Pt(0), Pt(7)
+        pf.line_spacing_rule = WD_LINE_SPACING.AT_LEAST
+        pf.line_spacing = Pt(SZ["body"] * 1.5)
+        for name in ("Header", "Footer"):
+            _clear_style_tabs(st[name])
+            st[name].paragraph_format.space_after = Pt(0)
+
+    def _font_table(self):
+        """Declare Archivo / JetBrains Mono with sans / mono PANOSE so a
+        machine without them substitutes a grotesque, never a serif."""
+        part = None
+        for rel in self.doc.part.rels.values():
+            if rel.reltype.endswith("/fontTable"):
+                part = rel.target_part
+        if part is None:
+            return
+        from lxml import etree
+        root = etree.fromstring(part.blob)
+        W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+        for name, panose, fam, pitch in (
+                (FONT, "020B0504020202020204", "swiss", "variable"),
+                (CODE, "020B0509020102050004", "modern", "fixed")):
+            f = etree.SubElement(root, f"{{{W}}}font")
+            f.set(f"{{{W}}}name", name)
+            for tag, val in (("panose1", panose), ("charset", "00"),
+                             ("family", fam), ("pitch", pitch)):
+                e = etree.SubElement(f, f"{{{W}}}{tag}")
+                e.set(f"{{{W}}}val", val)
+        part._blob = etree.tostring(root, xml_declaration=True,
+                                    encoding="UTF-8", standalone=True)
+
+    def _canvas(self):
+        """Horizon page colour (Word shows it on screen; Google Docs keeps
+        it as page colour). Prints white unless background printing is on —
+        accepted: print pages are light either way."""
+        bg = OxmlElement("w:background")
+        bg.set(qn("w:color"), HEX["horizon"])
+        self.doc.element.insert(0, bg)
+        settings = self.doc.settings.element
+        dbs = OxmlElement("w:displayBackgroundShape")
+        before = [qn(f"w:{t}") for t in (
+            "writeProtection", "view", "zoom", "removePersonalInformation",
+            "removeDateAndTime", "doNotDisplayPageBoundaries")]
+        prev = [el for el in settings if el.tag in before]
+        if prev:
+            prev[-1].addnext(dbs)
+        else:
+            settings.insert(0, dbs)
+
+    def _tabbed(self, p, stops):
+        for pos, align in stops:
+            p.paragraph_format.tab_stops.add_tab_stop(pos, align)
+
+    def _page_head(self, header):
+        """§5.1 — kicker left, quiet meta right in Mist. No rule beneath."""
+        header.is_linked_to_previous = False
+        p = header.paragraphs[0]
+        for r in list(p.runs):
+            r._r.getparent().remove(r._r)
+        self._tabbed(p, [(self._usable, WD_TAB_ALIGNMENT.RIGHT)])
+        self._label(p, self.doc_type, C["black"], SZ["kicker"], bold=True,
+                    track=0.2)
+        if self.meta:
+            self._label(p, "\t" + "  ·  ".join(self.meta), C["mist"],
+                        SZ["label"])
+
+    def _folio(self, footer):
+        """§5.4 — Cloud hairline, lockup left, legal line centred, doc-id
+        and page X / Y right. Resumes: candidate name left, no lockup."""
+        p = footer.paragraphs[0]
+        pf = p.paragraph_format
+        pf.line_spacing_rule = WD_LINE_SPACING.SINGLE
+        stops = [(self._usable, WD_TAB_ALIGNMENT.RIGHT)]
+        if not self.resume:
+            stops.insert(0, (int(self._usable / 2), WD_TAB_ALIGNMENT.CENTER))
+        self._tabbed(p, stops)
+        _p_border(p, "top", HAIR, HEX["cloud"], space=6)
+        f, mist, black = SZ["folio"], C["mist"], C["black"]
+        if self.resume:                      # unbranded: name left, X / Y
+            self._label(p, self.candidate or self.doc_type, black, f,
+                        track=0.25)
+            self._label(p, "\t", black, f)
+        else:
+            lockup = LOGO / "lockup-black.png"
+            if lockup.exists():
+                pic = p.add_run().add_picture(str(lockup), height=Pt(9))
+                pic.width = int(Pt(9) * 3148 / 480)
+            legal = LEGAL_PUBLIC if self.public else LEGAL
+            self._label(p, "\t" + legal, black, f, track=0.25)
+            self._label(p, f"\t{self.doc_id}  ·  ", mist, f, track=0.25)
+        for instr, cached in (('PAGE \\# "00"', "01"),
+                              (None, None),
+                              ('NUMPAGES \\# "00"', "01")):
+            if instr is None:
+                self._label(p, " / ", mist, f, track=0.25)
+                continue
+            for r in _field(p, instr, cached):
+                self._style(r, f, mist, caps=True)
 
     # ── run helpers ──
     @staticmethod
-    def _style_run(run, font, size, color, bold=False, caps=False):
-        run.font.name, run.font.size = font, Pt(size)
-        run.font.color.rgb, run.font.bold = color, bold
+    def _style(run, size, color, bold=False, caps=False, font=FONT):
+        _font(run, font)
+        run.font.size = Pt(size)
+        run.font.color.rgb = color
+        run.font.bold = bold
+        run.font.italic = False           # italics are banned
         if caps:
             run.font.all_caps = True
         return run
 
-    def _mono(self, p, text, color=MIST, size=8, bold=False):
-        r = p.add_run(text)
-        self._style_run(r, MONO, size, color, bold=bold, caps=True)
-        _tracking(r, 12)
+    def _label(self, p, text, color, size=SZ["label"], bold=False,
+               track=0.42):
+        """Body 1 voice: caps, opened tracking (+.06em)."""
+        r = self._style(p.add_run(text), size, color, bold=bold, caps=True)
+        _tracking(r, track)
         return r
 
-    def _rich(self, p, text, size, color, bold_color=INK):
-        """Minimal markup: <b>bold</b> renders weight-600 ink."""
-        for i, part in enumerate(text.split("<b>")):
-            if i == 0:
-                if part:
-                    self._style_run(p.add_run(part), SANS, size, color)
+    def _rich(self, p, text, size, color, bold_color=None):
+        """Markup: <b>emphasis</b> (bold, the 650 voice) and <hl>marker</hl>
+        (Seagrass fill under Real Black — once per page)."""
+        bold = hl = False
+        for tok in _MARKUP.split(text):
+            if tok in ("<b>", "</b>"):
+                bold = tok == "<b>"
                 continue
-            bold_txt, _, rest = part.partition("</b>")
-            self._style_run(p.add_run(bold_txt), SANS, size, bold_color,
-                            bold=True)
-            if rest:
-                self._style_run(p.add_run(rest), SANS, size, color)
+            if tok in ("<hl>", "</hl>"):
+                hl = tok == "<hl>"
+                continue
+            if not tok:
+                continue
+            if hl:
+                tok = f" {tok} "
+            c = (bold_color or color) if bold else color
+            if hl:
+                c = C["black"]
+            r = self._style(p.add_run(tok), size, c, bold=bold or hl)
+            if hl:
+                _run_shade(r, HEX["seagrass"])
+        return p
 
-    # ── components ──
-    def title(self, text):
+    def _para(self, before=0, after=0, line=None, exact=False, keep=False):
         p = self.doc.add_paragraph()
-        r = self._style_run(p.add_run(text), SANS, 22, INK, bold=True)
-        p.paragraph_format.line_spacing = 1.15
-        p.paragraph_format.space_after = Pt(6)
+        pf = p.paragraph_format
+        pf.space_before, pf.space_after = Pt(before), Pt(after)
+        if line:
+            pf.line_spacing_rule = (WD_LINE_SPACING.EXACTLY if exact
+                                    else WD_LINE_SPACING.AT_LEAST)
+            pf.line_spacing = Pt(line)
+        if keep:
+            pf.keep_with_next = True
+        return p
+
+    def _gap(self, pt=8):
+        """Spacer after a table (Word needs a paragraph between tables)."""
+        p = self._para(after=0, line=pt, exact=True)
+        r = p.add_run()
+        r.font.size = Pt(1)
+        return p
+
+    @staticmethod
+    def _cell_p(cell, first=True):
+        p = cell.paragraphs[0] if first else cell.add_paragraph()
+        pf = p.paragraph_format
+        pf.space_before = pf.space_after = Pt(0)
+        return p
+
+    def _table(self, rows, cols, widths):
+        """Fixed-layout, borderless, flush-left table. widths: fractions."""
+        t = self.doc.add_table(rows=rows, cols=cols)
+        _tbl_fixed(t, self._usable)
+        _tbl_borders(t, {})
+        _tbl_cell_margins(t)
+        ws = [int(self._usable * w) for w in widths]
+        for j, col in enumerate(t.columns):
+            col.width = ws[j]
+        for row in t.rows:
+            for j, cell in enumerate(row.cells):
+                cell.width = ws[j]
+        return t
+
+    # ── title block ──
+    def title(self, text):
+        """Doc H1 — 26pt bold, tight (design.md §3.3 Title wide)."""
+        p = self._para(after=6, line=SZ["title"] * 1.08, exact=True,
+                       keep=True)
+        p.paragraph_format.right_indent = int(self._usable * 0.18)
+        r = self._style(p.add_run(text), SZ["title"], C["black"], bold=True)
+        _tracking(r, -0.4)
+        self.doc.core_properties.title = text
         return p
 
     def lede(self, text):
-        p = self.doc.add_paragraph()
-        self._style_run(p.add_run(text), SANS, 11, SLATE)
-        p.paragraph_format.space_after = Pt(14)
+        p = self._para(after=16, line=SZ["lede"] * 1.45)
+        p.paragraph_format.right_indent = int(self._usable * 0.1)
+        self._rich(p, text, SZ["lede"], C["dust"], bold_color=C["black"])
+        return p
 
+    # ── signature: section head ──
     def section(self, idx, eyebrow, heading):
-        p = self.doc.add_paragraph()
-        p.paragraph_format.space_before = Pt(16)
-        p.paragraph_format.space_after = Pt(2)
-        self._mono(p, f"{idx:02d}  ", color=MIST)
-        self._mono(p, eyebrow, color=BLUE)
-        h = self.doc.add_paragraph()
-        self._style_run(h.add_run(heading), SANS, 15, INK, bold=True)
-        h.paragraph_format.line_spacing = 1.25
-        h.paragraph_format.space_after = Pt(4)
-        _p_border(h, "bottom", size=8, color=LINE, space=4)  # thread (gray; blue lives in eyebrow)
-        h.paragraph_format.space_after = Pt(10)
+        """§5.2 — Cloud hairline, index line (number black, topic Mist),
+        then the assertion headline."""
+        p = self._para(before=18, after=5, keep=True)
+        _p_border(p, "top", HAIR, HEX["cloud"], space=8)
+        self._label(p, f"{idx:02d}", C["black"], bold=True)
+        self._label(p, "    " + eyebrow, C["mist"])
+        h = self._para(after=8, line=SZ["section"] * 1.2, exact=True,
+                       keep=True)
+        h.paragraph_format.right_indent = int(self._usable * 0.15)
+        r = self._style(h.add_run(heading), SZ["section"], C["black"],
+                        bold=True)
+        _tracking(r, -0.15)
+        return h
 
     def h3(self, text):
-        p = self.doc.add_paragraph()
-        self._style_run(p.add_run(text), SANS, 11.5, INK, bold=True)
-        p.paragraph_format.space_before = Pt(8)
-        p.paragraph_format.space_after = Pt(3)
+        p = self._para(before=9, after=3, line=SZ["sub"] * 1.25, exact=True,
+                       keep=True)
+        self._style(p.add_run(text), SZ["sub"], C["black"], bold=True)
+        return p
 
     def body(self, text):
-        p = self.doc.add_paragraph()
-        self._rich(p, text, 10, INK)
+        p = self._para(after=7, line=SZ["body"] * 1.5)
+        self._rich(p, text, SZ["body"], C["black"])
         return p
 
     def bullets(self, items):
         for it in items:
             p = self.doc.add_paragraph(style="List Bullet")
-            self._rich(p, it, 10, INK)
-            p.paragraph_format.space_after = Pt(3)
+            pf = p.paragraph_format
+            pf.space_after = Pt(3)
+            pf.line_spacing_rule = WD_LINE_SPACING.AT_LEAST
+            pf.line_spacing = Pt(SZ["body"] * 1.45)
+            self._rich(p, it, SZ["body"], C["black"])
 
-    @staticmethod
-    def _fixed_layout(table):
-        layout = OxmlElement("w:tblLayout")
-        layout.set(qn("w:type"), "fixed")
-        table._tbl.tblPr.append(layout)
-
+    # ── metric row ──
     def metric_row(self, metrics):
-        """metrics: [{label, value, note?, hero?}] — 3 or 4 of them."""
-        t = self.doc.add_table(rows=3, cols=len(metrics))
-        t.alignment = WD_TABLE_ALIGNMENT.CENTER
-        t.autofit = False
-        self._fixed_layout(t)
-        _no_table_borders(t)
-        col_w = int(self._usable / len(metrics))
-        for row in t.rows:
-            for cell in row.cells:
-                cell.width = col_w
+        """metrics: [{label, value, unit?, note?, key?}] — 3–4 cells.
+        Cloud top rule, Rule bottom rule, hairline seams; the key metric
+        (``key`` or legacy ``hero``) gets the Seagrass marker."""
+        n = len(metrics)
+        t = self._table(3, n, [1 / n] * n)
         for i, m in enumerate(metrics):
-            for row in (0, 1, 2):
-                cell = t.cell(row, i)
-                edges = ["left", "right"] if True else []
-                if row == 0:
-                    edges.append("top")
-                if row == 2:
-                    edges.append("bottom")
-                _cell_borders(cell, edges, size=4, color=LINE)
-            lp = t.cell(0, i).paragraphs[0]
-            self._mono(lp, m["label"], color=MIST)
-            lp.paragraph_format.space_before = Pt(6)
-            vp = t.cell(1, i).paragraphs[0]
-            r = vp.add_run(m["value"])
-            self._style_run(r, MONO, 24, BLUE if m.get("hero") else INK,
+            left = 0 if i == 0 else 11
+            for row in range(3):
+                # explicit per-cell edges: survive Google Docs import
+                _cell_borders(t.cell(row, i), {
+                    "top": (HAIR, HEX["cloud"]) if row == 0 else None,
+                    "left": (HAIR, HEX["rule"]) if i else None,
+                    "bottom": (HAIR, HEX["rule"]) if row == 2 else None,
+                    "right": None})
+                _cell_margins(t.cell(row, i), left=left, right=8,
+                              top=10 if row == 0 else 0,
+                              bottom=11 if row == 2 else 0)
+            lp = self._cell_p(t.cell(0, i))
+            lp.paragraph_format.space_after = Pt(7)
+            self._label(lp, m["label"], C["mist"])
+            vp = self._cell_p(t.cell(1, i))
+            key = m.get("key") or m.get("hero")
+            v = f" {m['value']} " if key else m["value"]
+            r = self._style(vp.add_run(v), SZ["metric"], C["black"],
                             bold=True)
-            np_ = t.cell(2, i).paragraphs[0]
-            self._style_run(np_.add_run(m.get("note", "")), SANS, 8.5, SLATE)
-            np_.paragraph_format.space_after = Pt(6)
-        self.doc.add_paragraph().paragraph_format.space_after = Pt(2)
+            _tracking(r, -0.4)
+            if key:
+                _run_shade(r, HEX["seagrass"])
+            if m.get("unit"):
+                self._style(vp.add_run(" " + m["unit"]),
+                            SZ["metric"] * 0.45, C["dust"])
+            np_ = self._cell_p(t.cell(2, i))
+            np_.paragraph_format.space_before = Pt(5)
+            self._rich(np_, m.get("note", ""), SZ["small"], C["dust"])
+        self._gap(12)
+        return t
 
+    # ── callouts ──
     def callout(self, label, text, kind="insight"):
-        color = {"insight": BLUE, "warn": RGBColor(0xB7, 0x79, 0x1F),
-                 "risk": NEG}[kind]
-        border = {"insight": "2F80ED", "warn": WARN, "risk": "D64545"}[kind]
-        t = self.doc.add_table(rows=1, cols=1)
-        _no_table_borders(t)
+        """Fog panel + bold caps label. kind: insight (Seagrass dot) ·
+        note · ask (Real Black panel, Seagrass label — once per document)
+        · risk / warn (3pt semantic bar)."""
+        t = self._table(1, 1, [1])
         cell = t.cell(0, 0)
-        _shade(cell, WASH)
-        _cell_borders(cell, ["left"], size=18, color=border)
-        lp = cell.paragraphs[0]
-        lp.paragraph_format.space_before = Pt(5)
-        self._mono(lp, label, color=color, size=7.5)
-        bp = cell.add_paragraph()
-        self._rich(bp, text, 10, INK)
-        bp.paragraph_format.space_after = Pt(5)
-        self.doc.add_paragraph().paragraph_format.space_after = Pt(2)
+        ask = kind == "ask"
+        _cell_shade(cell, HEX["black"] if ask else HEX["fog"])
+        _cell_margins(cell, top=11, bottom=12, left=15, right=15)
+        if kind in ("risk", "warn"):
+            _cell_borders(cell, {"left": (24, HEX["neg" if kind == "risk"
+                                                   else "warn"])})
+        lp = self._cell_p(cell)
+        lp.paragraph_format.space_after = Pt(4)
+        lp.paragraph_format.keep_with_next = True
+        if kind == "insight":
+            dot = self._style(lp.add_run("●  "), SZ["label"] + 1,
+                              C["seagrass"])
+            _tracking(dot, 0)
+        label_color = {"ask": C["seagrass"], "risk": C["neg"],
+                       "warn": C["warn"]}.get(kind, C["black"])
+        self._label(lp, label, label_color, bold=True)
+        bp = self._cell_p(cell, first=False)
+        bp.paragraph_format.line_spacing_rule = WD_LINE_SPACING.AT_LEAST
+        bp.paragraph_format.line_spacing = Pt(SZ["callout"] * 1.45)
+        ink = C["horizon"] if ask else C["black"]
+        self._rich(bp, text, SZ["callout"], ink)
+        self._gap(12)
+        return t
 
-    def table(self, headers, rows, data_cols=()):
-        t = self.doc.add_table(rows=1 + len(rows), cols=len(headers))
-        _no_table_borders(t)
+    def ask(self, text, label="The ask"):
+        """The decision or request — Real Black panel, Seagrass label."""
+        return self.callout(label, text, kind="ask")
+
+    # ── table ──
+    def table(self, headers, rows, data_cols=(), total=False, key_row=None,
+              widths=None):
+        """Hairline table: caps Mist header over Cloud, Rule row dividers,
+        numbers right-aligned. total → last row gets a Real Black top rule
+        and weight; key_row → index of one row with a 3pt Seagrass bar."""
+        nc = len(headers)
+        t = self._table(1 + len(rows), nc, widths or [1 / nc] * nc)
+        last = len(rows) - 1
         for j, htext in enumerate(headers):
             cell = t.cell(0, j)
-            _cell_borders(cell, ["bottom"], size=6, color=LINE_STRONG)
-            p = cell.paragraphs[0]
-            self._mono(p, htext, color=MIST)
+            _cell_borders(cell, {"bottom": (HAIR, HEX["cloud"])})
+            _cell_margins(cell, bottom=5, right=0 if j == nc - 1 else 12)
+            p = self._cell_p(cell)
+            self._label(p, htext, C["mist"])
             if j in data_cols:
                 p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
         for i, row in enumerate(rows):
+            is_total = total and i == last
+            is_key = key_row == i
             for j, val in enumerate(row):
                 cell = t.cell(1 + i, j)
-                _cell_borders(cell, ["bottom"], size=4, color=LINE)
-                p = cell.paragraphs[0]
+                edges = {"bottom": None if is_total else (HAIR, HEX["rule"])}
+                if is_total:
+                    edges["top"] = (HAIR, HEX["black"])
+                if is_key and j == 0:
+                    edges["left"] = (24, HEX["seagrass"])
+                _cell_borders(cell, edges)
+                _cell_margins(cell, top=5, bottom=5,
+                              left=9 if (is_key and j == 0) else 0,
+                              right=0 if j == nc - 1 else 12)
+                p = self._cell_p(cell)
                 if j in data_cols:
                     p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-                    self._style_run(p.add_run(str(val)), MONO, 9, INK)
+                if is_total or is_key:
+                    self._style(p.add_run(str(val)), 9, C["black"], bold=True)
                 else:
-                    self._style_run(p.add_run(str(val)), SANS, 9.5, INK)
-        self.doc.add_paragraph().paragraph_format.space_after = Pt(2)
+                    self._rich(p, str(val), 9, C["black"])
+        self._gap(12)
+        return t
 
+    # ── quote ──
     def quote(self, text, cite):
-        t = self.doc.add_table(rows=1, cols=1)
-        _no_table_borders(t)
-        cell = t.cell(0, 0)
-        _cell_borders(cell, ["left"], size=12, color=LINE_STRONG)
-        p = cell.paragraphs[0]
-        self._style_run(p.add_run(f"“{text}”"), SANS, 11, INK)
-        cp = cell.add_paragraph()
-        self._mono(cp, "— ", color=BLUE)
-        self._mono(cp, cite, color=MIST)
-        self.doc.add_paragraph().paragraph_format.space_after = Pt(2)
+        """Reading-display quote: no marks, no rule, ≤ 34ch; cite caps Mist.
+        Simulated personas cite as ``Maya · Simulated Gen-Z shopper``."""
+        p = self._para(before=8, after=6, line=SZ["quote"] * 1.3, keep=True)
+        p.paragraph_format.right_indent = int(self._usable * 0.38)
+        r = self._style(p.add_run(text), SZ["quote"], C["black"])
+        _tracking(r, -0.1)
+        cp = self._para(after=14)
+        self._label(cp, "— " + cite, C["mist"])
+        return p
 
-    def kv(self, pairs):
-        t = self.doc.add_table(rows=len(pairs), cols=2)
-        _no_table_borders(t)
-        t.columns[0].width = Cm(3.6)
+    # ── spec list / logistics ──
+    def _spec_rows(self, t, pairs, col, label_frac_last=False):
         for i, (k, v) in enumerate(pairs):
-            self._mono(t.cell(i, 0).paragraphs[0], k, color=MIST)
-            self._style_run(t.cell(i, 1).paragraphs[0].add_run(v),
-                            SANS, 9.5, INK)
-        self.doc.add_paragraph().paragraph_format.space_after = Pt(2)
+            kc, vc = t.cell(i, col), t.cell(i, col + 1)
+            for c in (kc, vc):
+                edges = {"bottom": (HAIR, HEX["rule"])}
+                if i == 0:
+                    edges["top"] = (HAIR, HEX["cloud"])
+                _cell_borders(c, edges)
+                _cell_margins(c, top=5, bottom=5, right=10)
+            kp = self._cell_p(kc)
+            kp.paragraph_format.space_before = Pt(1)
+            self._label(kp, k, C["mist"])
+            self._rich(self._cell_p(vc), v, SZ["small"], C["black"])
+
+    def kv(self, pairs, label_width=0.24):
+        """Spec list (§6.7): quiet caps labels left, values right, Rule
+        hairline under each row, Cloud on top."""
+        t = self._table(len(pairs), 2, [label_width, 1 - label_width])
+        self._spec_rows(t, pairs, 0)
+        self._gap(12)
+        return t
 
     def logistics(self, left, right):
-        """Meeting logistics: two kv columns in a hairline box."""
+        """Meeting logistics: two spec lists side by side."""
         rows = max(len(left), len(right))
-        t = self.doc.add_table(rows=rows, cols=4)
-        t.autofit = False
-        self._fixed_layout(t)
-        _outer_table_borders(t, size=4, color=LINE)
-        widths = [0.13, 0.37, 0.13, 0.37]
-        for r in t.rows:
-            for j, cell in enumerate(r.cells):
-                cell.width = int(self._usable * widths[j])
-        for col, pairs in ((0, left), (2, right)):
-            for i, (k, v) in enumerate(pairs):
-                kp = t.cell(i, col).paragraphs[0]
-                self._mono(kp, k, color=MIST)
-                vp = t.cell(i, col + 1).paragraphs[0]
-                self._style_run(vp.add_run(v), SANS, 9.5, INK)
-                if i == 0:
-                    kp.paragraph_format.space_before = Pt(5)
-                    vp.paragraph_format.space_before = Pt(5)
-                if i == rows - 1:
-                    kp.paragraph_format.space_after = Pt(5)
-                    vp.paragraph_format.space_after = Pt(5)
-        self.doc.add_paragraph().paragraph_format.space_after = Pt(2)
+        gap = 0.06
+        t = self._table(rows, 5, [0.14, 0.33, gap, 0.14, 0.33])
+        pad = lambda ps: list(ps) + [("", "")] * (rows - len(ps))
+        self._spec_rows(t, pad(left), 0)
+        self._spec_rows(t, pad(right), 3)
+        for i in range(rows):
+            _cell_borders(t.cell(i, 2), {"top": None, "bottom": None})
+        for col, ps in ((0, left), (3, right)):   # no rule under padding
+            for i in range(len(ps), rows):
+                for c in (t.cell(i, col), t.cell(i, col + 1)):
+                    _cell_borders(c, {"bottom": None})
+        self._gap(12)
+        return t
 
-    def agenda(self, items):
-        """Pre-meeting agenda: eyebrow + mono-indexed compact list."""
-        p = self.doc.add_paragraph()
-        p.paragraph_format.space_before = Pt(10)
-        p.paragraph_format.space_after = Pt(4)
-        self._mono(p, "Agenda", color=BLUE)
-        _p_border(p, "bottom", size=8, color=LINE, space=4)
-        for i, item in enumerate(items, 1):
-            ip = self.doc.add_paragraph()
-            self._mono(ip, f"{i:02d}  ", color=BLUE, size=8.5)
-            self._rich(ip, item, 9.5, INK)
-            if i < len(items):    # template suppresses the last hairline
-                _p_border(ip, "bottom", size=4, color=LINE, space=3)
-            ip.paragraph_format.space_after = Pt(4)
+    # ── minutes set ──
+    def agenda(self, items, label="Agenda"):
+        """items: str or (text, who/timebox). Indexed hairline rows."""
+        lp = self._para(before=10, after=5, keep=True)
+        self._label(lp, label, C["black"], bold=True)
+        t = self._table(len(items), 3, [0.07, 0.68, 0.25])
+        for i, it in enumerate(items):
+            text, who = (it, "") if isinstance(it, str) else it
+            for j in range(3):
+                c = t.cell(i, j)
+                edges = {"bottom": (HAIR, HEX["rule"])}
+                if i == 0:
+                    edges["top"] = (HAIR, HEX["cloud"])
+                _cell_borders(c, edges)
+                _cell_margins(c, top=5, bottom=5, right=0 if j == 2 else 8)
+            ip = self._cell_p(t.cell(i, 0))
+            ip.paragraph_format.space_before = Pt(1.5)
+            self._label(ip, f"{i + 1:02d}", C["black"], bold=True)
+            self._rich(self._cell_p(t.cell(i, 1)), text, 9, C["black"])
+            wp = self._cell_p(t.cell(i, 2))
+            wp.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+            wp.paragraph_format.space_before = Pt(1.5)
+            self._label(wp, who, C["mist"])
+        self._gap(12)
+        return t
 
     def decisions(self, items):
-        """Meeting decisions: node glyph + referenceable D-ids."""
-        for i, item in enumerate(items, 1):
-            p = self.doc.add_paragraph()
-            self._mono(p, "\u25aa ", color=BLUE, size=8.5)
-            self._mono(p, f"D{i}  ", color=BLUE, size=8.5)
-            self._rich(p, item, 10, INK)
-            _p_border(p, "bottom", size=4, color=LINE, space=3)
-            p.paragraph_format.space_after = Pt(4)
+        """Referenceable D-ids on hairline rows."""
+        t = self._table(len(items), 2, [0.07, 0.93])
+        for i, item in enumerate(items):
+            for j in range(2):
+                c = t.cell(i, j)
+                edges = {"bottom": (HAIR, HEX["rule"])}
+                if i == 0:
+                    edges["top"] = (HAIR, HEX["cloud"])
+                _cell_borders(c, edges)
+                _cell_margins(c, top=5, bottom=5, right=8)
+            ip = self._cell_p(t.cell(i, 0))
+            r = self._style(ip.add_run(f"D{i + 1}"), 8, C["black"], bold=True)
+            _tracking(r, 0.3)
+            self._rich(self._cell_p(t.cell(i, 1)), item, SZ["body"],
+                       C["black"])
+        self._gap(12)
+        return t
 
     def actions(self, rows):
-        """Action items: [{action, owner, due, status}] -> A-id table.
-        status in {open, done, blocked} -> blue / green / red mono."""
-        status_color = {"open": BLUE_DEEP, "done": POS, "blocked": NEG}
-        t = self.doc.add_table(rows=1 + len(rows), cols=5)
-        t.autofit = False
-        self._fixed_layout(t)
-        _no_table_borders(t)
-        widths = [0.07, 0.47, 0.17, 0.12, 0.17]
-        for r in t.rows:
-            for j, cell in enumerate(r.cells):
-                cell.width = int(self._usable * widths[j])
-        for j, htext in enumerate(["#", "Action", "Owner", "Due", "Status"]):
-            cell = t.cell(0, j)
-            _cell_borders(cell, ["bottom"], size=6, color=LINE_STRONG)
-            self._mono(cell.paragraphs[0], htext, color=MIST)
+        """[{action, owner, due, status}] → A-id table. status: open |
+        done | blocked → Fog tag with Dust / Pos / Neg ink (never Seagrass)."""
+        ink = {"open": C["dust"], "done": C["pos"], "blocked": C["neg"]}
+        widths = [0.07, 0.49, 0.17, 0.13, 0.14]
+        t = self._table(1 + len(rows), 5, widths)
+        for j, h in enumerate(["#", "Action", "Owner", "Due", "Status"]):
+            c = t.cell(0, j)
+            _cell_borders(c, {"bottom": (HAIR, HEX["cloud"])})
+            _cell_margins(c, bottom=5, right=0 if j == 4 else 10)
+            self._label(self._cell_p(c), h, C["mist"])
         for i, row in enumerate(rows, 1):
             cells = t.rows[i].cells
-            for cell in cells:
-                _cell_borders(cell, ["bottom"], size=4, color=LINE)
-            self._mono(cells[0].paragraphs[0], f"A{i}", color=BLUE, size=8.5)
-            self._rich(cells[1].paragraphs[0], row["action"], 9.5, INK)
-            self._mono(cells[2].paragraphs[0], row["owner"], color=SLATE,
-                       size=8.5)
-            self._mono(cells[3].paragraphs[0], row.get("due", "TBD"),
-                       color=SLATE, size=8.5)
+            for j, c in enumerate(cells):
+                _cell_borders(c, {"bottom": (HAIR, HEX["rule"])})
+                _cell_margins(c, top=5, bottom=5, right=0 if j == 4 else 10)
+            r = self._style(self._cell_p(cells[0]).add_run(f"A{i}"), 8,
+                            C["black"], bold=True)
+            _tracking(r, 0.3)
+            self._rich(self._cell_p(cells[1]), row["action"], 9, C["black"])
+            self._style(self._cell_p(cells[2]).add_run(row["owner"]), 9,
+                        C["dust"])
+            self._style(self._cell_p(cells[3]).add_run(row.get("due", "TBD")),
+                        9, C["dust"])
             st = row.get("status", "open").lower()
-            self._mono(cells[4].paragraphs[0], st,
-                       color=status_color.get(st, BLUE_DEEP), size=8)
-        self.doc.add_paragraph().paragraph_format.space_after = Pt(2)
+            tag = self._label(self._cell_p(cells[4]), f" {st} ",
+                              ink.get(st, C["dust"]), size=6.5, track=0.3)
+            _run_shade(tag, HEX["fog"])
+        self._gap(12)
+        return t
 
     def smallprint(self, text):
-        """Next meeting / status / distribution / confidentiality."""
-        p = self.doc.add_paragraph()
-        p.paragraph_format.space_before = Pt(10)
-        self._rich(p, text, 8, MIST, bold_color=SLATE)
+        """Next meeting / status / distribution — 7pt Mist, bold in Dust."""
+        p = self._para(before=10, after=0, line=7 * 1.5)
+        self._rich(p, text, 7, C["mist"], bold_color=C["dust"])
         return p
+
+    # ── figure ──
+    def figure(self, image_path, caption, source="", idx=None,
+               width_frac=1.0):
+        """Chart/figure image (rendered per design.md §7) + figcap:
+        bold ``Fig 01``, one-sentence caption, source right in Mist."""
+        p = self._para(before=6, after=6, keep=True)
+        p.add_run().add_picture(str(image_path),
+                                width=int(self._usable * width_frac))
+        idx = idx if idx is not None else getattr(self, "_fig", 0) + 1
+        self._fig = idx
+        cp = self._para(after=12)
+        self._tabbed(cp, [(self._usable, WD_TAB_ALIGNMENT.RIGHT)])
+        self._style(cp.add_run(f"Fig {idx:02d}   "), SZ["small"],
+                        C["black"], bold=True)
+        self._style(cp.add_run(caption), SZ["small"], C["dust"])
+        if source:
+            self._style(cp.add_run(f"\tSource: {source}"), SZ["small"] - 0.5,
+                        C["mist"])
+        return p
+
+    # ── signature: chapter opener (long docs only) ──
+    def chapter(self, num, title):
+        """§5.5 — a page of its own: Fog ground, giant numeral + one-word
+        title bottom-left, nothing but the folio. Word can't colour a
+        single page, so the Fog ground fills the text block."""
+        sec = self.doc.add_section(WD_SECTION.NEW_PAGE)
+        sec.header.is_linked_to_previous = False      # no page head
+        hp = sec.header.paragraphs[0]
+        for r in list(hp.runs):
+            r._r.getparent().remove(r._r)
+        t = self._table(1, 1, [1])
+        cell = t.cell(0, 0)
+        _cell_shade(cell, HEX["fog"])
+        _cell_margins(cell, left=24, right=24, bottom=26)
+        t.rows[0].height = int(self._usable_h - Pt(30))
+        t.rows[0].height_rule = WD_ROW_HEIGHT_RULE.EXACTLY
+        cell.vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.BOTTOM
+        for k, text in enumerate((f"{num:02d}" if isinstance(num, int)
+                                  else str(num), title)):
+            p = self._cell_p(cell, first=k == 0)
+            p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.EXACTLY
+            p.paragraph_format.line_spacing = Pt(70)
+            r = self._style(p.add_run(text), 72, C["black"])
+            _tracking(r, -2)
+        # section break paragraph: shrink it so it can't spill a blank page
+        nxt = self.doc.add_section(WD_SECTION.NEW_PAGE)
+        body = self.doc.element.body
+        for p in body.iterchildren(qn("w:p")):
+            pPr = p.find(qn("w:pPr"))
+            if pPr is not None and pPr.find(qn("w:sectPr")) is not None:
+                self._shrink(p)
+        self._page_head(nxt.header)
+        return t
+
+    @staticmethod
+    def _shrink(p):
+        pPr = p.find(qn("w:pPr"))
+        sp = _set_child(pPr, "w:spacing", "w:pPr")
+        sp.set(qn("w:before"), "0")
+        sp.set(qn("w:after"), "0")
+        sp.set(qn("w:line"), "20")
+        sp.set(qn("w:lineRule"), "exact")
+        rpr = _set_child(pPr, "w:rPr", "w:pPr")
+        sz = OxmlElement("w:sz")
+        sz.set(qn("w:val"), "2")
+        rpr.append(sz)
 
     def page_break(self):
         self.doc.add_page_break()
 
     def save(self, path):
-        self.doc.save(path)
-        return path
+        self.doc.save(str(path))
+        return str(path)
 
 
 # ── demo / visual regression check ──────────────────────────────────
-if __name__ == "__main__":
+def _demo_chart(path):
+    """A §7-conformant bar chart PNG for the figure demo (Pillow)."""
+    from PIL import Image, ImageDraw, ImageFont
+    W_, H_ = 1800, 620
+    im = Image.new("RGB", (W_, H_), "#" + HEX["horizon"])
+    d = ImageDraw.Draw(im)
+    font = None
+    for f in ("/System/Library/Fonts/Supplemental/Arial.ttf",
+              "/System/Library/Fonts/Helvetica.ttc",
+              "/Library/Fonts/Arial.ttf"):
+        try:
+            font = ImageFont.truetype(f, 30)
+            bold = ImageFont.truetype(f, 32)
+            break
+        except OSError:
+            continue
+    font = font or ImageFont.load_default()
+    bold = bold if font else font
+    base, top, left = 520, 60, 60
+    for k in range(5):                       # gridlines, horizontal only
+        y = base - k * (base - top) / 4
+        d.line([(left, y), (W_ - 40, y)], fill="#" + HEX["rule"], width=2)
+    d.line([(left, base), (W_ - 40, base)], fill="#" + HEX["cloud"], width=2)
+    data = [("Field study", 2), ("Online panel", 4), ("Agency recall", 3),
+            ("Socialtrait", 24)]
+    bw, step = 190, (W_ - left - 80) / len(data)
+    for i, (lab, v) in enumerate(data):
+        x = left + 40 + i * step + (step - bw) / 2
+        h = (base - top) * v / 24
+        col = "#" + (HEX["day"] if lab == "Socialtrait" else HEX["cloud"])
+        d.rounded_rectangle([x, base - max(h, 6), x + bw, base], radius=6,
+                            fill=col)
+        d.text((x + bw / 2, base - max(h, 6) - 14), f"{v:g}", font=bold,
+               fill="#" + HEX["black"], anchor="mb")
+        d.text((x + bw / 2, base + 22), lab, font=font,
+               fill="#" + HEX["mist"], anchor="mt")
+    im.save(path)
+    return path
+
+
+def demo(out):
+    out = Path(out)
     d = OriDoc(doc_type="Statement of work", doc_id="ST-SOW-007",
-               date="2026-07-08", classification="Client confidential")
+               date="2026-10-07", classification="Client confidential",
+               meta=("Arlo Foods",), artifact="long-doc")
     d.title("Audience simulation pilot — statement of work")
-    d.lede("Scope, timeline, and commercial terms for the Q3 simulated-"
+    d.lede("Scope, timeline, and commercial terms for the Q4 simulated-"
            "audience pilot between Socialtrait and Arlo Foods.")
     d.metric_row([
-        {"label": "Studies", "value": "8", "note": "two campaigns"},
-        {"label": "Duration", "value": "10", "note": "weeks, from kickoff",
-         "hero": True},
-        {"label": "Fee", "value": "$44k", "note": "fixed, net-30"},
+        {"label": "Studies", "value": "8", "note": "across two campaigns"},
+        {"label": "Duration", "value": "10", "unit": "wks",
+         "note": "kickoff to readout", "key": True},
+        {"label": "Fee", "value": "$44", "unit": "k", "note": "fixed, net-30"},
         {"label": "Panel size", "value": "2,400", "note": "per study"},
     ])
-    d.section(1, "Scope", "Six simulated studies across two campaigns")
+    d.callout("Insight", "Simulated panels answer <b>before</b> the media "
+              "decision, not three weeks after it — that is the whole "
+              "commercial case for this pilot.")
+    d.section(1, "Scope", "Eight simulated studies across two campaigns")
     d.body("Socialtrait will run <b>eight simulated-audience studies</b> "
-           "across the client's two Q3 campaigns, covering four audience "
-           "cells per study with calibrated persona models.")
-    d.bullets(["Creative pre-tests for 6 variants per campaign",
+           "across the client's two Q4 campaigns, covering four audience "
+           "cells per study with calibrated persona models. Each study "
+           "reports preference share with confidence intervals and "
+           "verbatim-style persona reactions.")
+    d.bullets(["Creative pre-tests for six variants per campaign",
                "Segment-level preference ranking with confidence intervals",
                "Verbatim-style persona reactions for creative iteration"])
+    d.h3("Out of scope")
+    d.body("Media buying, creative production, and live-panel fieldwork. "
+           "Any of these can be added by change order.")
     d.section(2, "Timeline", "Kickoff to final readout in ten weeks")
-    d.table(["Phase", "Deliverable", "Week"],
-            [["Onboard", "Data intake, persona calibration", "1–2"],
-             ["Studies", "8 studies, rolling readouts", "3–8"],
-             ["Validation", "Holdout comparison, final report", "9–10"]],
-            data_cols=(2,))
+    d.table(["Phase", "Deliverable", "Weeks", "Fee"],
+            [["Onboard", "Data intake, persona calibration", "1–2", "$8k"],
+             ["Studies", "8 studies, rolling readouts", "3–8", "$30k"],
+             ["Validation", "Holdout comparison, final report", "9–10",
+              "$6k"],
+             ["Total", "", "10", "$44k"]],
+            data_cols=(2, 3), total=True, key_row=1,
+            widths=[0.2, 0.5, 0.14, 0.16])
+    chart = _demo_chart(out.with_name(out.stem + "-fig01.png"))
+    d.figure(chart, "Creative variants tested per campaign, by method.",
+             source="Socialtrait pilots, 2026")
     d.quote("The simulation caught in four hours what our panel would have "
-            "told us three weeks after launch.", "VP Growth · CPG pilot")
-    d.callout("The ask", "Countersign by <b>July 18</b> so persona "
-              "calibration completes before the August media flight.")
-    print("wrote", d.save(str(Path.cwd() / "ori-docx-demo.docx")))
+            "told us three weeks after launch.",
+            "Dana · VP Growth, CPG pilot")
+    d.kv([("Client", "Arlo Foods, Inc."),
+          ("Term", "2026-10-14 → 2026-12-19"),
+          ("Payment", "Fixed fee, net-30 from each invoice"),
+          ("Contacts", "suraj@socialtrait.ai · ops@arlofoods.com")])
+    d.callout("Risk", "Persona calibration needs the Q3 brand-tracker export "
+              "by <b>October 14</b>; a late export shifts every study by "
+              "the same amount.", kind="risk")
+    d.callout("Watch", "Holiday media freeze from Dec 20 — final readout "
+              "must land before it.", kind="warn")
+    d.chapter(2, "Minutes")
+    d.section(3, "Kickoff minutes", "Calibration starts Monday; two "
+              "decisions, four actions")
+    d.logistics([("Date", "2026-10-07, 10:00–10:45"),
+                 ("Where", "Google Meet"),
+                 ("Chair", "Suraj N.")],
+                [("Present", "Suraj N., Dana R., Priya K., Leo M."),
+                 ("Absent", "Ana T."),
+                 ("Notes", "Leo M.")])
+    d.agenda([("Pilot scope and success criteria", "Suraj · 15 min"),
+              ("Data intake and calibration plan", "Priya · 15 min"),
+              ("Readout cadence", "Dana · 10 min")])
+    d.h3("Decisions")
+    d.decisions(["Success = interval coverage ≥ <hl>80%</hl> on holdout "
+                 "cells.",
+                 "Readouts every second Thursday, 30 minutes, async-first."])
+    d.h3("Actions")
+    d.actions([
+        {"action": "Export Q3 brand-tracker data", "owner": "Dana R.",
+         "due": "Oct 14", "status": "open"},
+        {"action": "Calibrate four persona cells", "owner": "Priya K.",
+         "due": "Oct 21", "status": "open"},
+        {"action": "Share readout template", "owner": "Suraj N.",
+         "due": "Oct 9", "status": "done"},
+        {"action": "Legal review of data-sharing addendum",
+         "owner": "Ana T.", "due": "Oct 10", "status": "blocked"},
+    ])
+    d.ask("Countersign by <b>October 10</b> so persona calibration "
+          "completes before the November media flight.")
+    d.smallprint("<b>Next meeting:</b> 2026-10-21, 10:00. <b>Status:</b> "
+                 "final. <b>Distribution:</b> pilot team, Arlo Foods "
+                 "marketing.")
+    return d.save(out)
+
+
+def demo_resume(out):
+    r = OriDoc(doc_type="Resume", artifact="resume",
+               candidate="Maya Chen", classification="")
+    r.title("Maya Chen")
+    r.lede("Research engineer — audience simulation, causal inference, "
+           "evaluation.")
+    r.section(1, "Experience", "Socialtrait · Research engineer, 2024–")
+    r.bullets(["Built the persona calibration pipeline used in every pilot",
+               "Cut study turnaround from 19 days to <b>4 hours</b>"])
+    return r.save(out)
+
+
+if __name__ == "__main__":
+    # demos never land in the repo: default to the system temp dir
+    target = Path(sys.argv[1]) if len(sys.argv) > 1 else (
+        Path(tempfile.gettempdir()) / "ori-docx-demo.docx")
+    print("wrote", demo(target))
+    print("wrote", demo_resume(target.with_name(target.stem + "-resume.docx")))

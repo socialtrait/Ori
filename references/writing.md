@@ -18,8 +18,11 @@ input, delete it first.
 - **Honest provenance.** Simulated-audience findings are labeled as
   simulated. Unverifiable numbers become magnitudes or get cut. No invented
   testimonials, logos, or "trusted by" walls.
-- **Sentence case everywhere** — headings, labels excepted (mono labels are
-  uppercase by design).
+- **Sentence case everywhere** — headings included. Only kickers, labels,
+  and the folio are uppercase, by design.
+- **Dark moments carry few words.** A horizon or Real Black surface holds a
+  title, ≤ 20 words of support, and one signal. If it needs more, it's a
+  light (functional) page.
 - Spell out an acronym at first use unless the audience dimension says
   expert.
 
@@ -43,11 +46,11 @@ input, delete it first.
 
 ## Report (insight report)
 
-- Section = claim (H2) + evidence (one shape) + insight strip ("SO WHAT").
-- The insight strip states an implication or recommended action, never a
+- Section = claim (H2) + evidence (one shape) + insight callout.
+- The insight callout states an implication or recommended action, never a
   restatement of the chart.
 - Segment findings quote personas by name; quotes ≤ 25 words, verbatim.
-- Methods and sample sizes live in a final `METHOD` callout — small, honest,
+- Methods and sample sizes live in a final `Method` callout — small, honest,
   present.
 - Lead the report with the variant finding: what the reader doesn't already
   believe.
@@ -57,12 +60,15 @@ input, delete it first.
 - Ghost test: titles alone, read in order, are the complete pitch.
 - ≤ 24 words of body text per slide beyond the title. Slides are evidence
   displays, not documents.
-- Takeaway bar text ≤ 14 words, states the "therefore".
+- Takeaway text ≤ 14 words, states the "therefore".
+- Statement slides (dark): ≤ 12-word title, ≤ 20 words of support.
 - Context slot holds the one number the title claims, or a scope kicker
   (who/what/when, ≤ 15 words) — never a second sentence of argument.
 - Numbers on slides get magnitude context ("2.4× baseline", not "2.4×").
-- Closing slide: one ask, one contact line. No "Thank you" slide with
-  nothing on it.
+- Closing slide: one ask, one contact line, one Seagrass signal. No "Thank
+  you" slide with nothing on it.
+- Chapter openers (decks ≥ 12 slides) carry one word — the act — and nothing
+  else.
 
 ## Resume
 
